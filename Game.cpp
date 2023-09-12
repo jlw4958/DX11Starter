@@ -3,6 +3,9 @@
 #include "Input.h"
 #include "PathHelpers.h"
 #include "Mesh.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_dx11.h"
+#include "ImGui/imgui_impl_win32.h"
 
 // Needed for a helper function to load pre-compiled shader files
 #pragma comment(lib, "d3dcompiler.lib")
@@ -48,6 +51,11 @@ Game::~Game()
 
 	// Call Release() on any Direct3D objects made within this class
 	// - Note: this is unnecessary for D3D objects stored in ComPtrs
+	
+	// ImGui clean up
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 // --------------------------------------------------------
@@ -82,6 +90,18 @@ void Game::Init()
 		//    these calls will need to happen multiple times per frame
 		context->VSSetShader(vertexShader.Get(), 0, 0);
 		context->PSSetShader(pixelShader.Get(), 0, 0);
+	}
+
+	{
+		// Initialize ImGui itself & platform/renderer backends
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui_ImplWin32_Init(hWnd);
+		ImGui_ImplDX11_Init(device.Get(), context.Get());
+		// Pick a style (uncomment one of these 3)
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsLight();
+		//ImGui::StyleColorsClassic();
 	}
 }
 
@@ -241,6 +261,25 @@ void Game::OnResize()
 // --------------------------------------------------------
 void Game::Update(float deltaTime, float totalTime)
 {
+	// could turn into helper method
+	{
+		// Feed fresh input data to ImGui
+		ImGuiIO& io = ImGui::GetIO();
+		io.DeltaTime = deltaTime;
+		io.DisplaySize.x = (float)this->windowWidth;
+		io.DisplaySize.y = (float)this->windowHeight;
+		// Reset the frame
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+		// Determine new input capture
+		Input& input = Input::GetInstance();
+		input.SetKeyboardCapture(io.WantCaptureKeyboard);
+		input.SetMouseCapture(io.WantCaptureMouse);
+		// Show the demo window
+		ImGui::ShowDemoWindow();
+	}
+
 	// Example input checking: Quit if the escape key is pressed
 	if (Input::GetInstance().KeyDown(VK_ESCAPE))
 		Quit();
@@ -284,6 +323,8 @@ void Game::Draw(float deltaTime, float totalTime)
 		//  - Puts the results of what we've drawn onto the window
 		//  - Without this, the user never sees anything
 		bool vsyncNecessary = vsync || !deviceSupportsTearing || isFullscreen;
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		swapChain->Present(
 			vsyncNecessary ? 1 : 0,
 			vsyncNecessary ? 0 : DXGI_PRESENT_ALLOW_TEARING);
