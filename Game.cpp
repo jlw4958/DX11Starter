@@ -6,9 +6,11 @@
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
+#include "BufferStructs.h"
 
 // Needed for a helper function to load pre-compiled shader files
 #pragma comment(lib, "d3dcompiler.lib")
+#include <iostream>
 #include <d3dcompiler.h>
 
 // For the DirectX Math library
@@ -103,6 +105,19 @@ void Game::Init()
 		//ImGui::StyleColorsLight();
 		//ImGui::StyleColorsClassic();
 	}
+
+	// Get size as the next multiple of 16 (instead of hardcoding a size here!)
+	unsigned int size = sizeof(VertexShaderExternalData);
+	size = (size + 15) / 16 * 16; // This will work even if the struct size changes
+
+	// Describe the constant buffer
+	D3D11_BUFFER_DESC cbDesc = {}; // Sets struct to all zeros
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.ByteWidth = size; // Must be a multiple of 16
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+
+	device->CreateBuffer(&cbDesc, 0, vsConstantBuffer.GetAddressOf());
 }
 
 // --------------------------------------------------------
@@ -215,6 +230,7 @@ void Game::CreateGeometry()
 		{ XMFLOAT3(-0.55f, +0.3f, +0.0f), green },
 		{ XMFLOAT3(-0.55f, +0.3f, +0.0f), green },
 		{ XMFLOAT3(-0.8f, +0.0f, +0.0f), white },
+		{ XMFLOAT3(-1.0f, +0.5f, +0.0f), red },
 	};
 	Vertex shape2Vertices[] = {
 		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), black },
@@ -235,13 +251,19 @@ void Game::CreateGeometry()
 	//    in the correct order and each one will be used exactly once
 	// - But just to see how it's done...
 	unsigned int triIndices[] = { 0, 1, 2 };
-	unsigned int shape1Indices[] = { 0, 1, 2, 3, 4 };
+	unsigned int shape1Indices[] = { 0, 1, 2, 3, 4, 5};
 	unsigned int shape2Indices[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
+	int triCount = sizeof(triVertices) / sizeof(triVertices[0]);
+	int shape1Count = sizeof(shape1Vertices) / sizeof(shape1Vertices[0]);
+	int shape2Count = sizeof(shape2Vertices) / sizeof(shape2Vertices[0]);
+
+	std::cout << "tricount:" << triCount << " " << "shape1count:" << shape1Count << " " << "shape2count:" << shape2Count;
+
 	// mesh object (triangle)
-	triangle = std::make_shared<Mesh>(triVertices, sizeof(triVertices), triIndices, sizeof(triIndices), device, context);
-	shape1 = std::make_shared<Mesh>(shape1Vertices, sizeof(shape1Vertices), shape1Indices, sizeof(shape1Indices), device, context);
-	shape2 = std::make_shared<Mesh>(shape2Vertices, sizeof(shape2Vertices), shape2Indices, sizeof(shape2Indices), device, context);
+	triangle = std::make_shared<Mesh>(triVertices, triCount, triIndices, triCount, device, context);
+	shape1 = std::make_shared<Mesh>(shape1Vertices, shape1Count, shape1Indices, shape1Count, device, context);
+	shape2 = std::make_shared<Mesh>(shape2Vertices, shape2Count, shape2Indices, shape2Count, device, context);
 }
 
 
@@ -307,6 +329,21 @@ void Game::Draw(float deltaTime, float totalTime)
 	// - Other Direct3D calls will also be necessary to do more complex things
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
+
+	// shader things
+	VertexShaderExternalData vsData;
+	vsData.colorTint = XMFLOAT4(1.0f, 0.5f, 0.5f, 1.0f);
+	vsData.offset = XMFLOAT3(0.25f, 0.0f, 0.0f);
+
+	D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
+	context->Map(vsConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
+	memcpy(mappedBuffer.pData, &vsData, sizeof(vsData));
+	context->Unmap(vsConstantBuffer.Get(), 0);
+
+	context->VSSetConstantBuffers(
+		0, // Which slot (register) to bind the buffer to?
+		1, // How many are we activating? Can do multiple at once
+		vsConstantBuffer.GetAddressOf()); // Array of buffers (or the address of one)
 
 	// drawing the triangle
 	triangle->Draw();

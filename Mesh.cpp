@@ -6,20 +6,22 @@
 #include "PathHelpers.h"
 
 #pragma comment(lib, "d3dcompiler.lib")
+#include <iostream>
 #include <d3dcompiler.h>
 
 using namespace DirectX;
 
 Mesh::Mesh(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context)
 {
-	context = _context;
-	indices = numIndices;
+	this->context = _context;
+	this->indices = numIndices;
+	this->vertices = numVertices;
 
 	// creating the vertex buffer
 	{
 		D3D11_BUFFER_DESC vbd = {};
 		vbd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
-		vbd.ByteWidth = numVertices;       // 3 = number of vertices in the buffer
+		vbd.ByteWidth = sizeof(Vertex) * vertices;      // 3 = number of vertices in the buffer; sizeof(Vertex) * vertices; 
 		vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Tells Direct3D this is a vertex buffer
 		vbd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
 		vbd.MiscFlags = 0;
@@ -35,7 +37,7 @@ Mesh::Mesh(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIn
 	{
 		D3D11_BUFFER_DESC ibd = {};
 		ibd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
-		ibd.ByteWidth = indices;	// 3 = number of indices in the buffer
+		ibd.ByteWidth = sizeof(unsigned int) * indices;	// 3 = number of indices in the buffer; sizeof(unsigned int) * indices;
 		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;	// Tells Direct3D this is an index buffer
 		ibd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
 		ibd.MiscFlags = 0;

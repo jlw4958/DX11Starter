@@ -53,5 +53,9 @@ private:
 	/// number of indices in this mesh's index buffer
 	/// </summary>
 	int indices;
+	/// <summary>
+	/// number of vertices in this mesh's vertex buffer
+	/// </summary>
+	int vertices;
 };
 
