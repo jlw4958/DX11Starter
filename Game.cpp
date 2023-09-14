@@ -118,6 +118,14 @@ void Game::Init()
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
 
 	device->CreateBuffer(&cbDesc, 0, vsConstantBuffer.GetAddressOf());
+
+	// vectors to edit
+	XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
+	XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
+
+	// edited values
+	editVector = vec;
+	editColor = color;
 }
 
 // --------------------------------------------------------
@@ -302,6 +310,18 @@ void Game::Update(float deltaTime, float totalTime)
 		ImGui::ShowDemoWindow();
 	}
 
+	// ImGui things
+	{
+		// display some data
+		ImGui::Text("Framerate %f", ImGui::GetIO().Framerate);
+		ImGui::Text("Width %lu", windowWidth);
+		ImGui::Text("Height %lu", windowHeight);
+
+		// editing vectors
+		ImGui::DragFloat3("Edit a vector", &editVector.x);
+		ImGui::ColorEdit4("4 - component(RGBA) color editor", &editColor.x);
+	}
+
 	// Example input checking: Quit if the escape key is pressed
 	if (Input::GetInstance().KeyDown(VK_ESCAPE))
 		Quit();
@@ -332,8 +352,8 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	// shader things
 	VertexShaderExternalData vsData;
-	vsData.colorTint = XMFLOAT4(1.0f, 0.5f, 0.5f, 1.0f);
-	vsData.offset = XMFLOAT3(0.25f, 0.0f, 0.0f);
+	vsData.colorTint = editColor;
+	vsData.offset = editVector;
 
 	D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 	context->Map(vsConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);

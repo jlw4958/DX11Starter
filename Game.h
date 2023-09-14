@@ -50,5 +50,10 @@ private:
 	// cBuffer
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vsConstantBuffer;
 
+	// editing values
+	// vector
+	DirectX::XMFLOAT3 editVector;
+	DirectX::XMFLOAT4 editColor;
+
 };
 
