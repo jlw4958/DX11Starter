@@ -79,15 +79,47 @@ void Transform::Scale(float x, float y, float z)
 // transformations: vectors
 void Transform::MoveAbsolute(DirectX::XMFLOAT3 _offset)
 {
+	// loading position into math vector
+	DirectX::XMVECTOR posVec = XMLoadFloat3(&position);
+
+	// loading offset into math vector
+	DirectX::XMVECTOR offVec = XMLoadFloat3(&_offset);
+
+	// math time!
+	posVec = DirectX::XMVectorAdd(posVec, offVec);
+
+	// copying value back to storage type
+	DirectX::XMStoreFloat3(&position, posVec);
 }
 
 void Transform::Rotate(DirectX::XMFLOAT3 _rotation)
 {
+	// loading rotation into math vector
+	DirectX::XMVECTOR rotVec = XMLoadFloat3(&pitchYawRoll);
+
+	// loading change into math vector
+	DirectX::XMVECTOR rotChangeVec = XMLoadFloat3(&_rotation);
+
+	// math time!
+	rotVec = DirectX::XMVectorAdd(rotVec, rotChangeVec);
+
+	// copying value back to storage type
+	DirectX::XMStoreFloat3(&pitchYawRoll, rotChangeVec);
 }
 
 void Transform::Scale(DirectX::XMFLOAT3 _scale)
 {
+	// loading scale into math vector
+	DirectX::XMVECTOR scaleVec = XMLoadFloat3(&scale);
 
+	// loading scaling into math vector
+	DirectX::XMVECTOR scaleChangeVec = XMLoadFloat3(&_scale);
+
+	// math time!!
+	scaleVec = DirectX::XMVectorMultiply(scaleVec, scaleChangeVec);
+
+	// copying value back to storage type
+	DirectX::XMStoreFloat3(&scale, scaleVec);
 }
 
 // setters: floats
