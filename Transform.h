@@ -7,7 +7,7 @@ class Transform
 public:
 	Transform();
 
-	DirectX::XMFLOAT4X4 GetWorldMatrix();
+	//DirectX::XMFLOAT4X4 GetWorldMatrix();
 
 	//void MoveRelative(float x, float y, float z);
 	void MoveAbsolute(float x, float y, float z);

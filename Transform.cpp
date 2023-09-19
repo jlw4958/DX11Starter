@@ -1,6 +1,7 @@
 #include "Transform.h"
 #include <DirectXMath.h>
 
+// constructor
 Transform::Transform() : 
 	position(0, 0, 0),
 	pitchYawRoll(0, 0, 0),
@@ -17,42 +18,74 @@ Transform::Transform() :
 
 }
 
-DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
-{
-	DirectX::XMMATRIX t = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-	DirectX::XMMATRIX r = DirectX::XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
-	DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));
-	
-}
-
 // transformations: floats
 void Transform::MoveAbsolute(float x, float y, float z)
 {
+	// making a vector with the parameters
+	DirectX::XMFLOAT3 offset = DirectX::XMFLOAT3(x, y, z);
+
+	// loading position into math vector
+	DirectX::XMVECTOR posVec = XMLoadFloat3(&position);
+
+	// loading offset into math vector
+	DirectX::XMVECTOR offVec = XMLoadFloat3(&offset);
+
+	// math time!
+	posVec = DirectX::XMVectorAdd(posVec, offVec);
+
+	// copying value back to storage type
+	DirectX::XMStoreFloat3(&position, posVec);
 
 }
 
 void Transform::Rotate(float p, float y, float r)
 {
+	// making a vector with the parameters
+	DirectX::XMFLOAT3 rotationChange = DirectX::XMFLOAT3(p, y, r);
+
+	// loading rotation into math vector
+	DirectX::XMVECTOR rotVec = XMLoadFloat3(&pitchYawRoll);
+
+	// loading change into math vector
+	DirectX::XMVECTOR rotChangeVec = XMLoadFloat3(&rotationChange);
+
+	// math time!
+	rotVec = DirectX::XMVectorAdd(rotVec, rotChangeVec);
+
+	// copying value back to storage type
+	DirectX::XMStoreFloat3(&pitchYawRoll, rotChangeVec);
 
 }
 
 void Transform::Scale(float x, float y, float z)
 {
+	// making a vector with the parameters
+	DirectX::XMFLOAT3 scaleChange = DirectX::XMFLOAT3(x, y, z);
+
+	// loading scale into math vector
+	DirectX::XMVECTOR scaleVec = XMLoadFloat3(&scale);
+
+	// loading scaling into math vector
+	DirectX::XMVECTOR scaleChangeVec = XMLoadFloat3(&scaleChange);
+
+	// math time!!
+	scaleVec = DirectX::XMVectorMultiply(scaleVec, scaleChangeVec);
+
+	// copying value back to storage type
+	DirectX::XMStoreFloat3(&scale, scaleVec);
 
 }
 
 // transformations: vectors
-void Transform::MoveAbsolute(DirectX::XMFLOAT3 offset)
+void Transform::MoveAbsolute(DirectX::XMFLOAT3 _offset)
 {
-
 }
 
-void Transform::Rotate(DirectX::XMFLOAT3 rotation)
+void Transform::Rotate(DirectX::XMFLOAT3 _rotation)
 {
-
 }
 
-void Transform::Scale(DirectX::XMFLOAT3 scale)
+void Transform::Scale(DirectX::XMFLOAT3 _scale)
 {
 
 }
@@ -60,33 +93,35 @@ void Transform::Scale(DirectX::XMFLOAT3 scale)
 // setters: floats
 void Transform::SetPosition(float x, float y, float z)
 {
-
+	position.x = x;
+	position.y = y;
+	position.z = z;
 }
 
 void Transform::SetRotation(float x, float y, float z)
 {
-
+	pitchYawRoll = DirectX::XMFLOAT3(x, y, z);
 }
 
 void Transform::SetScale(float x, float y, float z)
 {
-
+	scale = DirectX::XMFLOAT3(x, y, z);
 }
 
 // setters: vectors
-void Transform::SetPosition(DirectX::XMFLOAT3 position)
+void Transform::SetPosition(DirectX::XMFLOAT3 _position)
 {
-
+	position = _position;
 }
 
-void Transform::SetRotation(DirectX::XMFLOAT3 rotation)
+void Transform::SetRotation(DirectX::XMFLOAT3 _rotation)
 {
-
+	pitchYawRoll = _rotation;
 }
 
-void Transform::SetScale(DirectX::XMFLOAT3 scale)
+void Transform::SetScale(DirectX::XMFLOAT3 _scale)
 {
-
+	scale = _scale;
 }
 
 // getters
@@ -106,6 +141,15 @@ DirectX::XMFLOAT3 Transform::GetScale()
 }
 
 // helpers
+
+//DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
+//{
+//	DirectX::XMMATRIX t = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+//	DirectX::XMMATRIX r = DirectX::XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
+//	DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));
+//
+//}
+
 void Transform::UpdateMatrices()
 {
 	// translation matrix

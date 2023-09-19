@@ -353,7 +353,7 @@ void Game::Draw(float deltaTime, float totalTime)
 	// shader things
 	VertexShaderExternalData vsData;
 	vsData.colorTint = editColor;
-	vsData.offset = editVector;
+	//vsData.offset = editVector;
 
 	D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 	context->Map(vsConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
