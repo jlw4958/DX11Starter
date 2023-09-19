@@ -16,3 +16,12 @@ DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
 	DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));
 	
 }
+
+void Transform::Scale(float x, float y, float z)
+{
+}
+
+DirectX::XMFLOAT3 Transform::GetScale()
+{
+	return DirectX::XMFLOAT3();
+}
