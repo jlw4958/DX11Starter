@@ -17,8 +17,42 @@ DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
 	
 }
 
+void Transform::MoveAbsolute(float x, float y, float z)
+{
+}
+
+void Transform::MoveRelative(float x, float y, float z)
+{
+}
+
+void Transform::Rotate(float p, float y, float r)
+{
+}
+
 void Transform::Scale(float x, float y, float z)
 {
+}
+
+void Transform::SetPosition(float x, float y, float z)
+{
+}
+
+void Transform::SetRotation(float x, float y, float z)
+{
+}
+
+void Transform::SetScale(float x, float y, float z)
+{
+}
+
+DirectX::XMFLOAT3 Transform::GetPosition()
+{
+	return DirectX::XMFLOAT3();
+}
+
+DirectX::XMFLOAT3 Transform::GetRotation()
+{
+	return DirectX::XMFLOAT3();
 }
 
 DirectX::XMFLOAT3 Transform::GetScale()
