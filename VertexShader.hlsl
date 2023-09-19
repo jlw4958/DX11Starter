@@ -1,7 +1,7 @@
 cbuffer ExternalData : register(b0)
 {
 	float4 colorTint;
-	float3 offset;
+	float4x4 world;
 }
 
 // Struct representing a single vertex worth of data
