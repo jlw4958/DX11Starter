@@ -18,7 +18,7 @@ public:
 		const wchar_t* titleBarText,// Text for the window's title bar
 		unsigned int windowWidth,	// Width of the window's client area
 		unsigned int windowHeight,	// Height of the window's client area
-		bool vsync,					// Sync the framerate to the monitor?
+		bool vsync,					// Sync the framerate to the monitor? turning this off can help you determine efficiency; keeping it off can result in screen tearing
 		bool debugTitleBarStats);	// Show extra stats (fps) in title bar?
 	~DXCore();
 

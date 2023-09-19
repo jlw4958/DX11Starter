@@ -1,0 +1,12 @@
+Class Content:
+- any program that wants to talk to the OS in a window needs some OS info
+	- this is why we use WinMain
+	- hInstance: handle instance
+		- handle = number
+		- identifies our program for the OS
+- 
+
+Misc:
+- you'll really only touch the code inside of Game.cpp (or Game.h? maybe?)
+- a mesh is a shape made of one or more triangles
+- the types we'll be using are wide types (w_char, w_int, etc) because they allow for more characters to be held
