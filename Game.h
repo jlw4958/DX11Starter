@@ -27,6 +27,7 @@ private:
 	// Initialization helper methods - feel free to customize, combine, remove, etc.
 	void LoadShaders(); 
 	void CreateGeometry();
+	void ImGuiHelper(float dt);
 
 	// Note the usage of ComPtr below
 	//  - This is a smart pointer for objects that abide by the
@@ -49,11 +50,6 @@ private:
 
 	// cBuffer
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vsConstantBuffer;
-
-	// editing values
-	// vector
-	DirectX::XMFLOAT3 editVector;
-	DirectX::XMFLOAT4 editColor;
 
 };
 

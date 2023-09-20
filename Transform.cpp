@@ -16,6 +16,7 @@ Transform::Transform() :
 	XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
 	XMStoreFloat4x4(&worldInverseTranspose, DirectX::XMMatrixIdentity());
 
+	isDirty = false;
 }
 
 // transformations: floats
@@ -36,6 +37,8 @@ void Transform::MoveAbsolute(float x, float y, float z)
 	// copying value back to storage type
 	DirectX::XMStoreFloat3(&position, posVec);
 
+	isDirty = true;
+
 }
 
 void Transform::Rotate(float p, float y, float r)
@@ -55,6 +58,7 @@ void Transform::Rotate(float p, float y, float r)
 	// copying value back to storage type
 	DirectX::XMStoreFloat3(&pitchYawRoll, rotChangeVec);
 
+	isDirty = true;
 }
 
 void Transform::Scale(float x, float y, float z)
@@ -74,6 +78,8 @@ void Transform::Scale(float x, float y, float z)
 	// copying value back to storage type
 	DirectX::XMStoreFloat3(&scale, scaleVec);
 
+	isDirty = true;
+
 }
 
 // transformations: vectors
@@ -90,6 +96,8 @@ void Transform::MoveAbsolute(DirectX::XMFLOAT3 _offset)
 
 	// copying value back to storage type
 	DirectX::XMStoreFloat3(&position, posVec);
+
+	isDirty = true;
 }
 
 void Transform::Rotate(DirectX::XMFLOAT3 _rotation)
@@ -105,6 +113,8 @@ void Transform::Rotate(DirectX::XMFLOAT3 _rotation)
 
 	// copying value back to storage type
 	DirectX::XMStoreFloat3(&pitchYawRoll, rotChangeVec);
+
+	isDirty = true;
 }
 
 void Transform::Scale(DirectX::XMFLOAT3 _scale)
@@ -120,6 +130,8 @@ void Transform::Scale(DirectX::XMFLOAT3 _scale)
 
 	// copying value back to storage type
 	DirectX::XMStoreFloat3(&scale, scaleVec);
+
+	isDirty = true;
 }
 
 // setters: floats
@@ -180,23 +192,30 @@ DirectX::XMFLOAT3 Transform::GetScale()
 //	DirectX::XMMATRIX r = DirectX::XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
 //	DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));
 //
+//	DirectX::XMMATRIX _worldMatrix = s * r * t; 
+//
 //}
 
-void Transform::UpdateMatrices()
+DirectX::XMFLOAT4X4 Transform::UpdateMatrices()
 {
-	// translation matrix
-	DirectX::XMMATRIX t = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+	if (isDirty) {
+		// translation matrix
+		DirectX::XMMATRIX t = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
-	// rotation matrix
-	DirectX::XMMATRIX r = DirectX::XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
+		// rotation matrix
+		DirectX::XMMATRIX r = DirectX::XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
 
-	// scale matrix
-	DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));	
+		// scale matrix
+		DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));	
 
-	// multiplying matricies
-	DirectX::XMMATRIX _world = s * r * t;
+		// multiplying matricies
+		DirectX::XMMATRIX _world = s * r * t;
 
-	// storing the matrix
-	DirectX::XMStoreFloat4x4(&world, _world);
-	DirectX::XMStoreFloat4x4(&worldInverseTranspose, DirectX::XMMatrixInverse(0, XMMatrixTranspose(_world)));
+		// storing the matrix
+		DirectX::XMStoreFloat4x4(&world, _world);
+		DirectX::XMStoreFloat4x4(&worldInverseTranspose, DirectX::XMMatrixInverse(0, XMMatrixTranspose(_world)));
+	}
+	
+	isDirty = false;
+	return world;
 }

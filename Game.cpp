@@ -291,27 +291,11 @@ void Game::OnResize()
 // --------------------------------------------------------
 void Game::Update(float deltaTime, float totalTime)
 {
-	// could turn into helper method
-	{
-		// Feed fresh input data to ImGui
-		ImGuiIO& io = ImGui::GetIO();
-		io.DeltaTime = deltaTime;
-		io.DisplaySize.x = (float)this->windowWidth;
-		io.DisplaySize.y = (float)this->windowHeight;
-		// Reset the frame
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		// Determine new input capture
-		Input& input = Input::GetInstance();
-		input.SetKeyboardCapture(io.WantCaptureKeyboard);
-		input.SetMouseCapture(io.WantCaptureMouse);
-		// Show the demo window
-		ImGui::ShowDemoWindow();
-	}
-
 	// ImGui things
 	{
+		// calling ImGUI helper method
+		ImGuiHelper(deltaTime);
+
 		// display some data
 		ImGui::Text("Framerate %f", ImGui::GetIO().Framerate);
 		ImGui::Text("Width %lu", windowWidth);
@@ -350,11 +334,6 @@ void Game::Draw(float deltaTime, float totalTime)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	// shader things
-	VertexShaderExternalData vsData;
-	vsData.colorTint = editColor;
-	vsData.offset = editVector;
-
 	D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 	context->Map(vsConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
 	memcpy(mappedBuffer.pData, &vsData, sizeof(vsData));
@@ -389,4 +368,24 @@ void Game::Draw(float deltaTime, float totalTime)
 		// Must re-bind buffers after presenting, as they become unbound
 		context->OMSetRenderTargets(1, backBufferRTV.GetAddressOf(), depthBufferDSV.Get());
 	}
+}
+
+// could turn into helper method
+void Game::ImGuiHelper(float dt)
+{
+	// Feed fresh input data to ImGui
+	ImGuiIO& io = ImGui::GetIO();
+	io.DeltaTime = dt;
+	io.DisplaySize.x = (float)this->windowWidth;
+	io.DisplaySize.y = (float)this->windowHeight;
+	// Reset the frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	// Determine new input capture
+	Input& input = Input::GetInstance();
+	input.SetKeyboardCapture(io.WantCaptureKeyboard);
+	input.SetMouseCapture(io.WantCaptureMouse);
+	// Show the demo window
+	ImGui::ShowDemoWindow();
 }
