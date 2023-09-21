@@ -321,26 +321,21 @@ void Game::Update(float deltaTime, float totalTime)
 		// get transform
 		// update transform
 		// set transform
-		entities[1].GetTransform()->Rotate(0.0f, 0.0f, float(1 * deltaTime));
+		if (entities[0].GetTransform()->GetScale().x >= 2) {
+			entities[0].GetTransform()->SetScale(1.0f, 1.0f, 1.0f);
+		}
+		else {
+			entities[0].GetTransform()->Scale(DirectX::XMFLOAT3(1.001f, 1.0f, 1.0f));
+		}
+		
+		if (entities[2].GetTransform()->GetPosition().y >= 1) {
+			entities[2].GetTransform()->SetPosition(0.0f, -1.5f, 0.0f);
+		}
+		else {
+			entities[2].GetTransform()->MoveAbsolute(0.0f, float(.1 * deltaTime), 0.0f);
+		}
 
-		entities[2].GetTransform()->MoveAbsolute(0.0f, float(.1 * deltaTime), 0.0f);
-		//std::cout << "translation x: " << entities[2].GetTransform()->GetPosition().y << "\n";
-
-		entities[0].GetTransform()->Scale(float(2 * deltaTime), 1.0f, 1.0f);
-
-		// problematic scaling
-		// the triangle isn't showing up bc scale is always 0; something may be wrong with transform class
-		std::cout << "start scale x: " << entities[0].GetTransform()->GetScale().x << "\n";
-		//if (entities[0].GetTransform()->GetScale().x >= 5) {
-		//	entities[0].GetTransform()->SetScale(1.0f, 1.0f, 1.0f);
-
-		//}
-		//else {
-		//	updateScale += .5f * deltaTime;
-		//	//entities[0].GetTransform()->SetScale(updateScale, 1.0f, 1.0f);
-		//	entities[0].GetTransform()->Scale(float(2 * deltaTime), 1.0f, 1.0f);
-		//	std::cout << "end scale x: " << entities[0].GetTransform()->GetScale().x << "\n";
-		//}
+		entities[3].GetTransform()->Rotate(0.0f, 0.0f, float(1 * deltaTime));
 	}
 
 	// Example input checking: Quit if the escape key is pressed
