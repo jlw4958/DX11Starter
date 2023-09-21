@@ -397,9 +397,11 @@ void Game::Draw(float deltaTime, float totalTime)
 }
 
 // could turn into helper method
-void Game::ImGuiHelper(float dt)
+void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
 {
 	ImGuiSetup(dt);
+
+
 
 
 }

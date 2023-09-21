@@ -30,7 +30,7 @@ private:
 	// Initialization helper methods - feel free to customize, combine, remove, etc.
 	void LoadShaders(); 
 	void CreateGeometry();
-	void ImGuiHelper(float dt);
+	void ImGuiHelper(float dt, std::vector<GameEntity> _entities);
 	void ImGuiSetup(float dt);
 
 	// Note the usage of ComPtr below
