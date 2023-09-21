@@ -128,7 +128,6 @@ void Game::Init()
 	entities.push_back(GameEntity(shape2));
 	entities.push_back(GameEntity(shape2));
 
-	updateScale = 1.0f;
 	// vectors to edit
 	//XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
 	//XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
@@ -304,7 +303,7 @@ void Game::Update(float deltaTime, float totalTime)
 	// ImGui things
 	{
 		// calling ImGUI helper method
-		ImGuiHelper(deltaTime);
+		ImGuiHelper(deltaTime, entities);
 
 		// display some data
 		ImGui::Text("Framerate %f", ImGui::GetIO().Framerate);

@@ -23,7 +23,6 @@ public:
 	void OnResize();
 	void Update(float deltaTime, float totalTime);
 	void Draw(float deltaTime, float totalTime);
-	float updateScale;
 
 private:
 
