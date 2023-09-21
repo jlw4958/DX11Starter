@@ -3,14 +3,14 @@
 
 // constructor
 Transform::Transform() : 
-	position(0, 0, 0),
+	scale(1, 1, 1),
 	pitchYawRoll(0, 0, 0),
-	scale(1, 1, 1)
+	position(0, 0, 0)
 {
 	// transformation values
 	//position = DirectX::XMFLOAT3(1, 1, 1);
 	//pitchYawRoll = DirectX::XMFLOAT3(1, 1, 1);
-	//scale = DirectX::XMFLOAT3(1, 1, 1);
+	SetScale(1, 1, 1);
 
 	// matrices
 	XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
@@ -63,24 +63,23 @@ void Transform::Rotate(float p, float y, float r)
 
 void Transform::Scale(float x, float y, float z)
 {
-	scale.x*= x;
-	scale.y *= y;
-	scale.z *= z;
+	//DirectX::XMFLOAT3 newScale = DirectX::XMFLOAT3(scale.x *= x, scale.y *= y, scale.z *= z);
+	//SetScale(newScale);
 
-	//// making a vector with the parameters
-	//DirectX::XMFLOAT3 scaleChange = DirectX::XMFLOAT3(x, y, z);
+	// making a vector with the parameters
+	DirectX::XMVECTOR scaleChange = DirectX::XMVectorSet(x, y, z, 0);
 
-	//// loading scale into math vector
-	//DirectX::XMVECTOR scaleVec = XMLoadFloat3(&scale);
+	// loading scale into math vector
+	DirectX::XMVECTOR scaleVec = XMLoadFloat3(&scale);
 
-	//// loading scaling into math vector
+	// loading scaling into math vector
 	//DirectX::XMVECTOR scaleChangeVec = XMLoadFloat3(&scaleChange);
 
-	//// math time!!
-	//scaleVec = DirectX::XMVectorMultiply(scaleVec, scaleChangeVec);
+	// math time!!
+	/*scaleVec = DirectX::XMVectorMultiply(scaleVec, scaleChange);*/
 
-	//// copying value back to storage type
-	//DirectX::XMStoreFloat3(&scale, scaleVec);
+	// copying value back to storage type
+	DirectX::XMStoreFloat3(&scale, DirectX::XMVectorMultiply(scaleVec, scaleChange));
 
 	isDirty = true;
 

@@ -326,17 +326,21 @@ void Game::Update(float deltaTime, float totalTime)
 		entities[2].GetTransform()->MoveAbsolute(0.0f, float(.1 * deltaTime), 0.0f);
 		//std::cout << "translation x: " << entities[2].GetTransform()->GetPosition().y << "\n";
 
-		// problematic scaling
-		if (entities[0].GetTransform()->GetScale().x >= 2) {
-			entities[0].GetTransform()->SetScale(1.0f, 1.0f, 1.0f);
+		entities[0].GetTransform()->Scale(float(2 * deltaTime), 1.0f, 1.0f);
 
-		}
-		else {
-			updateScale += .5f * deltaTime;
-			//entities[0].GetTransform()->SetScale(updateScale, 1.0f, 1.0f);
-			entities[0].GetTransform()->Scale(float(1.1 * deltaTime), 1.0f, 1.0f);
-			std::cout << "scale x: " << entities[0].GetTransform()->GetScale().x << "\n";
-		}
+		// problematic scaling
+		// the triangle isn't showing up bc scale is always 0; something may be wrong with transform class
+		std::cout << "start scale x: " << entities[0].GetTransform()->GetScale().x << "\n";
+		//if (entities[0].GetTransform()->GetScale().x >= 5) {
+		//	entities[0].GetTransform()->SetScale(1.0f, 1.0f, 1.0f);
+
+		//}
+		//else {
+		//	updateScale += .5f * deltaTime;
+		//	//entities[0].GetTransform()->SetScale(updateScale, 1.0f, 1.0f);
+		//	entities[0].GetTransform()->Scale(float(2 * deltaTime), 1.0f, 1.0f);
+		//	std::cout << "end scale x: " << entities[0].GetTransform()->GetScale().x << "\n";
+		//}
 	}
 
 	// Example input checking: Quit if the escape key is pressed
@@ -399,6 +403,13 @@ void Game::Draw(float deltaTime, float totalTime)
 
 // could turn into helper method
 void Game::ImGuiHelper(float dt)
+{
+	ImGuiSetup(dt);
+
+
+}
+
+void Game::ImGuiSetup(float dt)
 {
 	// Feed fresh input data to ImGui
 	ImGuiIO& io = ImGui::GetIO();

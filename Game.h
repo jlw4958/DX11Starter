@@ -31,6 +31,7 @@ private:
 	void LoadShaders(); 
 	void CreateGeometry();
 	void ImGuiHelper(float dt);
+	void ImGuiSetup(float dt);
 
 	// Note the usage of ComPtr below
 	//  - This is a smart pointer for objects that abide by the
