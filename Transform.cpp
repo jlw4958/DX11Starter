@@ -5,12 +5,12 @@
 Transform::Transform() : 
 	position(0, 0, 0),
 	pitchYawRoll(0, 0, 0),
-	scale(0, 0, 0)
+	scale(1, 1, 1)
 {
 	// transformation values
-	position = DirectX::XMFLOAT3(1, 1, 1);
-	pitchYawRoll = DirectX::XMFLOAT3(1, 1, 1);
-	scale = DirectX::XMFLOAT3(1, 1, 1);
+	//position = DirectX::XMFLOAT3(1, 1, 1);
+	//pitchYawRoll = DirectX::XMFLOAT3(1, 1, 1);
+	//scale = DirectX::XMFLOAT3(1, 1, 1);
 
 	// matrices
 	XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
@@ -56,7 +56,7 @@ void Transform::Rotate(float p, float y, float r)
 	rotVec = DirectX::XMVectorAdd(rotVec, rotChangeVec);
 
 	// copying value back to storage type
-	DirectX::XMStoreFloat3(&pitchYawRoll, rotChangeVec);
+	DirectX::XMStoreFloat3(&pitchYawRoll, rotVec);
 
 	isDirty = true;
 }
@@ -186,36 +186,34 @@ DirectX::XMFLOAT3 Transform::GetScale()
 
 // helpers
 
-//DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
-//{
-//	DirectX::XMMATRIX t = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-//	DirectX::XMMATRIX r = DirectX::XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
-//	DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));
-//
-//	DirectX::XMMATRIX _worldMatrix = s * r * t; 
-//
-//}
-
-DirectX::XMFLOAT4X4 Transform::UpdateMatrices()
+DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
 {
 	if (isDirty) {
-		// translation matrix
-		DirectX::XMMATRIX t = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
-		// rotation matrix
-		DirectX::XMMATRIX r = DirectX::XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
-
-		// scale matrix
-		DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));	
-
-		// multiplying matricies
-		DirectX::XMMATRIX _world = s * r * t;
-
-		// storing the matrix
-		DirectX::XMStoreFloat4x4(&world, _world);
-		DirectX::XMStoreFloat4x4(&worldInverseTranspose, DirectX::XMMatrixInverse(0, XMMatrixTranspose(_world)));
+		UpdateMatrices();
 	}
-	
+
 	isDirty = false;
 	return world;
+
+}
+
+void Transform::UpdateMatrices()
+{
+	// translation matrix
+	DirectX::XMMATRIX t = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+
+	// rotation matrix
+	DirectX::XMMATRIX r = DirectX::XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
+
+	// scale matrix
+	DirectX::XMMATRIX s = DirectX::XMMatrixScalingFromVector(XMLoadFloat3(&scale));	
+
+	// multiplying matricies
+	DirectX::XMMATRIX _world = s * r * t;
+
+	// storing the matrix
+	DirectX::XMStoreFloat4x4(&world, _world);
+	DirectX::XMStoreFloat4x4(&worldInverseTranspose, DirectX::XMMatrixInverse(0, XMMatrixTranspose(_world)));
+
 }

@@ -99,3 +99,8 @@ void Mesh::Draw()
 			0);    // Offset to add to each index when looking up vertices
 	}
 }
+
+Microsoft::WRL::ComPtr<ID3D11DeviceContext> Mesh::GetContext()
+{
+	return context;
+}

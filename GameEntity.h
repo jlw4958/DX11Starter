@@ -12,7 +12,7 @@ public:
 	std::shared_ptr<Mesh> GetMesh();
 	std::shared_ptr<Transform> GetTransform();
 
-	void Draw();
+	void Draw(Microsoft::WRL::ComPtr<ID3D11Buffer> vsConstantBuffer);
 
 private:
 	std::shared_ptr<Transform> myTransform;

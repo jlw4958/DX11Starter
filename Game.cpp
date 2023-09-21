@@ -7,6 +7,8 @@
 #include "ImGui/imgui_impl_dx11.h"
 #include "ImGui/imgui_impl_win32.h"
 #include "BufferStructs.h"
+#include "GameEntity.h"
+#include "Transform.h"
 
 // Needed for a helper function to load pre-compiled shader files
 #pragma comment(lib, "d3dcompiler.lib")
@@ -119,13 +121,21 @@ void Game::Init()
 
 	device->CreateBuffer(&cbDesc, 0, vsConstantBuffer.GetAddressOf());
 
+	// making entities
+	entities.push_back(GameEntity(triangle));
+	entities.push_back(GameEntity(triangle));
+	entities.push_back(GameEntity(shape1));
+	entities.push_back(GameEntity(shape2));
+	entities.push_back(GameEntity(shape2));
+
+	updateScale = 1.0f;
 	// vectors to edit
-	XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
-	XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
+	//XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
+	//XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
 
 	// edited values
-	editVector = vec;
-	editColor = color;
+	/*editVector = vec;
+	editColor = color;*/
 }
 
 // --------------------------------------------------------
@@ -287,7 +297,7 @@ void Game::OnResize()
 }
 
 // --------------------------------------------------------
-// Update your game here - user input, move objects, AI, etc.
+// Update your game here - user input, move objects, AI, etc. AND IMGUI
 // --------------------------------------------------------
 void Game::Update(float deltaTime, float totalTime)
 {
@@ -301,9 +311,32 @@ void Game::Update(float deltaTime, float totalTime)
 		ImGui::Text("Width %lu", windowWidth);
 		ImGui::Text("Height %lu", windowHeight);
 
-		// editing vectors
-		ImGui::DragFloat3("Edit a vector", &editVector.x);
-		ImGui::ColorEdit4("4 - component(RGBA) color editor", &editColor.x);
+		//// editing vectors
+		//ImGui::DragFloat3("Edit a vector", &editVector.x);
+		//ImGui::ColorEdit4("4 - component(RGBA) color editor", &editColor.x);
+	}
+
+	// transformations
+	{
+		// get transform
+		// update transform
+		// set transform
+		entities[1].GetTransform()->Rotate(0.0f, 0.0f, float(1 * deltaTime));
+
+		entities[2].GetTransform()->MoveAbsolute(0.0f, float(.1 * deltaTime), 0.0f);
+		//std::cout << "translation x: " << entities[2].GetTransform()->GetPosition().y << "\n";
+
+		// problematic scaling
+		if (entities[0].GetTransform()->GetScale().x >= 2) {
+			entities[0].GetTransform()->SetScale(1.0f, 1.0f, 1.0f);
+
+		}
+		else {
+			updateScale += .5f * deltaTime;
+			//entities[0].GetTransform()->SetScale(updateScale, 1.0f, 1.0f);
+			entities[0].GetTransform()->Scale(float(1.0001 * deltaTime), 1.0f, 1.0f);
+			std::cout << "scale x: " << entities[0].GetTransform()->GetScale().x << "\n";
+		}
 	}
 
 	// Example input checking: Quit if the escape key is pressed
@@ -334,22 +367,16 @@ void Game::Draw(float deltaTime, float totalTime)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
-	context->Map(vsConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
-	memcpy(mappedBuffer.pData, &vsData, sizeof(vsData));
-	context->Unmap(vsConstantBuffer.Get(), 0);
-
 	context->VSSetConstantBuffers(
 		0, // Which slot (register) to bind the buffer to?
 		1, // How many are we activating? Can do multiple at once
 		vsConstantBuffer.GetAddressOf()); // Array of buffers (or the address of one)
 
-	// drawing the triangle
-	triangle->Draw();
-	// shape1
-	shape1->Draw();
-	// shape2
-	shape2->Draw();
+	// drawing entities
+	for (int i = 0; i < entities.size(); i++)
+	{
+		entities[i].Draw(vsConstantBuffer);
+	}
 
 	// Frame END
 	// - These should happen exactly ONCE PER FRAME

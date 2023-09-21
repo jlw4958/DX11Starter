@@ -2,6 +2,7 @@
 #include <d3d11.h> // for referencing Direct3D stuff
 #include <wrl/client.h> // when using ComPtrs for Direct3D objects
 #include "Vertex.h"
+
 class Mesh
 {
 public:
@@ -35,6 +36,11 @@ public:
 	/// sets buffers; tells DirectX to draw the correct number of indices
 	/// </summary>
 	void Draw();
+	/// <summary>
+	/// returns the context
+	/// </summary>
+	/// <returns></returns>
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
 
 private:
 	/// <summary>

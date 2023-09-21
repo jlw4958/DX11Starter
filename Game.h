@@ -3,9 +3,11 @@
 #include "DXCore.h"
 #include "Mesh.h"
 #include "BufferStructs.h"
+#include "GameEntity.h"
 #include <DirectXMath.h>
 #include <wrl/client.h> // Used for ComPtr - a smart pointer for COM objects
 #include <memory>
+#include <vector>
 
 class Game 
 	: public DXCore
@@ -21,6 +23,7 @@ public:
 	void OnResize();
 	void Update(float deltaTime, float totalTime);
 	void Draw(float deltaTime, float totalTime);
+	float updateScale;
 
 private:
 
@@ -48,8 +51,10 @@ private:
 	std::shared_ptr<Mesh> shape1;
 	std::shared_ptr<Mesh> shape2;
 
-	// cBuffer
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vsConstantBuffer;
+
+	// entity list
+	std::vector<GameEntity> entities;
 
 };
 
