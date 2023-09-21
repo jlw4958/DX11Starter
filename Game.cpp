@@ -334,7 +334,7 @@ void Game::Update(float deltaTime, float totalTime)
 		else {
 			updateScale += .5f * deltaTime;
 			//entities[0].GetTransform()->SetScale(updateScale, 1.0f, 1.0f);
-			entities[0].GetTransform()->Scale(float(1.0001 * deltaTime), 1.0f, 1.0f);
+			entities[0].GetTransform()->Scale(float(1.1 * deltaTime), 1.0f, 1.0f);
 			std::cout << "scale x: " << entities[0].GetTransform()->GetScale().x << "\n";
 		}
 	}

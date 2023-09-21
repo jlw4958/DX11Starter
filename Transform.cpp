@@ -63,20 +63,24 @@ void Transform::Rotate(float p, float y, float r)
 
 void Transform::Scale(float x, float y, float z)
 {
-	// making a vector with the parameters
-	DirectX::XMFLOAT3 scaleChange = DirectX::XMFLOAT3(x, y, z);
+	scale.x*= x;
+	scale.y *= y;
+	scale.z *= z;
 
-	// loading scale into math vector
-	DirectX::XMVECTOR scaleVec = XMLoadFloat3(&scale);
+	//// making a vector with the parameters
+	//DirectX::XMFLOAT3 scaleChange = DirectX::XMFLOAT3(x, y, z);
 
-	// loading scaling into math vector
-	DirectX::XMVECTOR scaleChangeVec = XMLoadFloat3(&scaleChange);
+	//// loading scale into math vector
+	//DirectX::XMVECTOR scaleVec = XMLoadFloat3(&scale);
 
-	// math time!!
-	scaleVec = DirectX::XMVectorMultiply(scaleVec, scaleChangeVec);
+	//// loading scaling into math vector
+	//DirectX::XMVECTOR scaleChangeVec = XMLoadFloat3(&scaleChange);
 
-	// copying value back to storage type
-	DirectX::XMStoreFloat3(&scale, scaleVec);
+	//// math time!!
+	//scaleVec = DirectX::XMVectorMultiply(scaleVec, scaleChangeVec);
+
+	//// copying value back to storage type
+	//DirectX::XMStoreFloat3(&scale, scaleVec);
 
 	isDirty = true;
 
