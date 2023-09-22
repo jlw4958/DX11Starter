@@ -302,13 +302,17 @@ void Game::Update(float deltaTime, float totalTime)
 {
 	// ImGui things
 	{
-		// calling ImGUI helper method
-		ImGuiHelper(deltaTime, entities);
+		// ImGUI setup
+		ImGuiSetup(deltaTime);
 
 		// display some data
 		ImGui::Text("Framerate %f", ImGui::GetIO().Framerate);
 		ImGui::Text("Width %lu", windowWidth);
 		ImGui::Text("Height %lu", windowHeight);
+
+		// calling ImGUI helper method
+		ImGuiHelper(deltaTime, entities);
+
 
 		//// editing vectors
 		//ImGui::DragFloat3("Edit a vector", &editVector.x);
@@ -397,9 +401,7 @@ void Game::Draw(float deltaTime, float totalTime)
 
 // could turn into helper method
 void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
-{
-	ImGuiSetup(dt);
-	
+{	
 	// looping through the entities for the tree nodes
 	for (int i = 0; i < entities.size(); i++)
 	{
@@ -411,10 +413,10 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
 		DirectX::XMFLOAT3 scale = entities[i].GetTransform()->GetScale();
 
 		ImGui::DragFloat3("Position##%d", &pos.x);
-		ImGui::DragFloat3("Rotation##%d", &rot.x, i);
-		ImGui::DragFloat3("Scale##%d", &scale.x, i);
+		ImGui::DragFloat3("Rotation##%d", &rot.x);
+		ImGui::DragFloat3("Scale##%d", &scale.x);
 
-		ImGui::Text("Mesh Index Count: %d", i, i);
+		ImGui::Text("Mesh Index Count: %d", entities[i].GetMesh()->GetIndexCount());
 	}
 
 }
