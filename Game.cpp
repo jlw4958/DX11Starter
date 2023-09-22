@@ -399,9 +399,23 @@ void Game::Draw(float deltaTime, float totalTime)
 void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
 {
 	ImGuiSetup(dt);
+	
+	// looping through the entities for the tree nodes
+	for (int i = 0; i < entities.size(); i++)
+	{
+		ImGui::Text("Entity %i:", i);
 
+		// values
+		DirectX::XMFLOAT3 pos = entities[i].GetTransform()->GetPosition();
+		DirectX::XMFLOAT3 rot = entities[i].GetTransform()->GetRotation();
+		DirectX::XMFLOAT3 scale = entities[i].GetTransform()->GetScale();
 
+		ImGui::DragFloat3("Position##%d", &pos.x);
+		ImGui::DragFloat3("Rotation##%d", &rot.x, i);
+		ImGui::DragFloat3("Scale##%d", &scale.x, i);
 
+		ImGui::Text("Mesh Index Count: %d", i, i);
+	}
 
 }
 
