@@ -405,6 +405,8 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
 	// looping through the entities for the tree nodes
 	for (int i = 0; i < entities.size(); i++)
 	{
+		ImGui::PushID(i);
+
 		ImGui::Text("Entity %i:", i);
 
 		// values
@@ -412,11 +414,22 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
 		DirectX::XMFLOAT3 rot = entities[i].GetTransform()->GetRotation();
 		DirectX::XMFLOAT3 scale = entities[i].GetTransform()->GetScale();
 
-		ImGui::DragFloat3("Position##%d", &pos.x);
-		ImGui::DragFloat3("Rotation##%d", &rot.x);
-		ImGui::DragFloat3("Scale##%d", &scale.x);
-
+		if (ImGui::DragFloat3("Position", &pos.x, 0.01f))
+		{
+			entities[i].GetTransform()->SetPosition(pos);
+		}
+		if (ImGui::DragFloat3("Rotation (Radians)", &rot.x, 0.01f))
+		{
+			entities[i].GetTransform()->SetRotation(rot);
+		}
+		if (ImGui::DragFloat3("Scale", &scale.x, 0.01f))
+		{
+			entities[i].GetTransform()->SetScale(scale);
+		}
 		ImGui::Text("Mesh Index Count: %d", entities[i].GetMesh()->GetIndexCount());
+
+		ImGui::PopID();
+
 	}
 
 }
