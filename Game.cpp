@@ -130,11 +130,11 @@ void Game::Init()
 
 	// vectors to edit
 	//XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
-	//XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
+	XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
 
 	// edited values
-	/*editVector = vec;
-	editColor = color;*/
+	/*editVector = vec;*/
+	editColor = color;
 }
 
 // --------------------------------------------------------
@@ -310,6 +310,9 @@ void Game::Update(float deltaTime, float totalTime)
 		ImGui::Text("Width %lu", windowWidth);
 		ImGui::Text("Height %lu", windowHeight);
 
+		ImGui::ColorEdit4("4 - component(RGBA) color editor", &editColor.x);
+
+
 		// calling ImGUI helper method
 		ImGuiHelper(deltaTime, entities);
 
@@ -374,6 +377,9 @@ void Game::Draw(float deltaTime, float totalTime)
 		1, // How many are we activating? Can do multiple at once
 		vsConstantBuffer.GetAddressOf()); // Array of buffers (or the address of one)
 
+	VertexShaderExternalData vsData;
+	vsData.colorTint = editColor;
+
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
@@ -414,18 +420,21 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
 		DirectX::XMFLOAT3 rot = entities[i].GetTransform()->GetRotation();
 		DirectX::XMFLOAT3 scale = entities[i].GetTransform()->GetScale();
 
-		if (ImGui::DragFloat3("Position", &pos.x, 0.01f))
+		if (ImGui::DragFloat3("Position: ", &pos.x, 0.01f))
 		{
 			entities[i].GetTransform()->SetPosition(pos);
 		}
-		if (ImGui::DragFloat3("Rotation (Radians)", &rot.x, 0.01f))
+
+		if (ImGui::DragFloat3("Rotation (Radians): ", &rot.x, 0.01f))
 		{
 			entities[i].GetTransform()->SetRotation(rot);
 		}
-		if (ImGui::DragFloat3("Scale", &scale.x, 0.01f))
+
+		if (ImGui::DragFloat3("Scale: ", &scale.x, 0.01f))
 		{
 			entities[i].GetTransform()->SetScale(scale);
 		}
+
 		ImGui::Text("Mesh Index Count: %d", entities[i].GetMesh()->GetIndexCount());
 
 		ImGui::PopID();

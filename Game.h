@@ -23,6 +23,7 @@ public:
 	void OnResize();
 	void Update(float deltaTime, float totalTime);
 	void Draw(float deltaTime, float totalTime);
+	DirectX::XMFLOAT4 editColor;
 
 private:
 
