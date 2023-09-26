@@ -1,3 +1,5 @@
+// clean up this file
+
 #include "Game.h"
 #include "Vertex.h"
 #include "Input.h"
@@ -9,6 +11,7 @@
 #include "BufferStructs.h"
 #include "GameEntity.h"
 #include "Transform.h"
+#include "Camera.h"
 
 // Needed for a helper function to load pre-compiled shader files
 #pragma comment(lib, "d3dcompiler.lib")
@@ -73,6 +76,15 @@ void Game::Init()
 	//  - You'll be expanding and/or replacing these later
 	LoadShaders();
 	CreateGeometry();
+
+	// create the camera
+	camera = std::make_shared<Camera>( 
+		0.0f, 0.0f, -5.0f,
+		5.0f,
+		1.0f,
+		XM_PIDIV4, // pi/4
+		this->windowWidth/ this->windowHeight
+	);
 	
 	// Set initial graphics API state
 	//  - These settings persist until we change them
@@ -300,6 +312,10 @@ void Game::OnResize()
 // --------------------------------------------------------
 void Game::Update(float deltaTime, float totalTime)
 {
+	// camera things
+	// make sure you update camera too!
+	//call camera's update here
+
 	// ImGui things
 	{
 		// ImGUI setup
@@ -379,6 +395,8 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	VertexShaderExternalData vsData;
 	vsData.colorTint = editColor;
+
+	// set view and proj matrices = to view and proj getters, same with world matrix
 
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)

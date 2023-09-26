@@ -209,6 +209,8 @@ DirectX::XMFLOAT3 Transform::GetUp()
 {
 	return DirectX::XMFLOAT3();
 }
+
+
 // helpers
 
 DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
@@ -222,9 +224,6 @@ DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
 	return world;
 
 }
-
-
-
 
 void Transform::UpdateMatrices()
 {
