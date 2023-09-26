@@ -5,7 +5,12 @@
 Transform::Transform() : 
 	scale(1, 1, 1),
 	pitchYawRoll(0, 0, 0),
-	position(0, 0, 0)
+	position(0, 0, 0),
+	forward(0, 0, 1),
+	right(1, 0, 0),
+	up(0, 1, 0),
+	isDirty(false),
+	vectorsDirty(false)
 {
 	// transformation values
 	//position = DirectX::XMFLOAT3(1, 1, 1);
@@ -15,8 +20,6 @@ Transform::Transform() :
 	// matrices
 	XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
 	XMStoreFloat4x4(&worldInverseTranspose, DirectX::XMMatrixIdentity());
-
-	isDirty = false;
 }
 
 // transformations: floats
@@ -39,6 +42,22 @@ void Transform::MoveAbsolute(float x, float y, float z)
 
 	isDirty = true;
 
+}
+
+void Transform::MoveRelative(float x, float y, float z)
+{
+	// rotate the vector I'm moving along to be relative to me
+	// create a direction vector from the input
+	// and rotate to match our current orientation
+	DirectX::XMVECTOR movement = DirectX::XMVectorSet(x, y, z, 0);
+	DirectX::XMVECTOR rotQuat = DirectX::XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll));
+
+	// the non relative direction for our movement
+	DirectX::XMVECTOR relativeDir = DirectX::XMVector3Rotate(movement, rotQuat);
+
+	// add and store the results
+	DirectX::XMStoreFloat3(&position, XMLoadFloat3(&position) + relativeDir); // fix this
+	isDirty = true;
 }
 
 void Transform::Rotate(float p, float y, float r)
@@ -84,6 +103,10 @@ void Transform::MoveAbsolute(DirectX::XMFLOAT3 _offset)
 	DirectX::XMStoreFloat3(&position, posVec);
 
 	isDirty = true;
+}
+
+void Transform::MoveRelative(DirectX::XMFLOAT3 offset)
+{
 }
 
 void Transform::Rotate(DirectX::XMFLOAT3 _rotation)
@@ -170,6 +193,22 @@ DirectX::XMFLOAT3 Transform::GetScale()
 	return scale;
 }
 
+DirectX::XMFLOAT3 Transform::GetForward()
+{
+	// update vectors
+	// then return vectors
+	return DirectX::XMFLOAT3();
+}
+
+DirectX::XMFLOAT3 Transform::GetRight()
+{
+	return DirectX::XMFLOAT3();
+}
+
+DirectX::XMFLOAT3 Transform::GetUp()
+{
+	return DirectX::XMFLOAT3();
+}
 // helpers
 
 DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
@@ -183,6 +222,9 @@ DirectX::XMFLOAT4X4 Transform::GetWorldMatrix()
 	return world;
 
 }
+
+
+
 
 void Transform::UpdateMatrices()
 {
@@ -202,4 +244,23 @@ void Transform::UpdateMatrices()
 	DirectX::XMStoreFloat4x4(&world, _world);
 	DirectX::XMStoreFloat4x4(&worldInverseTranspose, DirectX::XMMatrixInverse(0, XMMatrixTranspose(_world)));
 
+}
+
+void Transform::UpdateVectors()
+{
+	if (!vectorsDirty)
+		return;
+
+	// update the vectors!
+	// quaternion math :0
+	DirectX::XMVECTOR rotQuat = DirectX::XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&pitchYawRoll)); // rotation quaternion
+	DirectX::XMStoreFloat3(&up, DirectX::XMVector3Rotate(DirectX::XMVectorSet(0, 1, 0, 0), rotQuat));
+	DirectX::XMStoreFloat3(&right, DirectX::XMVector3Rotate(DirectX::XMVectorSet(1, 0, 0, 0), rotQuat));
+	DirectX::XMStoreFloat3(&forward, DirectX::XMVector3Rotate(DirectX::XMVectorSet(0, 0, 1, 0), rotQuat));	// starts at 0, 0, 1 instead of moving to one spot and moving from there to another; 
+																											// starts from the beginning and moves to new spot each frame
+
+
+
+	// we're clean
+	vectorsDirty = false;
 }
