@@ -7,7 +7,7 @@ using namespace DirectX;
 
 Camera::Camera(float x, float y, float z, float moveSpeed, float mouseLookSpeed, float fov, float aspectRatio):
 	moveSpeed(moveSpeed),
-	mouseLookSpeed(mouseLookSpeed) // if we set value = to pramater, can initialize here
+	mouseLookSpeed(mouseLookSpeed) // if we set value = to paramater, can initialize here
 {
 	transform.SetPosition(x, y, z); // if setting value = to something else, initialize here
 
@@ -76,15 +76,15 @@ void Camera::UpdateProjectionMatrix(float _fov, float _aspectRatio)
 
 Transform* Camera::GetTransform()
 {
-	return nullptr;
+	return &transform;
 }
 
 XMFLOAT4X4 Camera::GetView()
 {
-	return XMFLOAT4X4();
+	return viewMatrix;
 }
 
 XMFLOAT4X4 Camera::GetProjection()
 {
-	return XMFLOAT4X4();
+	return projectionMatrix;
 }
