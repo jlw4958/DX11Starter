@@ -402,7 +402,7 @@ void Game::Draw(float deltaTime, float totalTime)
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
-		entities[i].Draw(vsConstantBuffer);
+		entities[i].Draw(vsConstantBuffer, camera);
 	}
 
 	// Frame END

@@ -1,6 +1,7 @@
 #include "GameEntity.h"
 #include "Mesh.h"
 #include "BufferStructs.h"
+#include "Camera.h"
 
 #include <iostream>
 #include <DirectXMath.h>
@@ -25,7 +26,7 @@ std::shared_ptr<Transform> GameEntity::GetTransform()
 /// <summary>
 /// sets buffers, issues draw commands
 /// </summary>
-void GameEntity::Draw(Microsoft::WRL::ComPtr<ID3D11Buffer> vsConstantBuffer)
+void GameEntity::Draw(Microsoft::WRL::ComPtr<ID3D11Buffer> vsConstantBuffer, std::shared_ptr<Camera> camPtr)
 {
 	// cBuffer
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> ctx = myMesh->GetContext();
@@ -34,6 +35,8 @@ void GameEntity::Draw(Microsoft::WRL::ComPtr<ID3D11Buffer> vsConstantBuffer)
 	VertexShaderExternalData vsData;
 	vsData.colorTint = editColor;
 	vsData.worldMatrix = myTransform->GetWorldMatrix();
+	vsData.projMatrix = camPtr->GetProjection();
+	vsData.viewMatrix = camPtr->GetView();
 
 	// mapping
 	D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};

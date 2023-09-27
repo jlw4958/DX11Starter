@@ -15,8 +15,8 @@ public:
 	void UpdateProjectionMatrix(float _fov, float _aspectRatio);
 
 	Transform* GetTransform();
-	XMFLOAT4X4 GetView();
-	XMFLOAT4X4 GetProjection();
+	DirectX::XMFLOAT4X4 GetView();
+	DirectX::XMFLOAT4X4 GetProjection();
 
 private:
 	// matrices
