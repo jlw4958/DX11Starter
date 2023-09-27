@@ -315,6 +315,7 @@ void Game::Update(float deltaTime, float totalTime)
 	// camera things
 	// make sure you update camera too!
 	//call camera's update here
+	camera->Update(deltaTime);
 
 	// ImGui things
 	{

@@ -13,8 +13,6 @@ Transform::Transform() :
 	vectorsDirty(false)
 {
 	// transformation values
-	//position = DirectX::XMFLOAT3(1, 1, 1);
-	//pitchYawRoll = DirectX::XMFLOAT3(1, 1, 1);
 	SetScale(1, 1, 1);
 
 	// matrices
@@ -196,8 +194,9 @@ DirectX::XMFLOAT3 Transform::GetScale()
 DirectX::XMFLOAT3 Transform::GetForward()
 {
 	// update vectors
+	UpdateVectors();
 	// then return vectors
-	return DirectX::XMFLOAT3();
+	return ;
 }
 
 DirectX::XMFLOAT3 Transform::GetRight()
@@ -257,8 +256,6 @@ void Transform::UpdateVectors()
 	DirectX::XMStoreFloat3(&right, DirectX::XMVector3Rotate(DirectX::XMVectorSet(1, 0, 0, 0), rotQuat));
 	DirectX::XMStoreFloat3(&forward, DirectX::XMVector3Rotate(DirectX::XMVectorSet(0, 0, 1, 0), rotQuat));	// starts at 0, 0, 1 instead of moving to one spot and moving from there to another; 
 																											// starts from the beginning and moves to new spot each frame
-
-
 
 	// we're clean
 	vectorsDirty = false;

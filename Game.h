@@ -18,8 +18,7 @@ public:
 	Game(HINSTANCE hInstance);
 	~Game();
 
-	// Overridden setup and game loop methods, which
-	// will be called automatically
+	// Overridden setup and game loop methods, which will be called automatically
 	void Init();
 	void OnResize();
 	void Update(float deltaTime, float totalTime);
