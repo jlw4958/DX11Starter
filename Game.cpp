@@ -348,7 +348,7 @@ void Game::Update(float deltaTime, float totalTime)
 			entities[0].GetTransform()->SetScale(1.0f, 1.0f, 1.0f);
 		}
 		else {
-			entities[0].GetTransform()->Scale(DirectX::XMFLOAT3(1.001f, 1.0f, 1.0f));
+			entities[0].GetTransform()->Scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
 		}
 		
 		if (entities[2].GetTransform()->GetPosition().y >= 1) {
@@ -435,9 +435,9 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
 		ImGui::Text("Entity %i:", i);
 
 		// values
-		DirectX::XMFLOAT3 pos = entities[i].GetTransform()->GetPosition();
-		DirectX::XMFLOAT3 rot = entities[i].GetTransform()->GetRotation();
-		DirectX::XMFLOAT3 scale = entities[i].GetTransform()->GetScale();
+		XMFLOAT3 pos = entities[i].GetTransform()->GetPosition();
+		XMFLOAT3 rot = entities[i].GetTransform()->GetRotation();
+		XMFLOAT3 scale = entities[i].GetTransform()->GetScale();
 
 		if (ImGui::DragFloat3("Position: ", &pos.x, 0.01f))
 		{

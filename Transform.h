@@ -18,7 +18,7 @@ public:
 	// transformers that take existing vectors
 	//void MoveRelative(float x, float y, float z);
 	void MoveAbsolute(DirectX::XMFLOAT3 offset);
-	void MoveRelative(DirectX::XMFLOAT3 offset);
+	//void MoveRelative(DirectX::XMFLOAT3 offset);
 	void Rotate(DirectX::XMFLOAT3 rotation);
 	void Scale(DirectX::XMFLOAT3 scale);
 
