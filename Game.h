@@ -24,7 +24,11 @@ public:
 	void Update(float deltaTime, float totalTime);
 	void Draw(float deltaTime, float totalTime);
 	DirectX::XMFLOAT4 editColor;
-	std::shared_ptr<Camera> camera;
+	std::shared_ptr<Camera> activeCam;
+	std::shared_ptr<Camera> cam1;
+	std::shared_ptr<Camera> cam2;
+	std::shared_ptr<Camera> cam3;
+	std::vector<std::shared_ptr<Camera>> cameras;
 
 private:
 

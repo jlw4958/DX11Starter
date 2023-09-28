@@ -43,6 +43,8 @@ Game::Game(HINSTANCE hInstance)
 	CreateConsoleWindow(500, 120, 32, 120);
 	printf("Console window created successfully.  Feel free to printf() here.\n");
 #endif
+
+	editColor = XMFLOAT4(0, 0, 255, 1);
 }
 
 // --------------------------------------------------------
@@ -76,15 +78,6 @@ void Game::Init()
 	//  - You'll be expanding and/or replacing these later
 	LoadShaders();
 	CreateGeometry();
-
-	// create the camera
-	camera = std::make_shared<Camera>( 
-		0.0f, 0.0f, -5.0f,
-		5.0f,
-		1.0f,
-		XM_PIDIV4, // pi/4
-		this->windowWidth/ this->windowHeight
-	);
 	
 	// Set initial graphics API state
 	//  - These settings persist until we change them
@@ -144,9 +137,50 @@ void Game::Init()
 	//XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
 	XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
 
-	// edited values
-	/*editVector = vec;*/
 	editColor = color;
+
+	// create the cameras
+	{
+		// cam 1
+		cam1 = std::make_shared<Camera>(
+			0.0f, 0.0f, -1.0f,
+			5.0f,
+			1.0f,
+			XM_PIDIV4, // pi/4
+			this->windowWidth / this->windowHeight
+			);
+
+		// cam 2
+		cam2 = std::make_shared<Camera>(
+			0.0f, 0.0f, -5.0f,
+			5.0f,
+			1.0f,
+			XM_PIDIV2, // pi/2
+			this->windowWidth / this->windowHeight
+			);
+
+		// cam 3
+		cam3 = std::make_shared<Camera>(
+			0.0f, 0.0f, -10.0f,
+			5.0f,
+			1.0f,
+			XM_PI, // pi
+			this->windowWidth / this->windowHeight
+			);
+	}
+
+	// push cameras to vector
+	cameras.push_back(cam1);
+	cameras.push_back(cam2);
+	cameras.push_back(cam3);
+
+	// choosing an active camera by default; cameras[0] will be active
+	for (int i = 1; i < cameras.size(); i++)
+	{
+		cameras[i]->isActive = false;
+	}
+
+	activeCam = cameras[0];
 }
 
 // --------------------------------------------------------
@@ -218,8 +252,6 @@ void Game::LoadShaders()
 			inputLayout.GetAddressOf());			// Address of the resulting ID3D11InputLayout pointer
 	}
 }
-
-
 
 // --------------------------------------------------------
 // Creates the geometry we're going to draw - a single triangle for now
@@ -295,7 +327,6 @@ void Game::CreateGeometry()
 	shape2 = std::make_shared<Mesh>(shape2Vertices, shape2Count, shape2Indices, shape2Count, device, context);
 }
 
-
 // --------------------------------------------------------
 // Handle resizing to match the new window size.
 //  - DXCore needs to resize the back buffer
@@ -315,7 +346,15 @@ void Game::Update(float deltaTime, float totalTime)
 	// camera things
 	// make sure you update camera too!
 	//call camera's update here
-	camera->Update(deltaTime);
+	activeCam->Update(deltaTime);
+
+	// updating all projection matrices
+	for (int i = 0; i < cameras.size(); i++)
+	{
+		if (!cameras[i]->isActive) {
+			cameras[i]->UpdateProjectionMatrix(cameras[i]->GetFOV(), cameras[i]->GetAspectRatio());
+		}
+	}
 
 	// ImGui things
 	{
@@ -402,7 +441,7 @@ void Game::Draw(float deltaTime, float totalTime)
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
-		entities[i].Draw(vsConstantBuffer, camera);
+		entities[i].Draw(vsConstantBuffer, activeCam);
 	}
 
 	// Frame END

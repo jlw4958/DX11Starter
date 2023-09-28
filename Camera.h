@@ -6,7 +6,7 @@
 class Camera
 {
 public:
-	Camera(float x, float y, float z, float moveSpeed, float mouseLookSpeed, float fov, float aspectRatio);
+	Camera(float x, float y, float z, float moveSpeed, float mouseLookSpeed, float _fov, float _aspectRatio);
 	~Camera();
 
 	// update methods
@@ -17,6 +17,10 @@ public:
 	Transform* GetTransform();
 	DirectX::XMFLOAT4X4 GetView();
 	DirectX::XMFLOAT4X4 GetProjection();
+	float GetFOV();
+	float GetAspectRatio();
+
+	bool isActive;
 
 private:
 	// matrices
@@ -27,6 +31,8 @@ private:
 
 	float moveSpeed;
 	float mouseLookSpeed;
+	float fov;
+	float aspectRatio;
 
 };
 

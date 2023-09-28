@@ -5,11 +5,16 @@
 
 using namespace DirectX;
 
-Camera::Camera(float x, float y, float z, float moveSpeed, float mouseLookSpeed, float fov, float aspectRatio):
+Camera::Camera(float x, float y, float z, float moveSpeed, float mouseLookSpeed, float _fov, float _aspectRatio):
 	moveSpeed(moveSpeed),
 	mouseLookSpeed(mouseLookSpeed) // if we set value = to paramater, can initialize here
 {
 	transform.SetPosition(x, y, z); // if setting value = to something else, initialize here
+
+	isActive = true;
+
+	fov = _fov;
+	aspectRatio = _aspectRatio;
 
 	// set up matrices >:)
 	UpdateViewMatrix();
@@ -32,8 +37,8 @@ void Camera::Update(float dt)
 
 	if (input.KeyDown('W')) { transform.MoveRelative(0, 0, speed); } // forward
 	if (input.KeyDown('S')) { transform.MoveRelative(0, 0, -speed); } // backwards
-	if (input.KeyDown('A')) { transform.MoveRelative(0, -speed, 0); } // left
-	if (input.KeyDown('D')) { transform.MoveRelative(0, speed, 0); } // right
+	if (input.KeyDown('A')) { transform.MoveRelative(-speed, 0, 0); } // left
+	if (input.KeyDown('D')) { transform.MoveRelative(speed, 0, 0); } // right
 	if (input.KeyDown(' ')) { transform.MoveRelative(0, speed, 0); } // up
 	if (input.KeyDown('X')) { transform.MoveRelative(0, -speed, 0); } // down
 
@@ -87,4 +92,14 @@ XMFLOAT4X4 Camera::GetView()
 XMFLOAT4X4 Camera::GetProjection()
 {
 	return projectionMatrix;
+}
+
+float Camera::GetFOV()
+{
+	return fov;
+}
+
+float Camera::GetAspectRatio()
+{
+	return aspectRatio;
 }
