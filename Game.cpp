@@ -387,7 +387,7 @@ void Game::Update(float deltaTime, float totalTime)
 			entities[0].GetTransform()->SetScale(1.0f, 1.0f, 1.0f);
 		}
 		else {
-			entities[0].GetTransform()->Scale(XMFLOAT3(1.001f, 1.0f, 1.0f));
+			entities[0].GetTransform()->Scale(XMFLOAT3(1.001f, 1.0f, 1.0f)); // scale by deltatime eventually
 		}
 		
 		if (entities[2].GetTransform()->GetPosition().y >= 1) {
@@ -516,6 +516,7 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector<
 					activeCam->isActive = false;
 					activeCam = _cameras[i];
 				}
+				// show camera info
 			}
 			ImGui::SameLine();
 			ImGui::PopID();
