@@ -152,7 +152,7 @@ void Game::Init()
 
 		// cam 2
 		cam2 = std::make_shared<Camera>(
-			0.0f, 0.0f, -5.0f,
+			0.0f, 0.0f, -2.0f,
 			5.0f,
 			1.0f,
 			XM_PIDIV2, // pi/2
@@ -161,10 +161,10 @@ void Game::Init()
 
 		// cam 3
 		cam3 = std::make_shared<Camera>(
-			0.0f, 0.0f, -10.0f,
+			0.0f, 0.0f, -5.0f,
 			5.0f,
 			1.0f,
-			XM_PI, // pi
+			XM_PI/3, // pi
 			this->windowWidth / this->windowHeight
 			);
 	}
@@ -370,7 +370,7 @@ void Game::Update(float deltaTime, float totalTime)
 
 
 		// calling ImGUI helper method
-		ImGuiHelper(deltaTime, entities);
+		ImGuiHelper(deltaTime, entities, cameras);
 
 
 		//// editing vectors
@@ -463,40 +463,65 @@ void Game::Draw(float deltaTime, float totalTime)
 	}
 }
 
-// could turn into helper method
-void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities)
+void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras)
 {	
 	// looping through the entities for the tree nodes
-	for (int i = 0; i < entities.size(); i++)
-	{
-		ImGui::PushID(i);
-
-		ImGui::Text("Entity %i:", i);
-
-		// values
-		XMFLOAT3 pos = entities[i].GetTransform()->GetPosition();
-		XMFLOAT3 rot = entities[i].GetTransform()->GetRotation();
-		XMFLOAT3 scale = entities[i].GetTransform()->GetScale();
-
-		if (ImGui::DragFloat3("Position: ", &pos.x, 0.01f))
+	if (ImGui::TreeNode("Entities")) {
+		for (int i = 0; i < _entities.size(); i++)
 		{
-			entities[i].GetTransform()->SetPosition(pos);
+			if (ImGui::TreeNode((void*)(intptr_t)i, "Entity %d", i)) {
+				ImGui::PushID(i);
+
+				ImGui::Text("Entity %i:", i);
+
+				// values
+				XMFLOAT3 pos = _entities[i].GetTransform()->GetPosition();
+				XMFLOAT3 rot = _entities[i].GetTransform()->GetRotation();
+				XMFLOAT3 scale = _entities[i].GetTransform()->GetScale();
+
+				if (ImGui::DragFloat3("Position ", &pos.x, 0.01f))
+				{
+					_entities[i].GetTransform()->SetPosition(pos);
+				}
+
+				if (ImGui::DragFloat3("Rotation (Radians) ", &rot.x, 0.01f))
+				{
+					_entities[i].GetTransform()->SetRotation(rot);
+				}
+
+				if (ImGui::DragFloat3("Scale ", &scale.x, 0.01f))
+				{
+					_entities[i].GetTransform()->SetScale(scale);
+				}
+
+				ImGui::Text("Mesh Index Count: %d", _entities[i].GetMesh()->GetIndexCount());
+
+				ImGui::PopID();
+				ImGui::TreePop();
+
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	// camera things
+	static int clicked = 0;
+	if (ImGui::TreeNode("Cameras")) {
+		for (int i = 0; i < _cameras.size(); i++)
+		{
+			ImGui::PushID(i);
+			if (ImGui::RadioButton("Camera##1", &clicked, i)) {
+				if (!_cameras[i]->isActive) {
+					_cameras[i]->isActive = true;
+					activeCam->isActive = false;
+					activeCam = _cameras[i];
+				}
+			}
+			ImGui::SameLine();
+			ImGui::PopID();
 		}
 
-		if (ImGui::DragFloat3("Rotation (Radians): ", &rot.x, 0.01f))
-		{
-			entities[i].GetTransform()->SetRotation(rot);
-		}
-
-		if (ImGui::DragFloat3("Scale: ", &scale.x, 0.01f))
-		{
-			entities[i].GetTransform()->SetScale(scale);
-		}
-
-		ImGui::Text("Mesh Index Count: %d", entities[i].GetMesh()->GetIndexCount());
-
-		ImGui::PopID();
-
+		ImGui::TreePop();
 	}
 
 }
