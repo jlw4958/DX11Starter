@@ -22,7 +22,7 @@ struct VertexShaderInput
 	//  v    v                v
 	float3 localPosition	: POSITION;     // XYZ position
     float3 normal			: NORMAL;
-    float2 uv				: UV;
+    float2 uv				: TEXTCOORD;
 };
 
 // Struct representing the data we're sending down the pipeline

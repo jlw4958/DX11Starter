@@ -20,7 +20,7 @@ Mesh::Mesh(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIn
 	this->vertices = numVertices;
 
 	// making the vertex and index buffers
-	CreateBuffers(_vertices, vertices, _indices, indices, _device, context);
+	CreateBuffers(_vertices, vertices, _indices, indices, _device);
 }
 
 Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device)
@@ -35,7 +35,7 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 	// - NOTE: You'll need to #include <fstream>
 
 
-	// File input object
+// File input object
 	std::ifstream obj(fileName);
 
 	// Check for successful open
@@ -241,7 +241,7 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 	//    sophisticated model loading library like TinyOBJLoader or The Open Asset Importer Library
 
 	// creating vertex and index buffers
-	CreateBuffers(&verts[0], vertCounter, &indices[0], indexCounter, _device, context);
+	CreateBuffers(&verts[0], vertCounter, &indices[0], indexCounter, _device);
 }
 
 Mesh::~Mesh()
@@ -266,26 +266,14 @@ int Mesh::GetIndexCount()
 
 void Mesh::Draw()
 {
-	// DRAW geometry
-	// - These steps are generally repeated for EACH object you draw
-	// - Other Direct3D calls will also be necessary to do more complex things
+
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	{
-		// Set buffers in the input assembler (IA) stage
-		//  - Do this ONCE PER OBJECT, since each object may have different geometry
-		//  - For this demo, this step *could* simply be done once during Init()
-		//  - However, this needs to be done between EACH DrawIndexed() call
-		//     when drawing different geometry, so it's here as an example
+
 		context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 		context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-		// Tell Direct3D to draw
-		//  - Begins the rendering pipeline on the GPU
-		//  - Do this ONCE PER OBJECT you intend to draw
-		//  - This will use all currently set Direct3D resources (shaders, buffers, etc)
-		//  - DrawIndexed() uses the currently set INDEX BUFFER to look up corresponding
-		//     vertices in the currently set VERTEX BUFFER
 		context->DrawIndexed(
 			indices,     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
@@ -298,13 +286,13 @@ Microsoft::WRL::ComPtr<ID3D11DeviceContext> Mesh::GetContext()
 	return context;
 }
 
-void Mesh::CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context)
+void Mesh::CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 {
 	// creating the vertex buffer
 	{
 		D3D11_BUFFER_DESC vbd = {};
 		vbd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
-		vbd.ByteWidth = sizeof(Vertex) * vertices;      // 3 = number of vertices in the buffer; sizeof(Vertex) * vertices; 
+		vbd.ByteWidth = sizeof(Vertex) * numVertices;      // 3 = number of vertices in the buffer; sizeof(Vertex) * vertices; 
 		vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Tells Direct3D this is a vertex buffer
 		vbd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
 		vbd.MiscFlags = 0;
@@ -320,7 +308,7 @@ void Mesh::CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indi
 	{
 		D3D11_BUFFER_DESC ibd = {};
 		ibd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
-		ibd.ByteWidth = sizeof(unsigned int) * indices;	// 3 = number of indices in the buffer; sizeof(unsigned int) * indices;
+		ibd.ByteWidth = sizeof(unsigned int) * numIndices;	// 3 = number of indices in the buffer; sizeof(unsigned int) * indices;
 		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;	// Tells Direct3D this is an index buffer
 		ibd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
 		ibd.MiscFlags = 0;
@@ -331,5 +319,7 @@ void Mesh::CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indi
 		initialIndexData.pSysMem = _indices; // pSysMem = Pointer to System Memory
 
 		_device->CreateBuffer(&ibd, &initialIndexData, indexBuffer.GetAddressOf());
+
+		this->indices = numIndices;
 	}
 }

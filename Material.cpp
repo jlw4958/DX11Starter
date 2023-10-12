@@ -3,11 +3,11 @@
 using namespace DirectX;
 
 
-Material::Material(XMFLOAT4 _colorTint, std::shared_ptr<SimplePixelShader> _pixelShader, std::shared_ptr<SimpleVertexShader> _vertexShader)
+Material::Material(XMFLOAT4 _colorTint, std::shared_ptr<SimplePixelShader> _pixelShader, std::shared_ptr<SimpleVertexShader> _vertexShader):
+	vertexShader(_vertexShader),
+	pixelShader(_pixelShader),
+	colorTint(_colorTint)
 {
-	colorTint = _colorTint;
-	pixelShader = _pixelShader;
-	vertexShader = _vertexShader;
 }
 
 Material::~Material()

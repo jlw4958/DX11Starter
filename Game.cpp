@@ -132,15 +132,12 @@ void Game::Init()
 	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
 
-	// making entities
-	entities.push_back(GameEntity(triangle, material1));
-	entities.push_back(GameEntity(triangle, material1));
-	entities.push_back(GameEntity(shape1, material2));
-	entities.push_back(GameEntity(shape2, material3));
-	entities.push_back(GameEntity(shape2, material3));
-
-	// loading models
-	std::make_shared<Mesh>(FixPath(L"../../Assets/Models/sphere.obj").c_str(), device);
+	//// making entities
+	//entities.push_back(GameEntity(triangle, material1));
+	//entities.push_back(GameEntity(triangle, material1));
+	//entities.push_back(GameEntity(shape1, material2));
+	//entities.push_back(GameEntity(shape2, material3));
+	//entities.push_back(GameEntity(shape2, material3));
 
 	// vectors to edit
 	//XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
@@ -222,64 +219,69 @@ void Game::CreateGeometry()
 	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
 
-	// Set up the vertices of the triangle we would like to draw
-	// - We're going to copy this array, exactly as it exists in CPU memory
-	//    over to a Direct3D-controlled data structure on the GPU (the vertex buffer)
-	// - Note: Since we don't have a camera or really any concept of
-	//    a "3d world" yet, we're simply describing positions within the
-	//    bounds of how the rasterizer sees our screen: [-1 to +1] on X and Y
-	// - This means (0,0) is at the very center of the screen.
-	// - These are known as "Normalized Device Coordinates" or "Homogeneous 
-	//    Screen Coords", which are ways to describe a position without
-	//    knowing the exact size (in pixels) of the image/window/etc.  
-	// - Long story short: Resizing the window also resizes the triangle,
-	//    since we're describing the triangle in terms of the window itself
-	Vertex triVertices[] =
-	{
-		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0)},
-		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-	};
-	Vertex shape1Vertices[] = {
-		{ XMFLOAT3(-1.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(-0.75f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(-0.55f, +0.3f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(-0.55f, +0.3f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(-0.8f, +0.0f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(-1.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-	};
-	Vertex shape2Vertices[] = {
-		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(+0.6f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(+0.5f, +0.2f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(+0.5f, +0.2f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0)},
-		{ XMFLOAT3(+0.4f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(+0.8f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-		{ XMFLOAT3(+0.6f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	// loading models
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("Assets/Models/sphere.obj").c_str(), device), material1));
 
-	};
+	/*
+	//// Set up the vertices of the triangle we would like to draw
+	//// - We're going to copy this array, exactly as it exists in CPU memory
+	////    over to a Direct3D-controlled data structure on the GPU (the vertex buffer)
+	//// - Note: Since we don't have a camera or really any concept of
+	////    a "3d world" yet, we're simply describing positions within the
+	////    bounds of how the rasterizer sees our screen: [-1 to +1] on X and Y
+	//// - This means (0,0) is at the very center of the screen.
+	//// - These are known as "Normalized Device Coordinates" or "Homogeneous 
+	////    Screen Coords", which are ways to describe a position without
+	////    knowing the exact size (in pixels) of the image/window/etc.  
+	//// - Long story short: Resizing the window also resizes the triangle,
+	////    since we're describing the triangle in terms of the window itself
+	//Vertex triVertices[] =
+	//{
+	//	{ XMFLOAT3(+0.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0)},
+	//	{ XMFLOAT3(+0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(-0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//};
+	//Vertex shape1Vertices[] = {
+	//	{ XMFLOAT3(-1.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(-0.75f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(-0.55f, +0.3f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(-0.55f, +0.3f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(-0.8f, +0.0f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(-1.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//};
+	//Vertex shape2Vertices[] = {
+	//	{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(+0.6f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(+0.5f, +0.2f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(+0.5f, +0.2f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0)},
+	//	{ XMFLOAT3(+0.4f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(+0.8f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	//	{ XMFLOAT3(+0.6f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
 
-	// Set up indices, which tell us which vertices to use and in which order
-	// - This is redundant for just 3 vertices, but will be more useful later
-	// - Indices are technically not required if the vertices are in the buffer 
-	//    in the correct order and each one will be used exactly once
-	// - But just to see how it's done...
-	unsigned int triIndices[] = { 0, 1, 2 };
-	unsigned int shape1Indices[] = { 0, 1, 2, 3, 4, 5};
-	unsigned int shape2Indices[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+	//};
 
-	int triCount = sizeof(triVertices) / sizeof(triVertices[0]);
-	int shape1Count = sizeof(shape1Vertices) / sizeof(shape1Vertices[0]);
-	int shape2Count = sizeof(shape2Vertices) / sizeof(shape2Vertices[0]);
+	//// Set up indices, which tell us which vertices to use and in which order
+	//// - This is redundant for just 3 vertices, but will be more useful later
+	//// - Indices are technically not required if the vertices are in the buffer 
+	////    in the correct order and each one will be used exactly once
+	//// - But just to see how it's done...
+	//unsigned int triIndices[] = { 0, 1, 2 };
+	//unsigned int shape1Indices[] = { 0, 1, 2, 3, 4, 5};
+	//unsigned int shape2Indices[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
-	std::cout << "tricount:" << triCount << " " << "shape1count:" << shape1Count << " " << "shape2count:" << shape2Count;
+	//int triCount = sizeof(triVertices) / sizeof(triVertices[0]);
+	//int shape1Count = sizeof(shape1Vertices) / sizeof(shape1Vertices[0]);
+	//int shape2Count = sizeof(shape2Vertices) / sizeof(shape2Vertices[0]);
 
-	// mesh object (triangle)
-	triangle = std::make_shared<Mesh>(triVertices, triCount, triIndices, triCount, device, context);
-	shape1 = std::make_shared<Mesh>(shape1Vertices, shape1Count, shape1Indices, shape1Count, device, context);
-	shape2 = std::make_shared<Mesh>(shape2Vertices, shape2Count, shape2Indices, shape2Count, device, context);
+	//std::cout << "tricount:" << triCount << " " << "shape1count:" << shape1Count << " " << "shape2count:" << shape2Count;
+
+	//// mesh object (triangle)
+	//triangle = std::make_shared<Mesh>(triVertices, triCount, triIndices, triCount, device, context);
+	//shape1 = std::make_shared<Mesh>(shape1Vertices, shape1Count, shape1Indices, shape1Count, device, context);
+	//shape2 = std::make_shared<Mesh>(shape2Vertices, shape2Count, shape2Indices, shape2Count, device, context);
+	*/
 }
 
 // --------------------------------------------------------
@@ -325,7 +327,7 @@ void Game::Update(float deltaTime, float totalTime)
 
 
 		// calling ImGUI helper method
-		ImGuiHelper(deltaTime, entities, cameras);
+		//ImGuiHelper(deltaTime, entities, cameras);
 
 
 		//// editing vectors
@@ -333,7 +335,7 @@ void Game::Update(float deltaTime, float totalTime)
 		//ImGui::ColorEdit4("4 - component(RGBA) color editor", &editColor.x);
 	}
 
-	// transformations
+	/*// transformations
 	{
 		// get transform
 		// update transform
@@ -353,7 +355,7 @@ void Game::Update(float deltaTime, float totalTime)
 		}
 
 		entities[3].GetTransform()->Rotate(0.0f, 0.0f, float(1 * deltaTime));
-	}
+	}*/
 
 	// Example input checking: Quit if the escape key is pressed
 	if (Input::GetInstance().KeyDown(VK_ESCAPE))
