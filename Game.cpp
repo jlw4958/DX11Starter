@@ -13,6 +13,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Material.h"
+#include "SimpleShader.h"
 
 // Needed for a helper function to load pre-compiled shader files
 #pragma comment(lib, "d3dcompiler.lib")
@@ -199,10 +200,10 @@ void Game::Init()
 // --------------------------------------------------------
 void Game::LoadShaders()
 {
-	vertexShader = std::make_shared<SimpleVertexShader>(device, context,
-		FixPath(L"VertexShader.cso").c_str());
 	pixelShader = std::make_shared<SimplePixelShader>(device, context,
 		FixPath(L"PixelShader.cso").c_str());
+	vertexShader = std::make_shared<SimpleVertexShader>(device, context,
+		FixPath(L"VertexShader.cso").c_str());
 }
 
 // --------------------------------------------------------
@@ -218,9 +219,12 @@ void Game::CreateGeometry()
 	XMFLOAT4 black = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
+	//std::cout << std::make_shared<Mesh>(FixPath(L"../../Assets/Models/sphere.obj").c_str(), device);
 
-	// loading models
 	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device), material1)); // make sure all models are lined up next to each other (adjust x pos)
+
+	//// loading models
+	//entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device), material1)); // make sure all models are lined up next to each other (adjust x pos)
 
 	/*
 	//// Set up the vertices of the triangle we would like to draw

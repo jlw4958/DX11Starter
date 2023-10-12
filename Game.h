@@ -6,6 +6,7 @@
 #include "GameEntity.h"
 #include "Camera.h"
 #include "SimpleShader.h"
+#include "PathHelpers.h"
 #include <DirectXMath.h>
 #include <wrl/client.h> // Used for ComPtr - a smart pointer for COM objects
 #include <memory>
