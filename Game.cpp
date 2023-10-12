@@ -220,7 +220,7 @@ void Game::CreateGeometry()
 
 
 	// loading models
-	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("Assets/Models/sphere.obj").c_str(), device), material1));
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device), material1)); // make sure all models are lined up next to each other (adjust x pos)
 
 	/*
 	//// Set up the vertices of the triangle we would like to draw
