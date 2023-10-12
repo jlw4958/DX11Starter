@@ -139,6 +139,9 @@ void Game::Init()
 	entities.push_back(GameEntity(shape2, material3));
 	entities.push_back(GameEntity(shape2, material3));
 
+	// loading models
+	std::make_shared<Mesh>(FixPath(L"../../Assets/Models/sphere.obj").c_str(), device);
+
 	// vectors to edit
 	//XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
 	XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
@@ -233,28 +236,28 @@ void Game::CreateGeometry()
 	//    since we're describing the triangle in terms of the window itself
 	Vertex triVertices[] =
 	{
-		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), red },
-		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), blue },
-		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), green },
+		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0)},
+		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
 	};
 	Vertex shape1Vertices[] = {
-		{ XMFLOAT3(-1.0f, +0.5f, +0.0f), red },
-		{ XMFLOAT3(-0.75f, +0.5f, +0.0f), blue },
-		{ XMFLOAT3(-0.55f, +0.3f, +0.0f), green },
-		{ XMFLOAT3(-0.55f, +0.3f, +0.0f), green },
-		{ XMFLOAT3(-0.8f, +0.0f, +0.0f), white },
-		{ XMFLOAT3(-1.0f, +0.5f, +0.0f), red },
+		{ XMFLOAT3(-1.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(-0.75f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(-0.55f, +0.3f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(-0.55f, +0.3f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(-0.8f, +0.0f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(-1.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
 	};
 	Vertex shape2Vertices[] = {
-		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), black },
-		{ XMFLOAT3(+0.6f, +0.4f, +0.0f), white },
-		{ XMFLOAT3(+0.5f, +0.2f, +0.0f), red },
-		{ XMFLOAT3(+0.5f, +0.2f, +0.0f), red},
-		{ XMFLOAT3(+0.4f, +0.4f, +0.0f), black },
-		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), black },
-		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), black },
-		{ XMFLOAT3(+0.8f, +0.4f, +0.0f), red },
-		{ XMFLOAT3(+0.6f, +0.4f, +0.0f), white },
+		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(+0.6f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(+0.5f, +0.2f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(+0.5f, +0.2f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0)},
+		{ XMFLOAT3(+0.4f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(+0.6f, +0.7f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(+0.8f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(+0.6f, +0.4f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
 
 	};
 

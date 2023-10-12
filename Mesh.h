@@ -16,6 +16,7 @@ public:
 	/// <param name="_device"></param>
 	/// <param name="_context"></param>
 	Mesh(Vertex *_vertices, int numVertices, unsigned int *_indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context);
+	Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device);
 	/// <summary>
 	/// Mesh class destructor
 	/// </summary>
@@ -63,5 +64,9 @@ private:
 	/// number of vertices in this mesh's vertex buffer
 	/// </summary>
 	int vertices;
+	/// <summary>
+	/// helper method that creates vertex and index buffers
+	/// </summary>
+	void CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context);
 };
 

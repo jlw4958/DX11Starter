@@ -30,17 +30,17 @@ std::shared_ptr<SimpleVertexShader> Material::GetVertexShader()
 	return vertexShader;
 }
 
-void Material::setColorTint(XMFLOAT4 newTint)
+void Material::SetColorTint(XMFLOAT4 newTint)
 {
 	colorTint = newTint;
 }
 
-void Material::setPixelShader(std::shared_ptr<SimplePixelShader> newPixelShader)
+void Material::SetPixelShader(std::shared_ptr<SimplePixelShader> newPixelShader)
 {
 	pixelShader = newPixelShader;
 }
 
-void Material::setVertexShader(std::shared_ptr<SimpleVertexShader> newVertexShader)
+void Material::SetVertexShader(std::shared_ptr<SimpleVertexShader> newVertexShader)
 {
 	vertexShader = newVertexShader;
 }
