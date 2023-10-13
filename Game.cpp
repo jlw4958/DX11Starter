@@ -78,8 +78,6 @@ void Game::Init()
 	// Helper methods for loading shaders, creating some basic
 	// geometry to draw and some simple camera matrices.
 	//  - You'll be expanding and/or replacing these later
-	LoadShaders();
-	CreateGeometry();
 
 	// colors
 	XMFLOAT4 color1(1.0f, 0.7f, 0.0f, 1.0f);
@@ -90,6 +88,12 @@ void Game::Init()
 	material1 = std::make_shared<Material>(color1, pixelShader, vertexShader);
 	material2 = std::make_shared<Material>(color2, pixelShader, vertexShader);
 	material3 = std::make_shared<Material>(color3, pixelShader, vertexShader);
+
+	LoadShaders();
+	CreateGeometry();
+
+
+	
 	
 	// Set initial graphics API state
 	//  - These settings persist until we change them
@@ -221,12 +225,10 @@ void Game::CreateGeometry()
 
 	//std::cout << std::make_shared<Mesh>(FixPath(L"../../Assets/Models/sphere.obj").c_str(), device);
 
-	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device), material1)); // make sure all models are lined up next to each other (adjust x pos)
-
 	//// loading models
 	//entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device), material1)); // make sure all models are lined up next to each other (adjust x pos)
 
-	/*
+	
 	//// Set up the vertices of the triangle we would like to draw
 	//// - We're going to copy this array, exactly as it exists in CPU memory
 	////    over to a Direct3D-controlled data structure on the GPU (the vertex buffer)
@@ -239,12 +241,12 @@ void Game::CreateGeometry()
 	////    knowing the exact size (in pixels) of the image/window/etc.  
 	//// - Long story short: Resizing the window also resizes the triangle,
 	////    since we're describing the triangle in terms of the window itself
-	//Vertex triVertices[] =
-	//{
-	//	{ XMFLOAT3(+0.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0)},
-	//	{ XMFLOAT3(+0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-	//	{ XMFLOAT3(-0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
-	//};
+	Vertex triVertices[] =
+	{
+		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0)},
+		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
+	};
 	//Vertex shape1Vertices[] = {
 	//	{ XMFLOAT3(-1.0f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
 	//	{ XMFLOAT3(-0.75f, +0.5f, +0.0f), XMFLOAT3(0, 0, -1), XMFLOAT2(0,0) },
@@ -271,11 +273,11 @@ void Game::CreateGeometry()
 	//// - Indices are technically not required if the vertices are in the buffer 
 	////    in the correct order and each one will be used exactly once
 	//// - But just to see how it's done...
-	//unsigned int triIndices[] = { 0, 1, 2 };
+	unsigned int triIndices[] = { 0, 1, 2 };
 	//unsigned int shape1Indices[] = { 0, 1, 2, 3, 4, 5};
 	//unsigned int shape2Indices[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
-	//int triCount = sizeof(triVertices) / sizeof(triVertices[0]);
+	int triCount = sizeof(triVertices) / sizeof(triVertices[0]);
 	//int shape1Count = sizeof(shape1Vertices) / sizeof(shape1Vertices[0]);
 	//int shape2Count = sizeof(shape2Vertices) / sizeof(shape2Vertices[0]);
 
@@ -285,7 +287,9 @@ void Game::CreateGeometry()
 	//triangle = std::make_shared<Mesh>(triVertices, triCount, triIndices, triCount, device, context);
 	//shape1 = std::make_shared<Mesh>(shape1Vertices, shape1Count, shape1Indices, shape1Count, device, context);
 	//shape2 = std::make_shared<Mesh>(shape2Vertices, shape2Count, shape2Indices, shape2Count, device, context);
-	*/
+
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device), material1)); // make sure all models are lined up next to each other (adjust x pos)
+	
 }
 
 // --------------------------------------------------------

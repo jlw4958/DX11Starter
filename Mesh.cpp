@@ -265,6 +265,10 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 	//    and detect duplicate vertices, but at that point it would be better to use a more
 	//    sophisticated model loading library like TinyOBJLoader or The Open Asset Importer Library
 
+	// instantiate values
+	this->indices = indexCounter;
+	this->vertices = vertCounter;
+
 	// making buffers
 	{
 		// creating the vertex buffer
@@ -277,7 +281,7 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 			vbd.MiscFlags = 0;
 			vbd.StructureByteStride = 0;
 			D3D11_SUBRESOURCE_DATA initialVertexData = {};
-			initialVertexData.pSysMem = &verts; // pSysMem = Pointer to System Memory
+			initialVertexData.pSysMem = &verts[0]; // pSysMem = Pointer to System Memory
 			_device->CreateBuffer(&vbd, &initialVertexData, vertexBuffer.GetAddressOf());
 		}
 		// creating the index buffer
@@ -291,7 +295,7 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 			ibd.StructureByteStride = 0;
 			// Specify the initial data for this buffer, similar to above
 			D3D11_SUBRESOURCE_DATA initialIndexData = {};
-			initialIndexData.pSysMem = &indices; // pSysMem = Pointer to System Memory
+			initialIndexData.pSysMem = &indices[0]; // pSysMem = Pointer to System Memory
 			_device->CreateBuffer(&ibd, &initialIndexData, indexBuffer.GetAddressOf());
 		}
 	}

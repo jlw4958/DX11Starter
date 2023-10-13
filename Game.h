@@ -57,7 +57,7 @@ private:
 	std::shared_ptr<SimpleVertexShader> vertexShader;
 
 	// shapes
-	//std::shared_ptr<Mesh> triangle;
+	std::shared_ptr<Mesh> triangle;
 	//std::shared_ptr<Mesh> shape1;
 	std::shared_ptr<Mesh> shape2;
 	
