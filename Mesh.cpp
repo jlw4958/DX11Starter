@@ -48,7 +48,7 @@ Mesh::Mesh(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIn
 	}
 }
 
-Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device)
+Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context)
 {
 	// Author: Chris Cascioli
 	// Purpose: Basic .OBJ 3D model loading, supporting positions, uvs and normals
@@ -59,6 +59,7 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 	//
 	// - NOTE: You'll need to #include <fstream>
 
+	this->context = _context;
 
 	// File input object
 	std::ifstream obj(fileName);

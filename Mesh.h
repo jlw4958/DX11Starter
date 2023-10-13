@@ -16,7 +16,7 @@ public:
 	/// <param name="_device"></param>
 	/// <param name="_context"></param>
 	Mesh(Vertex *_vertices, int numVertices, unsigned int *_indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context);
-	Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device);
+	Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context);
 	/// <summary>
 	/// Mesh class destructor
 	/// </summary>

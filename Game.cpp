@@ -288,7 +288,7 @@ void Game::CreateGeometry()
 	//shape1 = std::make_shared<Mesh>(shape1Vertices, shape1Count, shape1Indices, shape1Count, device, context);
 	//shape2 = std::make_shared<Mesh>(shape2Vertices, shape2Count, shape2Indices, shape2Count, device, context);
 
-	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device), material1)); // make sure all models are lined up next to each other (adjust x pos)
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device, context), material1)); // make sure all models are lined up next to each other (adjust x pos)
 	
 }
 
