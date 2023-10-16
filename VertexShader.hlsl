@@ -1,7 +1,5 @@
 cbuffer ExternalData : register(b0)
 {
-	float4 colorTint;
-
 	// matrices
 	float4x4 world;
 	float4x4 view;
@@ -38,7 +36,8 @@ struct VertexToPixel
 	//  |    |                |
 	//  v    v                v
 	float4 screenPosition	: SV_POSITION;	// XYZW position (System Value Position)
-	float4 color			: COLOR;        // RGBA color
+	float2 uv				: TEXTCOORD;    // UV
+	//float4 color			: COLOR;        // RGBA color
 };
 
 // --------------------------------------------------------
@@ -55,22 +54,7 @@ VertexToPixel main( VertexShaderInput input )
 
 	matrix wvp = mul(projection, mul(view, world));
 	output.screenPosition = mul(wvp, float4(input.localPosition, 1.0f));
+    output.uv = input.uv;
 
-	// Here we're essentially passing the input position directly through to the next
-	// stage (rasterizer), though it needs to be a 4-component vector now.  
-	// - To be considered within the bounds of the screen, the X and Y components 
-	//   must be between -1 and 1.  
-	// - The Z component must be between 0 and 1.  
-	// - Each of these components is then automatically divided by the W component, 
-	//   which we're leaving at 1.0 for now (this is more useful when dealing with 
-	//   a perspective projection matrix, which we'll get to in the future).
-
-	// Pass the color through 
-	// - The values will be interpolated per-pixel by the rasterizer
-	// - We don't need to alter it here, but we do need to send it to the pixel shader
-	output.color = colorTint;
-
-	// Whatever we return will make its way through the pipeline to the
-	// next programmable stage we're using (the pixel shader for now)
 	return output;
 }

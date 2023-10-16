@@ -82,9 +82,9 @@ void Game::Init()
 	LoadShaders();
 
 	// colors
-	XMFLOAT4 color1(1.0f, 0.7f, 0.0f, 1.0f);
-	XMFLOAT4 color2(0.0f, 1.0f, 0.2f, 1.0f);
-	XMFLOAT4 color3(0.6f, 0.7f, 0.4f, 1.0f);
+	XMFLOAT4 color1(0.4f, 0.2f, 0.7f, 1.0f);
+	XMFLOAT4 color2(0.6f, 0.1f, 1.0f, 1.0f);
+	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
 
 	// making materials!
 	material1 = std::make_shared<Material>(color1, pixelShader, vertexShader);
@@ -145,7 +145,7 @@ void Game::Init()
 	{
 		// cam 1
 		cam1 = std::make_shared<Camera>(
-			0.0f, 0.0f, -1.0f,
+			0.0f, 0.0f, -4.0f,
 			5.0f,
 			1.0f,
 			XM_PIDIV4, // pi/4
@@ -154,7 +154,7 @@ void Game::Init()
 
 		// cam 2
 		cam2 = std::make_shared<Camera>(
-			0.0f, 0.0f, -2.0f,
+			0.0f, 0.0f, -5.0f,
 			5.0f,
 			1.0f,
 			XM_PIDIV2, // pi/2
@@ -163,7 +163,7 @@ void Game::Init()
 
 		// cam 3
 		cam3 = std::make_shared<Camera>(
-			0.0f, 0.0f, -5.0f,
+			0.0f, 0.0f, -6.0f,
 			5.0f,
 			1.0f,
 			XM_PI/3, // pi
@@ -214,7 +214,25 @@ void Game::CreateGeometry()
 	XMFLOAT4 black = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device, context), material1)); // make sure all models are lined up next to each other (adjust x pos)
+	// the quads are weird >:(
+	// 1
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/cube.obj").c_str(), device, context), material1)); // make sure all models are lined up next to each other (adjust x pos)
+	entities[0].GetTransform()->SetPosition(XMFLOAT3(-6.0f, 0.0f, 0.0f));
+
+	// 2
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/cylinder.obj").c_str(), device, context), material2));
+	entities[1].GetTransform()->SetPosition(XMFLOAT3(-3.0f, 0.0f, 0.0f));
+
+	// 3
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/helix.obj").c_str(), device, context), material3));
+
+	// 4
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device, context), material1));
+	entities[3].GetTransform()->SetPosition(XMFLOAT3(3.0f, 0.0f, 0.0f));
+
+	// 5
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/torus.obj").c_str(), device, context), material2));
+	entities[4].GetTransform()->SetPosition(XMFLOAT3(6.0f, 0.0f, 0.0f));
 	
 }
 

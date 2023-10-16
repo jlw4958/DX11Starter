@@ -57,7 +57,7 @@ private:
 	// matrices
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMFLOAT4X4 worldInverseTranspose;
-	bool isDirty;
+	bool matrixIsDirty;
 	bool vectorsDirty;
 
 	void UpdateMatrices();

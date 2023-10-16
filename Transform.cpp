@@ -11,7 +11,7 @@ Transform::Transform() :
 	forward(0, 0, 1),
 	right(1, 0, 0),
 	up(0, 1, 0),
-	isDirty(false),
+	matrixIsDirty(false),
 	vectorsDirty(false)
 {
 	// transformation values
@@ -40,7 +40,7 @@ void Transform::MoveAbsolute(float x, float y, float z)
 	// copying value back to storage type
 	XMStoreFloat3(&position, posVec);
 
-	isDirty = true;
+	matrixIsDirty = true;
 
 }
 
@@ -57,7 +57,7 @@ void Transform::MoveRelative(float x, float y, float z)
 
 	// add and store the results
 	XMStoreFloat3(&position, XMLoadFloat3(&position) + relativeDir); // fix this
-	isDirty = true;
+	matrixIsDirty = true;
 }
 
 void Transform::Rotate(float p, float y, float r)
@@ -77,13 +77,14 @@ void Transform::Rotate(float p, float y, float r)
 	// copying value back to storage type
 	XMStoreFloat3(&pitchYawRoll, rotVec);
 
-	isDirty = true;
+	matrixIsDirty = true;
+	vectorsDirty = true;
 }
 
 void Transform::Scale(float x, float y, float z)
 {
 	Scale(XMFLOAT3(x, y, z));
-	isDirty = true;
+	matrixIsDirty = true;
 
 }
 
@@ -102,7 +103,7 @@ void Transform::MoveAbsolute(XMFLOAT3 _offset)
 	// copying value back to storage type
 	XMStoreFloat3(&position, posVec);
 
-	isDirty = true;
+	matrixIsDirty = true;
 }
 
 //void Transform::MoveRelative(XMFLOAT3 offset)
@@ -123,7 +124,7 @@ void Transform::Rotate(XMFLOAT3 _rotation)
 	// copying value back to storage type
 	XMStoreFloat3(&pitchYawRoll, rotChangeVec);
 
-	isDirty = true;
+	matrixIsDirty = true;
 }
 
 void Transform::Scale(XMFLOAT3 _scale)
@@ -140,7 +141,7 @@ void Transform::Scale(XMFLOAT3 _scale)
 	// copying value back to storage type
 	XMStoreFloat3(&scale, scaleVec);
 
-	isDirty = true;
+	matrixIsDirty = true;
 }
 
 // setters: floats
@@ -149,32 +150,39 @@ void Transform::SetPosition(float x, float y, float z)
 	position.x = x;
 	position.y = y;
 	position.z = z;
+	matrixIsDirty = true;
 }
 
 void Transform::SetRotation(float x, float y, float z)
 {
 	pitchYawRoll = XMFLOAT3(x, y, z);
+	matrixIsDirty = true;
 }
 
 void Transform::SetScale(float x, float y, float z)
 {
 	scale = XMFLOAT3(x, y, z);
+	matrixIsDirty = true;
 }
 
 // setters: vectors
 void Transform::SetPosition(XMFLOAT3 _position)
 {
 	position = _position;
+	matrixIsDirty = true;
 }
 
 void Transform::SetRotation(XMFLOAT3 _rotation)
 {
 	pitchYawRoll = _rotation;
+	matrixIsDirty = true;
+	vectorsDirty = true;
 }
 
 void Transform::SetScale(XMFLOAT3 _scale)
 {
 	scale = _scale;
+	matrixIsDirty = true;
 }
 
 // getters
@@ -220,12 +228,12 @@ XMFLOAT3 Transform::GetUp()
 
 XMFLOAT4X4 Transform::GetWorldMatrix()
 {
-	if (isDirty) {
+	if (matrixIsDirty) {
 
 		UpdateMatrices();
 	}
 
-	isDirty = false;
+	matrixIsDirty = false;
 	return world;
 
 }
