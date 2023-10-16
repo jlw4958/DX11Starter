@@ -337,8 +337,8 @@ void Game::Draw(float deltaTime, float totalTime)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	VertexShaderExternalData vsData;
-	vsData.colorTint = editColor;
+	/*VertexShaderExternalData vsData;
+	vsData.colorTint = editColor;*/
 
 	// set view and proj matrices = to view and proj getters, same with world matrix
 
