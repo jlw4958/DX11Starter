@@ -87,7 +87,7 @@ void Game::Init()
 	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
 
 	// making materials!
-	material1 = std::make_shared<Material>(color1, pixelShader, vertexShader);
+	material1 = std::make_shared<Material>(color1, customPixelShader, vertexShader);
 	material2 = std::make_shared<Material>(color2, pixelShader, vertexShader);
 	material3 = std::make_shared<Material>(color3, pixelShader, vertexShader);
 
@@ -196,7 +196,9 @@ void Game::Init()
 void Game::LoadShaders()
 {
 	pixelShader = std::make_shared<SimplePixelShader>(device, context,
-		FixPath(L"PixelShader.cso").c_str());
+		FixPath(L"PixelShader.cso").c_str());	
+	customPixelShader = std::make_shared<SimplePixelShader>(device, context,
+		FixPath(L"CustomPixelShader.cso").c_str());
 	vertexShader = std::make_shared<SimpleVertexShader>(device, context,
 		FixPath(L"VertexShader.cso").c_str());
 }
