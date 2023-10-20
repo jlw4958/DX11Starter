@@ -1,6 +1,8 @@
 cbuffer ExternalData : register(b0)
 {
 	float4 colorTint;
+	float totalTime;
+	//float greenValue;
 }
 
 struct VertexToPixel
@@ -8,38 +10,45 @@ struct VertexToPixel
 
 	float4 screenPosition : SV_POSITION;
 	float2 uv : TEXTCOORD; 
-	float4 color : COLOR;        // RGBA color
 
 };
 
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	VertexToPixel output;
-	
-    //float x = input.uv.x;
-    //float y = sin(x) * 2;
-	
-	//output.uv = float2(x, y);
-	//if () {
-	//	output.color = float4(1, 0, 0, 1);
-	//}
-	//else {
-	//	output.color = float4(0, 0, 1, 1);
-	//}
+	// UVs are usually between 0 and 1
+	// have colors change over time?
+	// how would we use this to draw a sine wave?
+	// how can we have the
 
-	//output.screenPosition = float4(sin(input.screenPosition.x), input.screenPosition.y, input.screenPosition.z, input.screenPosition.w);
-	
-    //output.color = y * float4(1, 0, 0, 1);
-	
-	//output.color = float4(1, 0, sqrt(sin(input.uv)));
-	
-    output.uv.x = sin(input.uv.x);
-    output.uv.y = cos(input.uv.y);
-	
-    output.color = colorTint * output.uv.x * output.uv.y;
+	float4 color;
 
-    //output.color = float4(colorTint.x * sin(input.uv.x * 5), colorTint.y * cos(input.uv.y * 5), colorTint.z * tan(input.uv.x * 5), 1);
+	// get the number out of the 0 to 1 range and round down
+	float solidNumU = trunc(input.uv.x * 10);
+	float solidNumV = trunc(input.uv.y * 10);
+	if (solidNumV % 2) {
 
+		//if (greenValue < 1) {
+		//	greenValue* totalTime;
+		//}
+		//if (greenValue >= 1) {
+		//	greenValue / totalTime;
+		//}
+
+		//while (greenValue < 1.0f) {
+		//	greenValue *= totalTime;
+		//	color = float4(sin(input.uv.x), greenValue, .6f, 1.0f) * frac(sin(dot(input.uv, float2(12.9898, 78.233))) * 43758.5453123);
+		//}
+		//if (greenValue >= 1.0f) {
+		//	greenValue = 0.1f;
+		//}
+
+		color = float4(sin(input.uv.x), input.uv.x*totalTime, .6f, 1.0f) * frac(sin(dot(input.uv, float2(12.9898, 78.233))) * 43758.5453123);
+	}
+	else {
+		// red
+		// add some noise!
+		color = float4(cos(input.uv.y), 0.0f, .6f, 1.0f) * frac(cos(dot(input.uv, float2(12.9898, 78.233))) * 43758.5453123);
+	}
 	
-    return output.color;
+    return color;
 }

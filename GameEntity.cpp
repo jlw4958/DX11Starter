@@ -32,7 +32,8 @@ std::shared_ptr<Material> GameEntity::GetMaterial()
 /// <summary>
 /// sets buffers, issues draw commands
 /// </summary>
-void GameEntity::Draw(std::shared_ptr<Camera> camPtr)
+//void GameEntity::Draw(std::shared_ptr<Camera> camPtr, float totalTime, float greenValue)
+void GameEntity::Draw(std::shared_ptr<Camera> camPtr, float totalTime)
 {
 	// cBuffer
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> ctx = myMesh->GetContext();
@@ -41,6 +42,9 @@ void GameEntity::Draw(std::shared_ptr<Camera> camPtr)
 	std::shared_ptr<SimpleVertexShader> vs = myMaterial->GetVertexShader();
 	std::shared_ptr<SimplePixelShader> ps = myMaterial->GetPixelShader();
 	ps->SetFloat4("colorTint", myMaterial->GetColorTint()); // Strings here MUST
+	ps->SetFloat("totalTime", totalTime);
+	//ps->SetFloat("greenValue", greenValue);
+
 	vs->SetMatrix4x4("world", myTransform->GetWorldMatrix()); // match variable
 	vs->SetMatrix4x4("view", camPtr->GetView()); // names in your
 	vs->SetMatrix4x4("projection", camPtr->GetProjection()); // shader’s cbuffer!

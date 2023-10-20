@@ -86,6 +86,10 @@ void Game::Init()
 	XMFLOAT4 color2(0.6f, 0.1f, 1.0f, 1.0f);
 	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
 
+	//greenValue = 0.1f;
+	//moreGreen = true;
+	//lessGreen = false;
+
 	// making materials!
 	material1 = std::make_shared<Material>(color1, customPixelShader, vertexShader);
 	material2 = std::make_shared<Material>(color2, pixelShader, vertexShader);
@@ -149,7 +153,7 @@ void Game::Init()
 			5.0f,
 			1.0f,
 			XM_PIDIV4, // pi/4
-			this->windowWidth / this->windowHeight
+			float(this->windowWidth / this->windowHeight)
 			);
 
 		// cam 2
@@ -158,8 +162,8 @@ void Game::Init()
 			5.0f,
 			1.0f,
 			XM_PIDIV2, // pi/2
-			this->windowWidth / this->windowHeight
-			);
+			float(this->windowWidth / this->windowHeight)
+		);
 
 		// cam 3
 		cam3 = std::make_shared<Camera>(
@@ -167,8 +171,8 @@ void Game::Init()
 			5.0f,
 			1.0f,
 			XM_PI/3, // pi
-			this->windowWidth / this->windowHeight
-			);
+			float(this->windowWidth / this->windowHeight)
+		);
 	}
 
 	// push cameras to vector
@@ -344,10 +348,27 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	// set view and proj matrices = to view and proj getters, same with world matrix
 
+	// editing greenValue
+	//if (moreGreen) {
+	//	greenValue *= totalTime;
+	//	if (greenValue >= 1.0f) {
+	//		moreGreen = false;
+	//		lessGreen = true;
+	//	}
+	//}
+	//if (lessGreen) {
+	//	greenValue -= .1;
+	//	if (greenValue <= 0.1f) {
+	//		lessGreen = false;
+	//		moreGreen = true;
+	//	}
+	//}
+
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
-		entities[i].Draw(activeCam);
+		entities[i].Draw(activeCam, totalTime);
+		//entities[i].Draw(activeCam, totalTime, greenValue);
 	}
 
 	// Frame END

@@ -61,7 +61,10 @@ private:
 	std::shared_ptr<Mesh> triangle;
 	//std::shared_ptr<Mesh> shape1;
 	std::shared_ptr<Mesh> shape2;
-	
+
+	//float greenValue;
+	//bool moreGreen;
+	//bool lessGreen;
 
 	// entity list
 	std::vector<GameEntity> entities;
