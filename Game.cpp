@@ -91,9 +91,9 @@ void Game::Init()
 	//lessGreen = false;
 
 	// making materials!
-	material1 = std::make_shared<Material>(color1, customPixelShader, vertexShader);
-	material2 = std::make_shared<Material>(color2, customPixelShader, vertexShader);
-	material3 = std::make_shared<Material>(color3, customPixelShader, vertexShader);
+	material1 = std::make_shared<Material>(color1, customPixelShader, vertexShader, 0.4f);
+	material2 = std::make_shared<Material>(color2, customPixelShader, vertexShader, 1.0f);
+	material3 = std::make_shared<Material>(color3, customPixelShader, vertexShader, 0.7f);
 
 	CreateGeometry();
 	
@@ -286,34 +286,7 @@ void Game::Update(float deltaTime, float totalTime)
 
 		// calling ImGUI helper method
 		ImGuiHelper(deltaTime, entities, cameras);
-
-
-		//// editing vectors
-		//ImGui::DragFloat3("Edit a vector", &editVector.x);
-		//ImGui::ColorEdit4("4 - component(RGBA) color editor", &editColor.x);
 	}
-
-	/*// transformations
-	{
-		// get transform
-		// update transform
-		// set transform
-		if (entities[0].GetTransform()->GetScale().x >= 2) {
-			entities[0].GetTransform()->SetScale(1.0f, 1.0f, 1.0f);
-		}
-		else {
-			entities[0].GetTransform()->Scale(XMFLOAT3(1.001f, 1.0f, 1.0f)); // scale by deltatime eventually
-		}
-		
-		if (entities[2].GetTransform()->GetPosition().y >= 1) {
-			entities[2].GetTransform()->SetPosition(0.0f, -1.5f, 0.0f);
-		}
-		else {
-			entities[2].GetTransform()->MoveAbsolute(0.0f, float(.1 * deltaTime), 0.0f);
-		}
-
-		entities[3].GetTransform()->Rotate(0.0f, 0.0f, float(1 * deltaTime));
-	}*/
 
 	// Example input checking: Quit if the escape key is pressed
 	if (Input::GetInstance().KeyDown(VK_ESCAPE))
@@ -343,31 +316,11 @@ void Game::Draw(float deltaTime, float totalTime)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	/*VertexShaderExternalData vsData;
-	vsData.colorTint = editColor;*/
-
-	// set view and proj matrices = to view and proj getters, same with world matrix
-
-	// editing greenValue
-	//if (moreGreen) {
-	//	greenValue *= totalTime;
-	//	if (greenValue >= 1.0f) {
-	//		moreGreen = false;
-	//		lessGreen = true;
-	//	}
-	//}
-	//if (lessGreen) {
-	//	greenValue -= .1;
-	//	if (greenValue <= 0.1f) {
-	//		lessGreen = false;
-	//		moreGreen = true;
-	//	}
-	//}
-
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
 		entities[i].Draw(activeCam, totalTime);
+		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambient", ambientColor);
 		//entities[i].Draw(activeCam, totalTime, greenValue);
 	}
 

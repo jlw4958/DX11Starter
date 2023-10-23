@@ -3,11 +3,13 @@
 using namespace DirectX;
 
 
-Material::Material(XMFLOAT4 _colorTint, std::shared_ptr<SimplePixelShader> _pixelShader, std::shared_ptr<SimpleVertexShader> _vertexShader):
+Material::Material(XMFLOAT4 _colorTint, std::shared_ptr<SimplePixelShader> _pixelShader, std::shared_ptr<SimpleVertexShader> _vertexShader, float _roughness):
 	vertexShader(_vertexShader),
 	pixelShader(_pixelShader),
-	colorTint(_colorTint)
+	colorTint(_colorTint),
+	roughness(_roughness)
 {
+	// roughness will range from 0 to 1
 }
 
 Material::~Material()
@@ -20,6 +22,7 @@ XMFLOAT4 Material::GetColorTint()
 	return colorTint;
 }
 
+
 std::shared_ptr<SimplePixelShader> Material::GetPixelShader()
 {
 	return pixelShader;
@@ -28,6 +31,11 @@ std::shared_ptr<SimplePixelShader> Material::GetPixelShader()
 std::shared_ptr<SimpleVertexShader> Material::GetVertexShader()
 {
 	return vertexShader;
+}
+
+float Material::GetRoughness()
+{
+	return roughness;
 }
 
 void Material::SetColorTint(XMFLOAT4 newTint)

@@ -43,7 +43,8 @@ void GameEntity::Draw(std::shared_ptr<Camera> camPtr, float totalTime)
 	std::shared_ptr<SimplePixelShader> ps = myMaterial->GetPixelShader();
 	ps->SetFloat4("colorTint", myMaterial->GetColorTint()); // Strings here MUST
 	ps->SetFloat("totalTime", totalTime);
-	//ps->SetFloat("greenValue", greenValue);
+	ps->SetFloat("roughness", myMaterial->GetRoughness());
+	ps->SetFloat3("cameraPosition", camPtr->GetTransform()->GetPosition());
 
 	vs->SetMatrix4x4("world", myTransform->GetWorldMatrix()); // match variable
 	vs->SetMatrix4x4("view", camPtr->GetView()); // names in your

@@ -1,3 +1,5 @@
+#include "ShaderStructsInclude.hlsli"
+
 cbuffer ExternalData : register(b0)
 {
 	// matrices
@@ -21,23 +23,6 @@ struct VertexShaderInput
 	float3 localPosition	: POSITION;     // XYZ position
     float3 normal			: NORMAL;
     float2 uv				: TEXTCOORD;
-};
-
-// Struct representing the data we're sending down the pipeline
-// - Should match our pixel shader's input (hence the name: Vertex to Pixel)
-// - At a minimum, we need a piece of data defined tagged as SV_POSITION
-// - The name of the struct itself is unimportant, but should be descriptive
-// - Each variable must have a semantic, which defines its usage
-struct VertexToPixel
-{
-	// Data type
-	//  |
-	//  |   Name          Semantic
-	//  |    |                |
-	//  v    v                v
-	float4 screenPosition	: SV_POSITION;	// XYZW position (System Value Position)
-	float2 uv				: TEXTCOORD;    // UV
-	float4 color			: COLOR;        // RGBA color
 };
 
 // --------------------------------------------------------

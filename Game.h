@@ -35,6 +35,8 @@ public:
 	std::shared_ptr<Material> material2;
 	std::shared_ptr<Material> material3;
 
+	DirectX::XMFLOAT3 ambientColor;
+
 private:
 
 	// Initialization helper methods - feel free to customize, combine, remove, etc.
