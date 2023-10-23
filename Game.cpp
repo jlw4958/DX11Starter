@@ -135,7 +135,7 @@ void Game::Init()
 
 		// cam 2
 		cam2 = std::make_shared<Camera>(
-			0.0f, 0.0f, -10.0f,
+			0.0f, 0.0f, -7.0f,
 			5.0f,
 			1.0f,
 			XM_PIDIV2, // pi/2
@@ -144,7 +144,7 @@ void Game::Init()
 
 		// cam 3
 		cam3 = std::make_shared<Camera>(
-			0.0f, 0.0f, -20.0f,
+			0.0f, 0.0f, -15.0f,
 			5.0f,
 			1.0f,
 			XM_PI/3, // pi
