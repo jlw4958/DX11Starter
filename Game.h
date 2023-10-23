@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "SimpleShader.h"
 #include "PathHelpers.h"
+#include "Lights.h"
 #include <DirectXMath.h>
 #include <wrl/client.h> // Used for ComPtr - a smart pointer for COM objects
 #include <memory>
@@ -64,12 +65,11 @@ private:
 	//std::shared_ptr<Mesh> shape1;
 	std::shared_ptr<Mesh> shape2;
 
-	//float greenValue;
-	//bool moreGreen;
-	//bool lessGreen;
-
 	// entity list
 	std::vector<GameEntity> entities;
+
+	// lights
+	Light directionalLight1;
 
 };
 

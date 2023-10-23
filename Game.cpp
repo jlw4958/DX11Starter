@@ -90,10 +90,10 @@ void Game::Init()
 
 	CreateGeometry();
 
-	{
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // can use lines too! or points! anything!; if you don't set this, it defaults to triangles with modern graphics drivers (but not all of them!!)
-	}
-
+	// primitive topology
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // can use lines too! or points! anything!; if you don't set this, it defaults to triangles with modern graphics drivers (but not all of them!!)
+	
+	// ImGUI
 	{
 		// Initialize ImGui itself & platform/renderer backends
 		IMGUI_CHECKVERSION();
@@ -164,6 +164,13 @@ void Game::Init()
 	}
 
 	activeCam = cameras[0];
+
+	// lights
+	directionalLight1 = {}; // set all to 0, then set only necessary values
+	directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
+	directionalLight1.Direction = XMFLOAT3(0, 1, 1);
+	directionalLight1.Intensity = 1.0f;
+	directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
 }
 
 // --------------------------------------------------------
