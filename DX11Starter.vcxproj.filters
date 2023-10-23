@@ -148,4 +148,12 @@
   <ItemGroup>
     <ResourceCompile Include="DX11Starter.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ShaderStructsInclude.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="ShaderFunctionsInclude.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
 </Project>

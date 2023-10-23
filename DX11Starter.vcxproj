@@ -203,6 +203,10 @@
   <ItemGroup>
     <ResourceCompile Include="DX11Starter.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ShaderFunctionsInclude.hlsli" />
+    <None Include="ShaderStructsInclude.hlsli" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -37,7 +37,7 @@ struct VertexToPixel
 	//  v    v                v
 	float4 screenPosition	: SV_POSITION;	// XYZW position (System Value Position)
 	float2 uv				: TEXTCOORD;    // UV
-	//float4 color			: COLOR;        // RGBA color
+	float4 color			: COLOR;        // RGBA color
 };
 
 // --------------------------------------------------------

@@ -33,5 +33,4 @@ struct VertexToPixel
 float4 main(VertexToPixel input) : SV_TARGET
 {	
     return colorTint;
-	// return float4(input.uv, 0, 1); // Adjust for your variable names
 }
