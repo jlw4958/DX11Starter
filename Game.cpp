@@ -86,10 +86,14 @@ void Game::Init()
 	XMFLOAT4 color2(0.6f, 0.1f, 1.0f, 1.0f);
 	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
 
+	//greenValue = 0.1f;
+	//moreGreen = true;
+	//lessGreen = false;
+
 	// making materials!
 	material1 = std::make_shared<Material>(color1, customPixelShader, vertexShader);
-	material2 = std::make_shared<Material>(color2, pixelShader, vertexShader);
-	material3 = std::make_shared<Material>(color3, pixelShader, vertexShader);
+	material2 = std::make_shared<Material>(color2, customPixelShader, vertexShader);
+	material3 = std::make_shared<Material>(color3, customPixelShader, vertexShader);
 
 	CreateGeometry();
 	
@@ -145,30 +149,30 @@ void Game::Init()
 	{
 		// cam 1
 		cam1 = std::make_shared<Camera>(
-			0.0f, 0.0f, -4.0f,
+			0.0f, 0.0f, -5.0f,
 			5.0f,
 			1.0f,
 			XM_PIDIV4, // pi/4
-			this->windowWidth / this->windowHeight
+			float(this->windowWidth / this->windowHeight)
 			);
 
 		// cam 2
 		cam2 = std::make_shared<Camera>(
-			0.0f, 0.0f, -5.0f,
+			0.0f, 0.0f, -10.0f,
 			5.0f,
 			1.0f,
 			XM_PIDIV2, // pi/2
-			this->windowWidth / this->windowHeight
-			);
+			float(this->windowWidth / this->windowHeight)
+		);
 
 		// cam 3
 		cam3 = std::make_shared<Camera>(
-			0.0f, 0.0f, -6.0f,
+			0.0f, 0.0f, -20.0f,
 			5.0f,
 			1.0f,
 			XM_PI/3, // pi
-			this->windowWidth / this->windowHeight
-			);
+			float(this->windowWidth / this->windowHeight)
+		);
 	}
 
 	// push cameras to vector
@@ -281,7 +285,7 @@ void Game::Update(float deltaTime, float totalTime)
 
 
 		// calling ImGUI helper method
-		//ImGuiHelper(deltaTime, entities, cameras);
+		ImGuiHelper(deltaTime, entities, cameras);
 
 
 		//// editing vectors
@@ -344,10 +348,27 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	// set view and proj matrices = to view and proj getters, same with world matrix
 
+	// editing greenValue
+	//if (moreGreen) {
+	//	greenValue *= totalTime;
+	//	if (greenValue >= 1.0f) {
+	//		moreGreen = false;
+	//		lessGreen = true;
+	//	}
+	//}
+	//if (lessGreen) {
+	//	greenValue -= .1;
+	//	if (greenValue <= 0.1f) {
+	//		lessGreen = false;
+	//		moreGreen = true;
+	//	}
+	//}
+
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
-		entities[i].Draw(activeCam);
+		entities[i].Draw(activeCam, totalTime);
+		//entities[i].Draw(activeCam, totalTime, greenValue);
 	}
 
 	// Frame END
@@ -372,7 +393,7 @@ void Game::Draw(float deltaTime, float totalTime)
 void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras)
 {	
 	// looping through the entities for the tree nodes
-	if (ImGui::TreeNode("Entities")) {
+	/*if (ImGui::TreeNode("Entities")) {
 		for (int i = 0; i < _entities.size(); i++)
 		{
 			if (ImGui::TreeNode((void*)(intptr_t)i, "Entity %d", i)) {
@@ -408,7 +429,7 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector<
 			}
 		}
 		ImGui::TreePop();
-	}
+	}*/
 
 	// camera things
 	static int clicked = 0;

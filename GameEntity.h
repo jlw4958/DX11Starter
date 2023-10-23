@@ -15,7 +15,8 @@ public:
 	std::shared_ptr<Transform> GetTransform();
 	std::shared_ptr<Material> GetMaterial();
 
-	void Draw(std::shared_ptr<Camera> camPtr);
+	void Draw(std::shared_ptr<Camera> camPtr, float totalTime);
+	// void Draw(std::shared_ptr<Camera> camPtr, float totalTime, float greenValue);
 	
 	// setters
 	void SetMaterial(std::shared_ptr<Material> newMaterial);
