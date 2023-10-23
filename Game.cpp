@@ -47,6 +47,7 @@ Game::Game(HINSTANCE hInstance)
 #endif
 
 	editColor = XMFLOAT4(0, 0, 255, 1);
+	ambientColor = XMFLOAT3(.1f, .1f, .25f);
 }
 
 // --------------------------------------------------------
@@ -75,10 +76,6 @@ Game::~Game()
 // --------------------------------------------------------
 void Game::Init()
 {
-	// Helper methods for loading shaders, creating some basic
-	// geometry to draw and some simple camera matrices.
-	//  - You'll be expanding and/or replacing these later
-
 	LoadShaders();
 
 	// colors
@@ -86,34 +83,15 @@ void Game::Init()
 	XMFLOAT4 color2(0.6f, 0.1f, 1.0f, 1.0f);
 	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
 
-	//greenValue = 0.1f;
-	//moreGreen = true;
-	//lessGreen = false;
-
 	// making materials!
 	material1 = std::make_shared<Material>(color1, customPixelShader, vertexShader, 0.4f);
 	material2 = std::make_shared<Material>(color2, customPixelShader, vertexShader, 1.0f);
-	material3 = std::make_shared<Material>(color3, customPixelShader, vertexShader, 0.7f);
+	material3 = std::make_shared<Material>(color3, pixelShader, vertexShader, 0.7f);
 
 	CreateGeometry();
-	
-	// Set initial graphics API state
-	//  - These settings persist until we change them
-	//  - Some of these, like the primitive topology & input layout, probably won't change
-	//  - Others, like setting shaders, will need to be moved elsewhere later
+
 	{
-		// Tell the input assembler (IA) stage of the pipeline what kind of
-		// geometric primitives (points, lines or triangles) we want to draw.  
-		// Essentially: "What kind of shape should the GPU draw with our vertices?"
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // can use lines too! or points! anything!; if you don't set this, it defaults to triangles with modern graphics drivers (but not all of them!!)
-
-		// Ensure the pipeline knows how to interpret all the numbers stored in
-		// the vertex buffer. For this course, all of your vertices will probably
-		// have the same layout, so we can just set this once at startup.
-
-		// Set the active vertex and pixel shaders
-		//  - Once you start applying different shaders to different objects,
-		//    these calls will need to happen multiple times per frame
 	}
 
 	{
@@ -140,7 +118,6 @@ void Game::Init()
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
 
 	// vectors to edit
-	//XMFLOAT3 vec(0.0f, 0.0f, 0.0f);
 	XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
 
 	editColor = color;
