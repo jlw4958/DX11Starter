@@ -41,12 +41,13 @@ void GameEntity::Draw(std::shared_ptr<Camera> camPtr, float totalTime)
 	// shader things (constant buffer)
 	std::shared_ptr<SimpleVertexShader> vs = myMaterial->GetVertexShader();
 	std::shared_ptr<SimplePixelShader> ps = myMaterial->GetPixelShader();
-	ps->SetFloat4("colorTint", myMaterial->GetColorTint()); // Strings here MUST
+	ps->SetFloat4("colorTint", myMaterial->GetColorTint());
 	ps->SetFloat("totalTime", totalTime);
 	ps->SetFloat("roughness", myMaterial->GetRoughness());
 	ps->SetFloat3("cameraPosition", camPtr->GetTransform()->GetPosition());
 
 	vs->SetMatrix4x4("world", myTransform->GetWorldMatrix()); // match variable
+	vs->SetMatrix4x4("worldInvTranspose", myTransform->GetWorldInvTranspose());
 	vs->SetMatrix4x4("view", camPtr->GetView()); // names in your
 	vs->SetMatrix4x4("projection", camPtr->GetProjection()); // shader’s cbuffer!
 

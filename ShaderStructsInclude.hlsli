@@ -5,9 +5,10 @@ struct VertexToPixel
 {
 
     float4 screenPosition : SV_POSITION;
-    float2 uv : TEXTCOORD;
     float4 color : COLOR; // RGBA color
-
+    float3 normal : NORMAL; 
+    float3 worldPosition : POSITION;
+    float2 uv : TEXTCOORD;
 };
 
 #endif

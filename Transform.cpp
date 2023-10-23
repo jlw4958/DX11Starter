@@ -238,6 +238,11 @@ XMFLOAT4X4 Transform::GetWorldMatrix()
 
 }
 
+DirectX::XMFLOAT4X4 Transform::GetWorldInvTranspose()
+{
+	return worldInverseTranspose;
+}
+
 void Transform::UpdateMatrices()
 {
 	// translation matrix

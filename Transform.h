@@ -37,6 +37,7 @@ public:
 	DirectX::XMFLOAT3 GetRotation();
 	DirectX::XMFLOAT3 GetScale();
 	DirectX::XMFLOAT4X4 GetWorldMatrix();
+	DirectX::XMFLOAT4X4 GetWorldInvTranspose();
 
 	DirectX::XMFLOAT3 GetForward();
 	DirectX::XMFLOAT3 GetRight();

@@ -18,6 +18,9 @@ cbuffer ExternalData : register(b0)
 // - Named "main" because that's the default the shader compiler looks for
 // --------------------------------------------------------
 float4 main(VertexToPixel input) : SV_TARGET
-{	
+{
+    // normalize incoming normal (input.normal)
+    input.normal = normalize(input.normal);
+
     return colorTint*float4(ambientColor, 1.0f);
 }
