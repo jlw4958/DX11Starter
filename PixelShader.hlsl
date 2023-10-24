@@ -1,4 +1,5 @@
 #include "ShaderStructsInclude.hlsli"
+#include "ShaderFunctionsInclude.hlsli"
 
 cbuffer ExternalData : register(b0)
 {
@@ -6,6 +7,7 @@ cbuffer ExternalData : register(b0)
     float roughness;
     float3 cameraPosition;
     float3 ambientColor;
+    Light directionalLight1;
 }
 
 // --------------------------------------------------------
@@ -19,8 +21,29 @@ cbuffer ExternalData : register(b0)
 // --------------------------------------------------------
 float4 main(VertexToPixel input) : SV_TARGET
 {
+    float spec;
+    
     // normalize incoming normal (input.normal)
     input.normal = normalize(input.normal);
+    
+    // directional light
+    float3 lightNormalDir = normalize(-directionalLight1.Direction);
+    float3 diffusion = Diffuse(input.normal, lightNormalDir);
+    
+    float3 finalColor = (diffusion * directionalLight1.Color * colorTint) + (ambientColor * colorTint);
+    // specular
+    float specExponent = (1.0f - roughness) * MAX_SPECULAR_EXPONENT;
+    
+    if (specExponent > 0.05f)
+    {
+        spec = pow(saturate(dot(Reflection(lightNormalDir, input.normal), ViewVector(cameraPosition, input.worldPosition))), specExponent);
+    }
+    else
+    {
+        spec = 0;
+    }
+    
+    float3 light = colorTint * (diffusion + spec); // Tint specular?
 
-    return colorTint*float4(ambientColor, 1.0f);
+    return float4((diffusion * colorTint + spec) * directionalLight1.Color, 1.0f);
 }

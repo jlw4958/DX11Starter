@@ -48,6 +48,7 @@ Game::Game(HINSTANCE hInstance)
 
 	editColor = XMFLOAT4(0, 0, 255, 1);
 	ambientColor = XMFLOAT3(.1f, .1f, .25f);
+	directionalLight1 = {}; // set all to 0, then set only necessary values
 }
 
 // --------------------------------------------------------
@@ -166,11 +167,14 @@ void Game::Init()
 	activeCam = cameras[0];
 
 	// lights
-	directionalLight1 = {}; // set all to 0, then set only necessary values
-	directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
-	directionalLight1.Direction = XMFLOAT3(0, 1, 1);
-	directionalLight1.Intensity = 1.0f;
-	directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
+
+	// directional light
+	{
+		directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
+		directionalLight1.Direction = XMFLOAT3(0, 1, 1);
+		directionalLight1.Intensity = 1.0f;
+		directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
+	}
 }
 
 // --------------------------------------------------------
@@ -300,12 +304,16 @@ void Game::Draw(float deltaTime, float totalTime)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
+	pixelShader->SetData(
+		"directionalLight1", // The name of the (eventual) variable in the shader
+		&directionalLight1, // The address of the data to set
+		sizeof(Light)); // The size of the data (the whole struct!) to set
+
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
 		entities[i].Draw(activeCam, totalTime);
 		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambient", ambientColor);
-		//entities[i].Draw(activeCam, totalTime, greenValue);
 	}
 
 	// Frame END
