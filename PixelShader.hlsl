@@ -8,6 +8,8 @@ cbuffer ExternalData : register(b0)
     float3 cameraPosition;
     float3 ambientColor;
     Light directionalLight1;
+    Light directionalLight2;
+    Light directionalLight3;
 }
 
 // --------------------------------------------------------
@@ -26,24 +28,27 @@ float4 main(VertexToPixel input) : SV_TARGET
     // normalize incoming normal (input.normal)
     input.normal = normalize(input.normal);
     
-    // directional light
-    float3 lightNormalDir = normalize(-directionalLight1.Direction);
-    float3 diffusion = Diffuse(input.normal, lightNormalDir);
+    //// directional light
+    //float3 lightNormalDir = normalize(-directionalLight1.Direction);
+    //float3 diffusion = Diffuse(input.normal, lightNormalDir);
     
-    float3 finalColor = (diffusion * directionalLight1.Color * colorTint) + (ambientColor * colorTint);
-    // specular
-    float specExponent = (1.0f - roughness) * MAX_SPECULAR_EXPONENT;
+    float3 finalColor = (diffusion * directionalLight1.Color * (float3) colorTint) + (ambientColor * (float3) colorTint);
+    //// specular
+    //float specExponent = (1.0f - roughness) * MAX_SPECULAR_EXPONENT;
     
-    if (specExponent > 0.05f)
-    {
-        spec = pow(saturate(dot(Reflection(lightNormalDir, input.normal), ViewVector(cameraPosition, input.worldPosition))), specExponent);
-    }
-    else
-    {
-        spec = 0;
-    }
+    //if (specExponent > 0.05f)
+    //{
+    //    spec = pow(saturate(dot(Reflection(lightNormalDir, input.normal), ViewVector(cameraPosition, input.worldPosition))), specExponent);
+    //}
+    //else
+    //{
+    //    spec = 0;
+    //}
     
-    float3 light = colorTint * (diffusion + spec); // Tint specular?
+    //float3 light = colorTint * (diffusion + spec); // Tint specular?
+    
+    // after making 3 lights, add together with ambientColor to make finalColor; return final color
 
-    return float4((diffusion * colorTint + spec) * directionalLight1.Color, 1.0f);
+    return float4(finalColor, 1.0);
+    //return float4((diffusion * colorTint + spec) * directionalLight1.Color, 1.0f);
 }

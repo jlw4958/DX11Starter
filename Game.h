@@ -70,6 +70,8 @@ private:
 
 	// lights
 	Light directionalLight1;
+	Light directionalLight2;
+	Light directionalLight3;
 
 };
 
