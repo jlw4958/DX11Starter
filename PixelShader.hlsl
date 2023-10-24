@@ -12,6 +12,12 @@ cbuffer ExternalData : register(b0)
     Light directionalLight3;
 }
 
+// smapler for textures!
+SamplerState BasicSampelr : register(s0);
+
+// you may end up with multiple of these; will be used for this is ngle draw
+Texture2D SurfaceTexture : register(t0);
+
 // --------------------------------------------------------
 // The entry point (main method) for our pixel shader
 // 
@@ -23,6 +29,9 @@ cbuffer ExternalData : register(b0)
 // --------------------------------------------------------
 float4 main(VertexToPixel input) : SV_TARGET
 {
+
+    //return SurfaceTexture.Sample(BasicSampler, input.uv);
+
     float spec;
     
     // normalize incoming normal (input.normal)

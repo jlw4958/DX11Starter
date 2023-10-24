@@ -15,6 +15,8 @@
 #include "Material.h"
 #include "SimpleShader.h"
 
+#include "WICTextureLoader.h" // windows imaging component
+
 // Needed for a helper function to load pre-compiled shader files
 #pragma comment(lib, "d3dcompiler.lib")
 #include <iostream>
@@ -73,7 +75,7 @@ Game::~Game()
 
 // --------------------------------------------------------
 // Called once per program, after Direct3D and the window
-// are initialized but before the game loop.
+// are  ialized but before the game loop.
 // --------------------------------------------------------
 void Game::Init()
 {
@@ -83,6 +85,18 @@ void Game::Init()
 	XMFLOAT4 color1(0.4f, 0.2f, 0.7f, 1.0f);
 	XMFLOAT4 color2(0.6f, 0.1f, 1.0f, 1.0f);
 	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
+
+	// textures loaded before making materials
+	CreateWICTextureFromFile(device.Get(), FixPath(L"").c_str(), 0, textureSRV.GetAddressOf()); // choose a pic later
+
+	// making sampler state
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP; // must do u, v, and w, even if texture is 2d or 1d
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX; // a very big number >:)
+	device->CreateSamplerState(&samplerDesc, sampler.GetAddressOf());
 
 	// making materials!
 	material1 = std::make_shared<Material>(color1, pixelShader, vertexShader, 0.7f);
@@ -188,6 +202,8 @@ void Game::Init()
 		directionalLight3.Intensity = 1.0f;
 		directionalLight3.Color = XMFLOAT3(0.3f, 0.3f, 1.0f);
 	}
+
+
 }
 
 // --------------------------------------------------------
@@ -331,6 +347,10 @@ void Game::Draw(float deltaTime, float totalTime)
 		"directionalLight1", // The name of the (eventual) variable in the shader
 		&directionalLight3, // The address of the data to set
 		sizeof(Light)); // The size of the data (the whole struct!) to set
+
+	// textures
+	pixelShader->SetSamplerState("BasicSampler", sampler);
+	pixelShader->SetShaderResourceView("SurfaceTexture", textureSRV);
 
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)

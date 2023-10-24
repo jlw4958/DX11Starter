@@ -73,5 +73,10 @@ private:
 	Light directionalLight2;
 	Light directionalLight3;
 
+	// texture stuff
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureSRV; // one per image loaded!
+
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler; // for now, just one >:)
+
 };
 
