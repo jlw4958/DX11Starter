@@ -73,6 +73,8 @@ private:
 	Light directionalLight2;
 	Light directionalLight3;
 
+	std::vector<Light> lights;
+
 	// texture stuff
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureSRV; // one per image loaded!
 

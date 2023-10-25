@@ -51,6 +51,10 @@ Game::Game(HINSTANCE hInstance)
 	editColor = XMFLOAT4(0, 0, 255, 1);
 	ambientColor = XMFLOAT3(.1f, .1f, .25f);
 	directionalLight1 = {}; // set all to 0, then set only necessary values
+	directionalLight2 = {}; // set all to 0, then set only necessary values
+	directionalLight3 = {}; // set all to 0, then set only necessary values
+
+	lights = {};
 }
 
 // --------------------------------------------------------
@@ -85,6 +89,8 @@ void Game::Init()
 	XMFLOAT4 color1(0.4f, 0.2f, 0.7f, 1.0f);
 	XMFLOAT4 color2(0.6f, 0.1f, 1.0f, 1.0f);
 	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
+	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
 
 	// textures loaded before making materials
 	CreateWICTextureFromFile(device.Get(), FixPath(L"").c_str(), 0, textureSRV.GetAddressOf()); // choose a pic later
@@ -99,9 +105,9 @@ void Game::Init()
 	device->CreateSamplerState(&samplerDesc, sampler.GetAddressOf());
 
 	// making materials!
-	material1 = std::make_shared<Material>(color1, pixelShader, vertexShader, 0.7f);
-	material2 = std::make_shared<Material>(color2, pixelShader, vertexShader, 0.7f);
-	material3 = std::make_shared<Material>(color3, pixelShader, vertexShader, 0.7f);
+	material1 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
+	material2 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
+	material3 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
 
 	CreateGeometry();
 
@@ -180,29 +186,6 @@ void Game::Init()
 
 	activeCam = cameras[0];
 
-	// lights
-
-	// directional lights
-	{
-		// 1
-		directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
-		directionalLight1.Direction = XMFLOAT3(0, 1, 1);
-		directionalLight1.Intensity = 1.0f;
-		directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
-
-		// 2
-		directionalLight2.Type = LIGHT_TYPE_DIRECTIONAL;
-		directionalLight2.Direction = XMFLOAT3(1, 0, 1);
-		directionalLight2.Intensity = 1.0f;
-		directionalLight2.Color = XMFLOAT3(1.0f, 0.3f, 0.3f);
-
-		// 3
-		directionalLight3.Type = LIGHT_TYPE_DIRECTIONAL;
-		directionalLight3.Direction = XMFLOAT3(1, 1, 0);
-		directionalLight3.Intensity = 1.0f;
-		directionalLight3.Color = XMFLOAT3(0.3f, 0.3f, 1.0f);
-	}
-
 
 }
 
@@ -235,7 +218,37 @@ void Game::CreateGeometry()
 	XMFLOAT4 green	= XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	XMFLOAT4 blue	= XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	XMFLOAT4 black = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// lights
+
+	// directional lights
+	{
+		// 1
+		directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
+		directionalLight1.Direction = XMFLOAT3(0, 1, 0);
+		directionalLight1.Intensity = 1.0f;
+		directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
+
+		// 2
+		directionalLight2.Type = LIGHT_TYPE_DIRECTIONAL;
+		directionalLight2.Direction = XMFLOAT3(1, 0, 0);
+		directionalLight2.Intensity = 1.0f;
+		directionalLight2.Color = XMFLOAT3(1.0f, 0.3f, 0.3f);
+
+		// 3
+		directionalLight3.Type = LIGHT_TYPE_DIRECTIONAL;
+		directionalLight3.Direction = XMFLOAT3(0, 0, 1);
+		directionalLight3.Intensity = 1.0f;
+		directionalLight3.Color = XMFLOAT3(0.3f, 0.3f, 1.0f);
+	}
+
+	lights.push_back(directionalLight1);
+	lights.push_back(directionalLight2);
+	lights.push_back(directionalLight3);
+
+	// textures
+	pixelShader->SetSamplerState("BasicSampler", sampler);
+	pixelShader->SetShaderResourceView("SurfaceTexture", textureSRV);
 
 	// the quads are weird >:(
 	// 1
@@ -333,28 +346,27 @@ void Game::Draw(float deltaTime, float totalTime)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	pixelShader->SetData(
-		"directionalLight1", // The name of the (eventual) variable in the shader
-		&directionalLight1, // The address of the data to set
-		sizeof(Light)); // The size of the data (the whole struct!) to set
-
-	pixelShader->SetData(
-		"directionalLight1", // The name of the (eventual) variable in the shader
-		&directionalLight2, // The address of the data to set
-		sizeof(Light)); // The size of the data (the whole struct!) to set
-
-	pixelShader->SetData(
-		"directionalLight1", // The name of the (eventual) variable in the shader
-		&directionalLight3, // The address of the data to set
-		sizeof(Light)); // The size of the data (the whole struct!) to set
-
-	// textures
-	pixelShader->SetSamplerState("BasicSampler", sampler);
-	pixelShader->SetShaderResourceView("SurfaceTexture", textureSRV);
-
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
+		// lights
+		pixelShader->SetData(
+			"directionalLight1", // The name of the (eventual) variable in the shader
+			&directionalLight1, // The address of the data to set
+			sizeof(Light)); // The size of the data (the whole struct!) to set
+
+		pixelShader->SetData(
+			"directionalLight2", // The name of the (eventual) variable in the shader
+			&directionalLight2, // The address of the data to set
+			sizeof(Light)); // The size of the data (the whole struct!) to set
+
+		pixelShader->SetData(
+			"directionalLight3", // The name of the (eventual) variable in the shader
+			&directionalLight3, // The address of the data to set
+			sizeof(Light)); // The size of the data (the whole struct!) to set
+
+		pixelShader->SetData("lights", &lights[0], sizeof(Light) * (int)lights.size());
+
 		entities[i].Draw(activeCam, totalTime);
 		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambient", ambientColor);
 	}
