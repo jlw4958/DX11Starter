@@ -19,23 +19,57 @@ float3 Reflection(float3 lightDir, float3 normal)
     return reflect(lightDir, normal);
 }
 
-float3 DirLight(Light light, float3 normal, float4 surfaceColor, float3 ambient, float roughness, float3 cameraPos, float3 worldPos)
+float Attenuate(Light light, float3 worldPos)
+{
+    float dist = distance(light.Position, worldPos);
+    float att = saturate(1.0f - (dist * dist / (light.Range * light.Range)));
+    return att * att;
+}
+
+float SpecCalc(float rough, float3 dir, float3 normal, float3 camPos,float3 worldPos)
 {
     float spec = 0;
-    // directional light
-    float3 lightNormalDir = normalize(-light.Direction);
-    float3 diffusion = Diffuse(normal, lightNormalDir);
-
-    float3 finalColor = (diffusion * light.Color * (float3) surfaceColor) + (ambient * (float3)surfaceColor);
-    // specular
-    float specExponent = (1.0f - roughness) * MAX_SPECULAR_EXPONENT;
-
+    float specExponent = (1.0f - rough) * MAX_SPECULAR_EXPONENT;
     if (specExponent > 0.05f)
     {
-        spec = pow(saturate(dot(Reflection(lightNormalDir, normal), ViewVector(cameraPos, worldPos))), specExponent);
+        spec = pow(saturate(dot(Reflection(dir, normal), ViewVector(camPos, worldPos))), specExponent);
     }
+    
+    return spec;
+}
+
+float3 DirLight(Light light, float3 normal, float4 surfaceColor, float3 ambient, float roughness, float3 cameraPos, float3 worldPos)
+{
+    // normalize direction
+    float3 lightNormalDir = normalize(-light.Direction);
+    
+    // diffusion
+    float3 diffusion = Diffuse(normal, lightNormalDir);
+    
+    // specular
+    float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos);
     
     return (diffusion * (float3)surfaceColor + spec) * light.Color;
 }
+
+float3 PointLight(Light light, float3 normal, float4 surfaceColor, float3 ambient, float roughness, float3 cameraPos, float3 worldPos)
+{
+    // direction
+    float3 pointDir = normalize(light.Position - worldPos);
+    
+    // normalize direction
+    float3 lightNormalDir = normalize(-pointDir);
+    
+    // diffusion
+    float3 diffusion = Diffuse(normal, lightNormalDir);
+    
+    // specular
+    float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos);
+    
+    // attenuation
+    float attenuate = Attenuate(light, worldPos);
+
+    return (diffusion * (float3) surfaceColor + spec) * attenuate * light.Color;
+};
 
 #endif

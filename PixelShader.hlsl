@@ -1,7 +1,7 @@
 #include "ShaderStructsInclude.hlsli"
 #include "ShaderFunctionsInclude.hlsli"
 
-#define TOTAL_LIGHTS 3
+#define TOTAL_LIGHTS 5
 
 cbuffer ExternalData : register(b0)
 {
@@ -12,10 +12,6 @@ cbuffer ExternalData : register(b0)
     
     // lights array!
     Light lights[TOTAL_LIGHTS];
-    
-    Light directionalLight1;
-    Light directionalLight2;
-    Light directionalLight3;
 }
 
 // smapler for textures!
@@ -40,16 +36,21 @@ float4 main(VertexToPixel input) : SV_TARGET
 
     // after making 3 lights, add together with ambientColor to make finalColor; return final color
     float3 finalColor = ambientColor * (float3)colorTint;
+    float3 finalLight;
     
     for (int i = 0; i < TOTAL_LIGHTS; i++)
     {
-        float3 finalLight = DirLight(lights[i], input.normal, colorTint, ambientColor, roughness, cameraPosition, input.worldPosition);
+        
+        if (lights[i].Type == LIGHT_TYPE_DIRECTIONAL)
+        {
+            finalLight = DirLight(lights[i], input.normal, colorTint, ambientColor, roughness, cameraPosition, input.worldPosition);
+        }
+        if (lights[i].Type == LIGHT_TYPE_POINT)
+        {
+            finalLight = PointLight(lights[i], input.normal, colorTint, ambientColor, roughness, cameraPosition, input.worldPosition);
+        }
         finalColor += finalLight;
-        //finalColor = finalLight + ambientColor;
     }
 
-    //float3 finalColor = finalLight + ambientColor;
-    
     return float4(finalColor, 1.0);
-    //return float4((diffusion * colorTint + spec) * directionalLight1.Color, 1.0f);
 }

@@ -54,6 +54,9 @@ Game::Game(HINSTANCE hInstance)
 	directionalLight2 = {}; // set all to 0, then set only necessary values
 	directionalLight3 = {}; // set all to 0, then set only necessary values
 
+	pointLight1 = {};
+	pointLight2 = {};
+
 	lights = {};
 }
 
@@ -242,9 +245,24 @@ void Game::CreateGeometry()
 		directionalLight3.Color = XMFLOAT3(0.3f, 0.3f, 1.0f);
 	}
 
+	// point lights
+	{
+		pointLight1.Type = LIGHT_TYPE_POINT;
+		pointLight1.Range;
+		pointLight1.Intensity = 1.0f;
+		pointLight1.Color = XMFLOAT3(0.7f, 0.1f, 0.7f); // purple
+
+		pointLight2.Type = LIGHT_TYPE_POINT;
+		pointLight2.Range;
+		pointLight2.Intensity = 1.0f;
+		pointLight2.Color = XMFLOAT3(1.0f, 0.4f, 0.7f); // pink?
+	}
+
 	lights.push_back(directionalLight1);
 	lights.push_back(directionalLight2);
 	lights.push_back(directionalLight3);
+	lights.push_back(pointLight1);
+	lights.push_back(pointLight2);
 
 	// textures
 	pixelShader->SetSamplerState("BasicSampler", sampler);
@@ -350,20 +368,6 @@ void Game::Draw(float deltaTime, float totalTime)
 	for (int i = 0; i < entities.size(); i++)
 	{
 		// lights
-		pixelShader->SetData(
-			"directionalLight1", // The name of the (eventual) variable in the shader
-			&directionalLight1, // The address of the data to set
-			sizeof(Light)); // The size of the data (the whole struct!) to set
-
-		pixelShader->SetData(
-			"directionalLight2", // The name of the (eventual) variable in the shader
-			&directionalLight2, // The address of the data to set
-			sizeof(Light)); // The size of the data (the whole struct!) to set
-
-		pixelShader->SetData(
-			"directionalLight3", // The name of the (eventual) variable in the shader
-			&directionalLight3, // The address of the data to set
-			sizeof(Light)); // The size of the data (the whole struct!) to set
 
 		pixelShader->SetData("lights", &lights[0], sizeof(Light) * (int)lights.size());
 

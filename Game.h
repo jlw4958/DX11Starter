@@ -69,9 +69,15 @@ private:
 	std::vector<GameEntity> entities;
 
 	// lights
+
+	// directional
 	Light directionalLight1;
 	Light directionalLight2;
 	Light directionalLight3;
+
+	// point
+	Light pointLight1;
+	Light pointLight2;
 
 	std::vector<Light> lights;
 
