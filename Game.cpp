@@ -49,7 +49,7 @@ Game::Game(HINSTANCE hInstance)
 #endif
 
 	editColor = XMFLOAT4(0, 0, 255, 1);
-	ambientColor = XMFLOAT3(.1f, .1f, .25f);
+	ambientColor = XMFLOAT3(.9f, .9f, .9f);
 	directionalLight1 = {}; // set all to 0, then set only necessary values
 	directionalLight2 = {}; // set all to 0, then set only necessary values
 	directionalLight3 = {}; // set all to 0, then set only necessary values
@@ -434,6 +434,17 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector<
 		}
 		ImGui::TreePop();
 	}*/
+
+	if (ImGui::TreeNode("Lights")) {
+		ImGui::ColorEdit3("Change Ambient Term", &ambientColor.x);
+		ImGui::ColorEdit3("Change Directional Light 1 Color", &directionalLight1.Color.x);
+		ImGui::ColorEdit3("Change Directional Light 2 Color", &directionalLight2.Color.x);
+		ImGui::ColorEdit3("Change Directional Light 3 Color", &directionalLight3.Color.x);
+		ImGui::ColorEdit3("Change Point Light 1 Color", &pointLight1.Color.x);
+		ImGui::ColorEdit3("Change Point Light 2 Color", &pointLight2.Color.x);
+
+		ImGui::TreePop();
+	}
 
 	// camera things
 	static int clicked = 0;
