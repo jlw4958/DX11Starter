@@ -96,7 +96,10 @@ void Game::Init()
 
 
 	// textures loaded before making materials
-	CreateWICTextureFromFile(device.Get(), FixPath(L"").c_str(), 0, textureSRV.GetAddressOf()); // choose a pic later
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray-rocks").c_str(), 0, textureSRV.GetAddressOf());
+	// break
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark-willow").c_str(), 0, textureSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/ganges-river").c_str(), 0, textureSRV.GetAddressOf());
 
 	// making sampler state
 	D3D11_SAMPLER_DESC samplerDesc = {};
