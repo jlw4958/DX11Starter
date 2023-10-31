@@ -257,22 +257,22 @@ void Game::CreateGeometry()
 		directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
 		directionalLight1.Direction = XMFLOAT3(0, 1, 0);
 		directionalLight1.Intensity = 1.0f;
-		directionalLight1.Color = white;
-		//directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
+		//directionalLight1.Color = white;
+		directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
 
 		// 2
 		directionalLight2.Type = LIGHT_TYPE_DIRECTIONAL;
 		directionalLight2.Direction = XMFLOAT3(1, 0, 0);
 		directionalLight2.Intensity = 1.0f;
-		directionalLight2.Color = white;
-		//directionalLight2.Color = XMFLOAT3(1.0f, 0.3f, 0.3f);
+		//directionalLight2.Color = white;
+		directionalLight2.Color = XMFLOAT3(1.0f, 0.3f, 0.3f);
 
 		// 3
 		directionalLight3.Type = LIGHT_TYPE_DIRECTIONAL;
 		directionalLight3.Direction = XMFLOAT3(0, 0, 1);
 		directionalLight3.Intensity = 1.0f;
-		directionalLight3.Color = white;
-		//directionalLight3.Color = XMFLOAT3(0.3f, 0.3f, 1.0f);
+		//directionalLight3.Color = white;
+		directionalLight3.Color = XMFLOAT3(0.3f, 0.3f, 1.0f);
 	}
 
 	// point lights
