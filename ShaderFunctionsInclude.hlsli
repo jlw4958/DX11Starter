@@ -38,7 +38,7 @@ float SpecCalc(float rough, float3 dir, float3 normal, float3 camPos,float3 worl
     return spec;
 }
 
-float3 DirLight(Light light, float3 normal, float4 surfaceColor, float3 ambient, float roughness, float3 cameraPos, float3 worldPos)
+float3 DirLight(Light light, float3 normal, float3 colorTint, float3 ambient, float roughness, float3 cameraPos, float3 worldPos)
 {
     // normalize direction
     float3 lightNormalDir = normalize(-light.Direction);
@@ -49,10 +49,10 @@ float3 DirLight(Light light, float3 normal, float4 surfaceColor, float3 ambient,
     // specular
     float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos);
     
-    return (diffusion * (float3)surfaceColor + spec) * light.Color;
+    return (diffusion * colorTint + spec) * light.Color;
 }
 
-float3 PointLight(Light light, float3 normal, float4 surfaceColor, float3 ambient, float roughness, float3 cameraPos, float3 worldPos)
+float3 PointLight(Light light, float3 normal, float3 colorTint, float3 ambient, float roughness, float3 cameraPos, float3 worldPos)
 {
     // direction
     float3 pointDir = normalize(light.Position - worldPos);
@@ -69,7 +69,7 @@ float3 PointLight(Light light, float3 normal, float4 surfaceColor, float3 ambien
     // attenuation
     float attenuate = Attenuate(light, worldPos);
 
-    return (diffusion * (float3) surfaceColor + spec) * attenuate * light.Color;
+    return (diffusion * colorTint + spec) * attenuate * light.Color;
 };
 
 #endif

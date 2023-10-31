@@ -17,6 +17,12 @@ Material::~Material()
 	// nothing for now!
 }
 
+void Material::Setup()
+{
+	for (auto& t : textureSRVs) { pixelShader->SetShaderResourceView(t.first.c_str(), t.second); }
+	for (auto& s : samplers) { pixelShader->SetSamplerState(s.first.c_str(), s.second); }
+}
+
 XMFLOAT4 Material::GetColorTint()
 {
 	return colorTint;
@@ -51,4 +57,14 @@ void Material::SetPixelShader(std::shared_ptr<SimplePixelShader> newPixelShader)
 void Material::SetVertexShader(std::shared_ptr<SimpleVertexShader> newVertexShader)
 {
 	vertexShader = newVertexShader;
+}
+
+void Material::AddTextureSRV(std::string shaderName, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv)
+{
+	textureSRVs.insert({ shaderName, srv });
+}
+
+void Material::AddSampler(std::string shaderName, Microsoft::WRL::ComPtr<ID3D11SamplerState> sample)
+{
+	samplers.insert({ shaderName, sample });
 }

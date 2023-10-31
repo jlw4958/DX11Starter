@@ -5,7 +5,7 @@
 
 cbuffer ExternalData : register(b0)
 {
-    float4 colorTint;
+    float3 colorTint;
     float roughness;
     float3 cameraPosition;
     float3 ambientColor;
@@ -33,24 +33,31 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
 
     //return SurfaceTexture.Sample(BasicSampler, input.uv);
+    
+    // Adjust the variables below as necessary to work with your own code
+    float3 surfaceColor = SurfaceTexture.Sample(BasicSampler, input.uv).rgb;
+    
+    surfaceColor *= colorTint;
 
     // after making 3 lights, add together with ambientColor to make finalColor; return final color
-    float3 finalColor = ambientColor * (float3)colorTint;
-    float3 finalLight;
+    float3 finalColor = ambientColor * surfaceColor; //  * surfaceColor
     
+    float3 finalLight;
     for (int i = 0; i < TOTAL_LIGHTS; i++)
     {
         
         if (lights[i].Type == LIGHT_TYPE_DIRECTIONAL)
         {
-            finalLight = DirLight(lights[i], input.normal, colorTint, ambientColor, roughness, cameraPosition, input.worldPosition);
+            finalLight = DirLight(lights[i], input.normal, surfaceColor, ambientColor, roughness, cameraPosition, input.worldPosition);
         }
         if (lights[i].Type == LIGHT_TYPE_POINT)
         {
-            finalLight = PointLight(lights[i], input.normal, colorTint, ambientColor, roughness, cameraPosition, input.worldPosition);
+            finalLight = PointLight(lights[i], input.normal, surfaceColor, ambientColor, roughness, cameraPosition, input.worldPosition);
         }
         finalColor += finalLight;
     }
+    
+    //finalColor += surfaceColor;
 
     return float4(finalColor, 1.0);
 }

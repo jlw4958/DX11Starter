@@ -41,6 +41,9 @@ void GameEntity::Draw(std::shared_ptr<Camera> camPtr, float totalTime)
 	// shader things (constant buffer)
 	std::shared_ptr<SimpleVertexShader> vs = myMaterial->GetVertexShader();
 	std::shared_ptr<SimplePixelShader> ps = myMaterial->GetPixelShader();
+
+	myMaterial->Setup();
+
 	ps->SetFloat4("colorTint", myMaterial->GetColorTint());
 	ps->SetFloat("totalTime", totalTime);
 	ps->SetFloat("roughness", myMaterial->GetRoughness());

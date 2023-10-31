@@ -84,6 +84,10 @@ private:
 	// texture stuff
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureSRV; // one per image loaded!
 
+	 // one per image loaded!
+	 // one per image loaded!
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> riverTextureSRV; // one per image loaded!
+
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler; // for now, just one >:)
 
 };

@@ -49,7 +49,7 @@ Game::Game(HINSTANCE hInstance)
 #endif
 
 	editColor = XMFLOAT4(0, 0, 255, 1);
-	ambientColor = XMFLOAT3(.9f, .9f, .9f);
+	ambientColor = XMFLOAT3(.1f, .1f, .1f);
 	directionalLight1 = {}; // set all to 0, then set only necessary values
 	directionalLight2 = {}; // set all to 0, then set only necessary values
 	directionalLight3 = {}; // set all to 0, then set only necessary values
@@ -94,26 +94,43 @@ void Game::Init()
 	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
 	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
+	// sampler state
+	{
+		// making sampler state
+		D3D11_SAMPLER_DESC samplerDesc = {};
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP; // must do u, v, and w, even if texture is 2d or 1d
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX; // a very big number >:)
+		device->CreateSamplerState(&samplerDesc, sampler.GetAddressOf());
+	}
 
-	// textures loaded before making materials
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray-rocks").c_str(), 0, textureSRV.GetAddressOf());
-	// break
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark-willow").c_str(), 0, textureSRV.GetAddressOf());
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/ganges-river").c_str(), 0, textureSRV.GetAddressOf());
+	// textures and materials
+	{
+		// rocks
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksTextureSRV; // comptr to srv
 
-	// making sampler state
-	D3D11_SAMPLER_DESC samplerDesc = {};
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP; // must do u, v, and w, even if texture is 2d or 1d
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX; // a very big number >:)
-	device->CreateSamplerState(&samplerDesc, sampler.GetAddressOf());
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray-rocks.png").c_str(), 0, rocksTextureSRV.GetAddressOf()); // gray rocks
 
-	// making materials!
-	material1 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
-	material2 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
-	material3 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
+		// bark
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkTextureSRV; // comptr to srv
+
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark-willow.png").c_str(), 0, barkTextureSRV.GetAddressOf());
+
+
+		// making materials!
+		material1 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
+		material2 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
+		material3 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
+
+		material1->AddSampler("BasicSampler", sampler);
+		material1->AddTextureSRV("SurfaceTexture", rocksTextureSRV);
+
+		material2->AddSampler("BasicSampler", sampler);
+		material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
+	}
+	
 
 	CreateGeometry();
 
@@ -191,8 +208,6 @@ void Game::Init()
 	}
 
 	activeCam = cameras[0];
-
-
 }
 
 // --------------------------------------------------------
@@ -225,6 +240,9 @@ void Game::CreateGeometry()
 	XMFLOAT4 blue	= XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	XMFLOAT4 black = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
+
+	XMFLOAT3 white = XMFLOAT3(1.0f, 1.0f, 1.0f);
+
 	// lights
 
 	// directional lights
@@ -233,19 +251,22 @@ void Game::CreateGeometry()
 		directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
 		directionalLight1.Direction = XMFLOAT3(0, 1, 0);
 		directionalLight1.Intensity = 1.0f;
-		directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
+		directionalLight1.Color = white;
+		//directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
 
 		// 2
 		directionalLight2.Type = LIGHT_TYPE_DIRECTIONAL;
 		directionalLight2.Direction = XMFLOAT3(1, 0, 0);
 		directionalLight2.Intensity = 1.0f;
-		directionalLight2.Color = XMFLOAT3(1.0f, 0.3f, 0.3f);
+		directionalLight2.Color = white;
+		//directionalLight2.Color = XMFLOAT3(1.0f, 0.3f, 0.3f);
 
 		// 3
 		directionalLight3.Type = LIGHT_TYPE_DIRECTIONAL;
 		directionalLight3.Direction = XMFLOAT3(0, 0, 1);
 		directionalLight3.Intensity = 1.0f;
-		directionalLight3.Color = XMFLOAT3(0.3f, 0.3f, 1.0f);
+		directionalLight3.Color = white;
+		//directionalLight3.Color = XMFLOAT3(0.3f, 0.3f, 1.0f);
 	}
 
 	// point lights
@@ -253,12 +274,14 @@ void Game::CreateGeometry()
 		pointLight1.Type = LIGHT_TYPE_POINT;
 		pointLight1.Range;
 		pointLight1.Intensity = 1.0f;
-		pointLight1.Color = XMFLOAT3(0.7f, 0.1f, 0.7f); // purple
+		pointLight1.Color = white;
+		//pointLight1.Color = XMFLOAT3(0.7f, 0.1f, 0.7f); // purple
 
 		pointLight2.Type = LIGHT_TYPE_POINT;
 		pointLight2.Range;
 		pointLight2.Intensity = 1.0f;
-		pointLight2.Color = XMFLOAT3(1.0f, 0.4f, 0.7f); // pink?
+		pointLight2.Color = white;
+		//pointLight2.Color = XMFLOAT3(1.0f, 0.4f, 0.7f); // pink?
 	}
 
 	lights.push_back(directionalLight1);
@@ -266,11 +289,7 @@ void Game::CreateGeometry()
 	lights.push_back(directionalLight3);
 	lights.push_back(pointLight1);
 	lights.push_back(pointLight2);
-
-	// textures
-	pixelShader->SetSamplerState("BasicSampler", sampler);
-	pixelShader->SetShaderResourceView("SurfaceTexture", textureSRV);
-
+	
 	// the quads are weird >:(
 	// 1
 	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/cube.obj").c_str(), device, context), material1)); // make sure all models are lined up next to each other (adjust x pos)
