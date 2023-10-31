@@ -209,6 +209,9 @@
     <None Include="ShaderFunctionsInclude.hlsli" />
     <None Include="ShaderStructsInclude.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="README.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\directxtk_desktop_win10.2023.9.6.1\build\native\directxtk_desktop_win10.targets" Condition="Exists('packages\directxtk_desktop_win10.2023.9.6.1\build\native\directxtk_desktop_win10.targets')" />
