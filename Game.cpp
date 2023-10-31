@@ -49,7 +49,7 @@ Game::Game(HINSTANCE hInstance)
 #endif
 
 	editColor = XMFLOAT4(0, 0, 255, 1);
-	ambientColor = XMFLOAT3(.1f, .1f, .1f);
+	ambientColor = XMFLOAT3(.1f, .1f, .25f);
 	directionalLight1 = {}; // set all to 0, then set only necessary values
 	directionalLight2 = {}; // set all to 0, then set only necessary values
 	directionalLight3 = {}; // set all to 0, then set only necessary values
@@ -110,13 +110,17 @@ void Game::Init()
 	{
 		// rocks
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksTextureSRV; // comptr to srv
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksSpecularSRV; // comptr to srv
 
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray-rocks.png").c_str(), 0, rocksTextureSRV.GetAddressOf()); // gray rocks
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks.jpg").c_str(), 0, rocksTextureSRV.GetAddressOf()); // gray rocks
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray-rocks-spec.png").c_str(), 0, rocksSpecularSRV.GetAddressOf()); // gray rocks
 
 		// bark
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkTextureSRV; // comptr to srv
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkSpecularSRV; // comptr to srv
 
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark-willow.png").c_str(), 0, barkTextureSRV.GetAddressOf());
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow.jpg").c_str(), 0, barkTextureSRV.GetAddressOf());
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark-willow-spec.png").c_str(), 0, barkSpecularSRV.GetAddressOf());
 
 
 		// making materials!
@@ -126,9 +130,11 @@ void Game::Init()
 
 		material1->AddSampler("BasicSampler", sampler);
 		material1->AddTextureSRV("SurfaceTexture", rocksTextureSRV);
+		material1->AddTextureSRV("SurfaceSpecular", rocksSpecularSRV);
 
 		material2->AddSampler("BasicSampler", sampler);
 		material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
+		material2->AddTextureSRV("SurfaceSpecular", barkSpecularSRV);
 	}
 	
 

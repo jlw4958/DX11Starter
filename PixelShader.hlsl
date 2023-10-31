@@ -19,6 +19,7 @@ SamplerState BasicSampler : register(s0);
 
 // you may end up with multiple of these; will be used for this is angle draw
 Texture2D SurfaceTexture : register(t0);
+Texture2D SurfaceSpecular : register(t1);
 
 // --------------------------------------------------------
 // The entry point (main method) for our pixel shader
@@ -33,11 +34,16 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
 
     //return SurfaceTexture.Sample(BasicSampler, input.uv);
+
+    // normal mapping
+    //float3 normalFromMap = NormalMap <-- from class
+
     
     // Adjust the variables below as necessary to work with your own code
     float3 surfaceColor = SurfaceTexture.Sample(BasicSampler, input.uv).rgb;
+    float specScale = SurfaceSpecular.Sample(BasicSampler, input.uv).r;
     
-    surfaceColor *= colorTint;
+    //surfaceColor *= colorTint;
 
     // after making 3 lights, add together with ambientColor to make finalColor; return final color
     float3 finalColor = ambientColor * surfaceColor; //  * surfaceColor
@@ -48,11 +54,11 @@ float4 main(VertexToPixel input) : SV_TARGET
         
         if (lights[i].Type == LIGHT_TYPE_DIRECTIONAL)
         {
-            finalLight = DirLight(lights[i], input.normal, surfaceColor, ambientColor, roughness, cameraPosition, input.worldPosition);
+            finalLight = DirLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specScale);
         }
         if (lights[i].Type == LIGHT_TYPE_POINT)
         {
-            finalLight = PointLight(lights[i], input.normal, surfaceColor, ambientColor, roughness, cameraPosition, input.worldPosition);
+            finalLight = PointLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specScale);
         }
         finalColor += finalLight;
     }
