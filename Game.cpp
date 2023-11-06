@@ -111,30 +111,36 @@ void Game::Init()
 		// rocks
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksTextureSRV; // comptr to srv
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksSpecularSRV; // comptr to srv
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksNormalSRV; // comptr to srv
 
 		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks.jpg").c_str(), 0, rocksTextureSRV.GetAddressOf()); // gray rocks
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray-rocks-spec.png").c_str(), 0, rocksSpecularSRV.GetAddressOf()); // gray rocks
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks_spec.png").c_str(), 0, rocksSpecularSRV.GetAddressOf()); // gray rocks
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks_normal.png").c_str(), 0, rocksNormalSRV.GetAddressOf()); // gray rocks
 
 		// bark
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkTextureSRV; // comptr to srv
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkSpecularSRV; // comptr to srv
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkNormalSRV; // comptr to srv
 
 		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow.jpg").c_str(), 0, barkTextureSRV.GetAddressOf());
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark-willow-spec.png").c_str(), 0, barkSpecularSRV.GetAddressOf());
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_spec.png").c_str(), 0, barkSpecularSRV.GetAddressOf());
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_normal.png").c_str(), 0, barkNormalSRV.GetAddressOf());
 
 
 		// making materials!
-		material1 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
-		material2 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
-		material3 = std::make_shared<Material>(white, pixelShader, vertexShader, 0.7f);
+		material1 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
+		material2 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
+		material3 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
 
 		material1->AddSampler("BasicSampler", sampler);
 		material1->AddTextureSRV("SurfaceTexture", rocksTextureSRV);
 		material1->AddTextureSRV("SurfaceSpecular", rocksSpecularSRV);
+		material1->AddTextureSRV("SurfaceNormal", rocksNormalSRV);
 
 		material2->AddSampler("BasicSampler", sampler);
 		material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
 		material2->AddTextureSRV("SurfaceSpecular", barkSpecularSRV);
+		material2->AddTextureSRV("SurfaceNormal", barkNormalSRV);
 	}
 
 
@@ -232,6 +238,12 @@ void Game::LoadShaders()
 		FixPath(L"CustomPixelShader.cso").c_str());
 	vertexShader = std::make_shared<SimpleVertexShader>(device, context,
 		FixPath(L"VertexShader.cso").c_str());
+
+	// normal shaders
+	normalVertexShader = std::make_shared<SimpleVertexShader>(device, context,
+		FixPath(L"NormalVertexShader.cso").c_str());
+	normalPixelShader = std::make_shared<SimplePixelShader>(device, context,
+		FixPath(L"NormalPixelShader.cso").c_str());
 }
 
 // --------------------------------------------------------

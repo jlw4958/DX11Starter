@@ -59,11 +59,8 @@ private:
 	std::shared_ptr<SimplePixelShader> pixelShader;
 	std::shared_ptr<SimplePixelShader> customPixelShader;
 	std::shared_ptr<SimpleVertexShader> vertexShader;
-
-	// shapes
-	std::shared_ptr<Mesh> triangle;
-	//std::shared_ptr<Mesh> shape1;
-	std::shared_ptr<Mesh> shape2;
+	std::shared_ptr<SimpleVertexShader> normalVertexShader;
+	std::shared_ptr<SimplePixelShader> normalPixelShader;
 
 	// entity list
 	std::vector<GameEntity> entities;
@@ -82,12 +79,6 @@ private:
 	std::vector<Light> lights;
 
 	// texture stuff
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureSRV; // one per image loaded!
-
-	 // one per image loaded!
-	 // one per image loaded!
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> riverTextureSRV; // one per image loaded!
-
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler; // for now, just one >:)
 
 };
