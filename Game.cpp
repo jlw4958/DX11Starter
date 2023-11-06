@@ -425,7 +425,7 @@ void Game::Draw(float deltaTime, float totalTime)
 void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras)
 {
 	// looping through the entities for the tree nodes
-	/*if (ImGui::TreeNode("Entities")) {
+	if (ImGui::TreeNode("Entities")) {
 		for (int i = 0; i < _entities.size(); i++)
 		{
 			if (ImGui::TreeNode((void*)(intptr_t)i, "Entity %d", i)) {
@@ -461,9 +461,11 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector<
 			}
 		}
 		ImGui::TreePop();
-	}*/
+	}
 
 	if (ImGui::TreeNode("Lights")) {
+
+		// pass these values back to update them
 		ImGui::ColorEdit3("Change Ambient Term", &ambientColor.x);
 		ImGui::ColorEdit3("Change Directional Light 1 Color", &directionalLight1.Color.x);
 		ImGui::ColorEdit3("Change Directional Light 2 Color", &directionalLight2.Color.x);
