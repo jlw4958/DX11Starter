@@ -22,7 +22,7 @@ struct VertexToPixel_Normal
     float4 color : COLOR; // RGBA color
     float3 normal : NORMAL;
     float3 worldPosition : POSITION;
-    float3 tangent;
+    float3 tangent : TANGENT;
     float2 uv : TEXTCOORD;
 };
 

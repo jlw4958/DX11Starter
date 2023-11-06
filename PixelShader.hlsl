@@ -34,10 +34,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
     // normalize lights
     input.normal = normalize(input.normal);
-
-    // normal mapping
-    //float3 normalFromMap = NormalMap <-- from class
-
+    
     // Adjust the variables below as necessary to work with your own code
     float3 surfaceColor = SurfaceTexture.Sample(BasicSampler, input.uv).rgb;
     float specScale = SurfaceSpecular.Sample(BasicSampler, input.uv).r;
