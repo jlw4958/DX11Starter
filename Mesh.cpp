@@ -4,15 +4,12 @@
 #include "Vertex.h" // holds our custom Vertex struct
 #include "Input.h"
 #include "PathHelpers.h"
-
 #pragma comment(lib, "d3dcompiler.lib")
 #include <iostream>
 #include <fstream>
 #include <d3dcompiler.h>
 #include <vector>
-
 using namespace DirectX;
-
 Mesh::Mesh(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context)
 {
 	this->context = _context;
@@ -31,7 +28,6 @@ Mesh::Mesh(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIn
 		initialVertexData.pSysMem = _vertices; // pSysMem = Pointer to System Memory
 		_device->CreateBuffer(&vbd, &initialVertexData, vertexBuffer.GetAddressOf());
 	}
-
 	// creating the index buffer
 	{
 		D3D11_BUFFER_DESC ibd = {};
@@ -63,11 +59,9 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 
 	// File input object
 	std::ifstream obj(fileName);
-
 	// Check for successful open
 	if (!obj.is_open())
 		return;
-
 	// Variables used while reading the file
 	std::vector<XMFLOAT3> positions;	// Positions from the file
 	std::vector<XMFLOAT3> normals;		// Normals from the file
@@ -77,13 +71,11 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 	int vertCounter = 0;			// Count of vertices
 	int indexCounter = 0;			// Count of indices
 	char chars[100];			// String for line reading
-
 	// Still have data left?
 	while (obj.good())
 	{
 		// Get the line (100 characters should be more than enough)
 		obj.getline(chars, 100);
-
 		// Check the type of line
 		if (chars[0] == 'v' && chars[1] == 'n')
 		{
@@ -93,7 +85,6 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 				chars,
 				"vn %f %f %f",
 				&norm.x, &norm.y, &norm.z);
-
 			// Add to the list of normals
 			normals.push_back(norm);
 		}
@@ -105,7 +96,6 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 				chars,
 				"vt %f %f",
 				&uv.x, &uv.y);
-
 			// Add to the list of uv's
 			uvs.push_back(uv);
 		}
@@ -117,7 +107,6 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 				chars,
 				"v %f %f %f",
 				&pos.x, &pos.y, &pos.z);
-
 			// Add to the positions
 			positions.push_back(pos);
 		}
@@ -134,7 +123,6 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 				&i[3], &i[4], &i[5],
 				&i[6], &i[7], &i[8],
 				&i[9], &i[10], &i[11]);
-
 			// If we only got the first number, chances are the OBJ
 			// file has no UV coordinates.  This isn't great, but we
 			// still want to load the model without crashing, so we
@@ -150,20 +138,17 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 					&i[3], &i[5],
 					&i[6], &i[8],
 					&i[9], &i[11]);
-
 				// The following indices are where the UVs should 
 				// have been, so give them a valid value
 				i[1] = 1;
 				i[4] = 1;
 				i[7] = 1;
 				i[10] = 1;
-
 				// If we have no UVs, create a single UV coordinate
 				// that will be used for all vertices
 				if (uvs.size() == 0)
 					uvs.push_back(XMFLOAT2(0, 0));
 			}
-
 			// - Create the verts by looking up
 			//    corresponding data from vectors
 			// - OBJ File indices are 1-based, so
@@ -172,17 +157,14 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 			v1.Position = positions[i[0] - 1];
 			v1.UV = uvs[i[1] - 1];
 			v1.Normal = normals[i[2] - 1];
-
 			Vertex v2;
 			v2.Position = positions[i[3] - 1];
 			v2.UV = uvs[i[4] - 1];
 			v2.Normal = normals[i[5] - 1];
-
 			Vertex v3;
 			v3.Position = positions[i[6] - 1];
 			v3.UV = uvs[i[7] - 1];
 			v3.Normal = normals[i[8] - 1];
-
 			// The model is most likely in a right-handed space,
 			// especially if it came from Maya.  We want to convert
 			// to a left-handed space for DirectX.  This means we 
@@ -193,33 +175,27 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 			// We also need to flip the UV coordinate since DirectX
 			// defines (0,0) as the top left of the texture, and many
 			// 3D modeling packages use the bottom left as (0,0)
-
 			// Flip the UV's since they're probably "upside down"
 			v1.UV.y = 1.0f - v1.UV.y;
 			v2.UV.y = 1.0f - v2.UV.y;
 			v3.UV.y = 1.0f - v3.UV.y;
-
 			// Flip Z (LH vs. RH)
 			v1.Position.z *= -1.0f;
 			v2.Position.z *= -1.0f;
 			v3.Position.z *= -1.0f;
-
 			// Flip normal's Z
 			v1.Normal.z *= -1.0f;
 			v2.Normal.z *= -1.0f;
 			v3.Normal.z *= -1.0f;
-
 			// Add the verts to the vector (flipping the winding order)
 			verts.push_back(v1);
 			verts.push_back(v3);
 			verts.push_back(v2);
 			vertCounter += 3;
-
 			// Add three more indices
 			indices.push_back(indexCounter); indexCounter += 1;
 			indices.push_back(indexCounter); indexCounter += 1;
 			indices.push_back(indexCounter); indexCounter += 1;
-
 			// Was there a 4th face?
 			// - 12 numbers read means 4 faces WITH uv's
 			// - 8 numbers read means 4 faces WITHOUT uv's
@@ -230,18 +206,15 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 				v4.Position = positions[i[9] - 1];
 				v4.UV = uvs[i[10] - 1];
 				v4.Normal = normals[i[11] - 1];
-
 				// Flip the UV, Z pos and normal's Z
 				v4.UV.y = 1.0f - v4.UV.y;
 				v4.Position.z *= -1.0f;
 				v4.Normal.z *= -1.0f;
-
 				// Add a whole triangle (flipping the winding order)
 				verts.push_back(v1);
 				verts.push_back(v4);
 				verts.push_back(v3);
 				vertCounter += 3;
-
 				// Add three more indices
 				indices.push_back(indexCounter); indexCounter += 1;
 				indices.push_back(indexCounter); indexCounter += 1;
@@ -249,10 +222,8 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 			}
 		}
 	}
-
 	// Close the file and create the actual buffers
 	obj.close();
-
 	// - At this point, "verts" is a vector of Vertex structs, and can be used
 	//    directly to create a vertex buffer:  &verts[0] is the address of the first vert
 	//
@@ -265,11 +236,9 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 	//    an index buffer isn't doing much for us.  We could try to optimize the mesh ourselves
 	//    and detect duplicate vertices, but at that point it would be better to use a more
 	//    sophisticated model loading library like TinyOBJLoader or The Open Asset Importer Library
-
 	// instantiate values
 	this->indices = indexCounter;
 	this->vertices = vertCounter;
-
 	// making buffers
 	{
 		// creating the vertex buffer
@@ -301,50 +270,39 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 		}
 	}
 }
-
 Mesh::~Mesh()
 {
 	// nothing for now!
 }
-
 Microsoft::WRL::ComPtr<ID3D11Buffer> Mesh::GetVertexBuffer()
 {
 	return vertexBuffer;
 }
-
 Microsoft::WRL::ComPtr<ID3D11Buffer> Mesh::GetIndexBuffer()
 {
 	return indexBuffer;
 }
-
 int Mesh::GetIndexCount()
 {
 	return indices;
 }
-
 void Mesh::Draw()
 {
-
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	{
-
 		context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 		context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
 		context->DrawIndexed(
 			indices,     // The number of indices to use (we could draw a subset if we wanted)
 			0,     // Offset to the first index we want to use
 			0);    // Offset to add to each index when looking up vertices
 	}
 }
-
 Microsoft::WRL::ComPtr<ID3D11DeviceContext> Mesh::GetContext()
 {
 	return context;
 }
-
 void Mesh::CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 {
-
 }

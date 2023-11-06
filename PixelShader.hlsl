@@ -32,21 +32,18 @@ Texture2D SurfaceSpecular : register(t1);
 // --------------------------------------------------------
 float4 main(VertexToPixel input) : SV_TARGET
 {
-
-    //return SurfaceTexture.Sample(BasicSampler, input.uv);
+    // normalize lights
+    input.normal = normalize(input.normal);
 
     // normal mapping
     //float3 normalFromMap = NormalMap <-- from class
 
-    
     // Adjust the variables below as necessary to work with your own code
     float3 surfaceColor = SurfaceTexture.Sample(BasicSampler, input.uv).rgb;
     float specScale = SurfaceSpecular.Sample(BasicSampler, input.uv).r;
     
-    //surfaceColor *= colorTint;
-
     // after making 3 lights, add together with ambientColor to make finalColor; return final color
-    float3 finalColor = ambientColor * surfaceColor; //  * surfaceColor
+    float3 finalColor = ambientColor * surfaceColor;
     
     float3 finalLight;
     for (int i = 0; i < TOTAL_LIGHTS; i++)
@@ -63,7 +60,5 @@ float4 main(VertexToPixel input) : SV_TARGET
         finalColor += finalLight;
     }
     
-    //finalColor += surfaceColor;
-
     return float4(finalColor, 1.0);
 }

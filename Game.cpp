@@ -73,7 +73,7 @@ Game::~Game()
 
 	// Call Release() on any Direct3D objects made within this class
 	// - Note: this is unnecessary for D3D objects stored in ComPtrs
-	
+
 	// ImGui clean up
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -136,13 +136,13 @@ void Game::Init()
 		material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
 		material2->AddTextureSRV("SurfaceSpecular", barkSpecularSRV);
 	}
-	
+
 
 	CreateGeometry();
 
 	// primitive topology
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // can use lines too! or points! anything!; if you don't set this, it defaults to triangles with modern graphics drivers (but not all of them!!)
-	
+
 	// ImGUI
 	{
 		// Initialize ImGui itself & platform/renderer backends
@@ -181,7 +181,7 @@ void Game::Init()
 			1.0f,
 			XM_PIDIV4, // pi/4
 			float(this->windowWidth / this->windowHeight)
-			);
+		);
 
 		// cam 2
 		cam2 = std::make_shared<Camera>(
@@ -197,7 +197,7 @@ void Game::Init()
 			0.0f, 0.0f, -15.0f,
 			5.0f,
 			1.0f,
-			XM_PI/3, // pi
+			XM_PI / 3, // pi
 			float(this->windowWidth / this->windowHeight)
 		);
 	}
@@ -227,7 +227,7 @@ void Game::Init()
 void Game::LoadShaders()
 {
 	pixelShader = std::make_shared<SimplePixelShader>(device, context,
-		FixPath(L"PixelShader.cso").c_str());	
+		FixPath(L"PixelShader.cso").c_str());
 	customPixelShader = std::make_shared<SimplePixelShader>(device, context,
 		FixPath(L"CustomPixelShader.cso").c_str());
 	vertexShader = std::make_shared<SimpleVertexShader>(device, context,
@@ -241,9 +241,9 @@ void Game::CreateGeometry()
 {
 	// Create some temporary variables to represent colors
 	// - Not necessary, just makes things more readable
-	XMFLOAT4 red	= XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green	= XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 blue	= XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	XMFLOAT4 black = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 
@@ -295,7 +295,7 @@ void Game::CreateGeometry()
 	lights.push_back(directionalLight3);
 	lights.push_back(pointLight1);
 	lights.push_back(pointLight2);
-	
+
 	// the quads are weird >:(
 	// 1
 	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/cube.obj").c_str(), device, context), material1)); // make sure all models are lined up next to each other (adjust x pos)
@@ -315,7 +315,7 @@ void Game::CreateGeometry()
 	// 5
 	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/torus.obj").c_str(), device, context), material2));
 	entities[4].GetTransform()->SetPosition(XMFLOAT3(6.0f, 0.0f, 0.0f));
-	
+
 }
 
 // --------------------------------------------------------
@@ -423,7 +423,7 @@ void Game::Draw(float deltaTime, float totalTime)
 }
 
 void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras)
-{	
+{
 	// looping through the entities for the tree nodes
 	/*if (ImGui::TreeNode("Entities")) {
 		for (int i = 0; i < _entities.size(); i++)
