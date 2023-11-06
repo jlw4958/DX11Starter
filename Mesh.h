@@ -68,5 +68,14 @@ private:
 	/// helper method that creates vertex and index buffers
 	/// </summary>
 	void CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device);
+
+	/// <summary>
+	/// calculates the tangent of the vertices
+	/// </summary>
+	/// <param name="verts"></param>
+	/// <param name="numVerts"></param>
+	/// <param name="indices"></param>
+	/// <param name="numIndices"></param>
+	void CalculateTangents(Vertex* verts, int numVerts, unsigned int* indices, int numIndices);
 };
 

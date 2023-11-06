@@ -29,3 +29,18 @@ cams + entities made in init()
 
 	// copying value back to storage type
 	DirectX::XMStoreFloat3(&scale, DirectX::XMVectorMultiply(scaleVec, scaleChange));
+
+
+
+
+	// textures loaded before making materials
+	/*CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray-rocks.png").c_str(), 0, textureSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark-willow.png").c_str(), 0, textureSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/ganges-river.png").c_str(), 0, textureSRV.GetAddressOf());*/
+
+	 CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray-rocks.png").c_str(), 0,  rocksTextureSRV.GetAddressOf());
+	 CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark-willow.png").c_str(), 0,  barkTextureSRV.GetAddressOf());
+	 CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/ganges-river.png").c_str(), 0, riverTextureSRV.GetAddressOf());
+
+
+

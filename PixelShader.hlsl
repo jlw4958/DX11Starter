@@ -32,7 +32,8 @@ Texture2D SurfaceSpecular : register(t1);
 // --------------------------------------------------------
 float4 main(VertexToPixel input) : SV_TARGET
 {
-
+    input.normal = normalize(input.normal);
+    
     //return SurfaceTexture.Sample(BasicSampler, input.uv);
 
     // normal mapping
