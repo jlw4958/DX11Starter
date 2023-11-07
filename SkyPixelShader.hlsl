@@ -1,4 +1,12 @@
-float4 main() : SV_TARGET
+#include "ShaderStructsInclude.hlsli"
+
+TextureCube SkyTexture : register(t0);
+
+SamplerState SkySampler : register(s0);
+
+float4 main(VertexToPixel_Sky input) : SV_TARGET
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+	float3 skySample = SkyTexture.Sample(SkySampler, input.sampleDir);
+
+	return float4(skySample, 1.0f);
 }
