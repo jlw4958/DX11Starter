@@ -26,6 +26,12 @@ struct VertexToPixel_Normal
     float2 uv : TEXTCOORD;
 };
 
+struct VertexToPixel_Sky
+{
+    float4 position : SV_POSITION;
+    float3 sampleDir : DIRECTION;
+};
+
 struct Light
 {
 	// this order is important!! types are interlaced to meet the 16-byte boundary
