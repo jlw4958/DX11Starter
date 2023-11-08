@@ -19,15 +19,6 @@ Material::~Material()
 
 void Material::Setup()
 {
-	//pixelShader->SetFloat4("colorTint", colorTint);
-	//pixelShader->SetFloat("roughness", roughness);
-	//pixelShader->SetFloat3("cameraPosition", camPtr->GetTransform()->GetPosition());
-
-	//vs->SetMatrix4x4("world", myTransform->GetWorldMatrix()); // match variable
-	//vs->SetMatrix4x4("worldInvTranspose", myTransform->GetWorldInvTranspose());
-	//vs->SetMatrix4x4("view", camPtr->GetView()); // names in your
-	//vs->SetMatrix4x4("projection", camPtr->GetProjection()); // shader’s cbuffer!
-
 	for (auto& t : textureSRVs) { pixelShader->SetShaderResourceView(t.first.c_str(), t.second); }
 	for (auto& s : samplers) { pixelShader->SetSamplerState(s.first.c_str(), s.second); }
 }

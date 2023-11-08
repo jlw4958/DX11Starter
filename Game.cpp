@@ -124,18 +124,18 @@ void Game::Init()
 
 		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow.jpg").c_str(), 0, barkTextureSRV.GetAddressOf());
 		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_spec.png").c_str(), 0, barkSpecularSRV.GetAddressOf());
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_normal.png").c_str(), 0, barkNormalSRV.GetAddressOf());
+		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_normal_2.png").c_str(), 0, barkNormalSRV.GetAddressOf());
 
 
 		// making materials!
-		material1 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
+		material1 = std::make_shared<Material>(white, normalPixelShader, vertexShader, 0.7f);
 		material2 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
-		material3 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
+		//material3 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
 
 		material1->AddSampler("BasicSampler", sampler);
 		material1->AddTextureSRV("SurfaceTexture", rocksTextureSRV);
 		material1->AddTextureSRV("SurfaceSpecular", rocksSpecularSRV);
-		material1->AddTextureSRV("SurfaceNormal", rocksNormalSRV);
+		//material1->AddTextureSRV("SurfaceNormal", rocksNormalSRV);
 
 		material2->AddSampler("BasicSampler", sampler);
 		material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
@@ -318,7 +318,7 @@ void Game::CreateGeometry()
 	entities[1].GetTransform()->SetPosition(XMFLOAT3(-3.0f, 0.0f, 0.0f));
 
 	// 3
-	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/helix.obj").c_str(), device, context), material3));
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/helix.obj").c_str(), device, context), material2));
 
 	// 4
 	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/sphere.obj").c_str(), device, context), material1));
@@ -409,10 +409,11 @@ void Game::Draw(float deltaTime, float totalTime)
 	{
 		// lights
 
-		pixelShader->SetData("lights", &lights[0], sizeof(Light) * (int)lights.size());
+		entities[i].GetMaterial()->GetPixelShader()->SetData("lights", &lights[0], sizeof(Light) * (int)lights.size());
 
 		entities[i].Draw(activeCam, totalTime);
-		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambient", ambientColor);
+		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambientColor", ambientColor);
+		
 	}
 
 	// Frame END
