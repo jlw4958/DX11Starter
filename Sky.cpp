@@ -61,12 +61,12 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::CreateCubemap(
 	// - Explicitly NOT generating mipmaps, as we don't need them for the sky!
 	// - Order matters here!  +X, -X, +Y, -Y, +Z, -Z
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> textures[6] = {};
-	CreateWICTextureFromFile(device.Get(), right, (ID3D11Resource**)textures[0].GetAddressOf(), 0);
+	/*CreateWICTextureFromFile(device.Get(), right, (ID3D11Resource**)textures[0].GetAddressOf(), 0);
 	CreateWICTextureFromFile(device.Get(), left, (ID3D11Resource**)textures[1].GetAddressOf(), 0);
 	CreateWICTextureFromFile(device.Get(), up, (ID3D11Resource**)textures[2].GetAddressOf(), 0);
 	CreateWICTextureFromFile(device.Get(), down, (ID3D11Resource**)textures[3].GetAddressOf(), 0);
 	CreateWICTextureFromFile(device.Get(), front, (ID3D11Resource**)textures[4].GetAddressOf(), 0);
-	CreateWICTextureFromFile(device.Get(), back, (ID3D11Resource**)textures[5].GetAddressOf(), 0);
+	CreateWICTextureFromFile(device.Get(), back, (ID3D11Resource**)textures[5].GetAddressOf(), 0);*/
 
 	// We'll assume all of the textures are the same color format and resolution,
 	// so get the description of the first texture
@@ -92,7 +92,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::CreateCubemap(
 
 	// Create the final texture resource to hold the cube map
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> cubeMapTexture;
-	device->CreateTexture2D(&cubeDesc, 0, cubeMapTexture.GetAddressOf());
+	//device->CreateTexture2D(&cubeDesc, 0, cubeMapTexture.GetAddressOf());
 
 	// Loop through the individual face textures and copy them,
 	// one at a time, to the cube map texure
@@ -105,13 +105,13 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::CreateCubemap(
 			1); // How many mip levels are in the texture?
 
 		// Copy from one resource (texture) to another
-		context->CopySubresourceRegion(
-			cubeMapTexture.Get(),  // Destination resource
-			subresource,           // Dest subresource index (one of the array elements)
-			0, 0, 0,               // XYZ location of copy
-			textures[i].Get(),     // Source resource
-			0,                     // Source subresource index (we're assuming there's only one)
-			0);                    // Source subresource "box" of data to copy (zero means the whole thing)
+		//context->CopySubresourceRegion(
+		//	cubeMapTexture.Get(),  // Destination resource
+		//	subresource,           // Dest subresource index (one of the array elements)
+		//	0, 0, 0,               // XYZ location of copy
+		//	textures[i].Get(),     // Source resource
+		//	0,                     // Source subresource index (we're assuming there's only one)
+		//	0);                    // Source subresource "box" of data to copy (zero means the whole thing)
 	}
 
 	// At this point, all of the faces have been copied into the 
@@ -124,7 +124,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::CreateCubemap(
 
 	// Make the SRV
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> cubeSRV;
-	device->CreateShaderResourceView(cubeMapTexture.Get(), &srvDesc, cubeSRV.GetAddressOf());
+	//device->CreateShaderResourceView(cubeMapTexture.Get(), &srvDesc, cubeSRV.GetAddressOf());
 
 	// Send back the SRV, which is what we need for our shaders
 	return cubeSRV;

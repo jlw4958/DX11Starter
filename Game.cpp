@@ -128,14 +128,13 @@ void Game::Init()
 
 
 		// making materials!
-		material1 = std::make_shared<Material>(white, normalPixelShader, vertexShader, 0.7f);
+		material1 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
 		material2 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
-		//material3 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
 
 		material1->AddSampler("BasicSampler", sampler);
 		material1->AddTextureSRV("SurfaceTexture", rocksTextureSRV);
 		material1->AddTextureSRV("SurfaceSpecular", rocksSpecularSRV);
-		//material1->AddTextureSRV("SurfaceNormal", rocksNormalSRV);
+		material1->AddTextureSRV("SurfaceNormal", rocksNormalSRV);
 
 		material2->AddSampler("BasicSampler", sampler);
 		material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
@@ -409,6 +408,7 @@ void Game::Draw(float deltaTime, float totalTime)
 	{
 		// lights
 
+		// entity specific pixel shader!
 		entities[i].GetMaterial()->GetPixelShader()->SetData("lights", &lights[0], sizeof(Light) * (int)lights.size());
 
 		entities[i].Draw(activeCam, totalTime);
