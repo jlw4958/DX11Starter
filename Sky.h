@@ -8,8 +8,9 @@
 class Sky
 {
 public:
-	Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs);
+	Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs);
 	~Sky();
+
 	// --------------------------------------------------------
 	// Author: Chris Cascioli
 	// Purpose: Creates a cube map on the GPU from 6 individual textures

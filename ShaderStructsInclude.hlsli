@@ -7,6 +7,19 @@
 #define LIGHT_TYPE_SPOT        2
 #define MAX_SPECULAR_EXPONENT 256.0f
 
+struct VertexShaderInput
+{
+	// Data type
+	//  |
+	//  |   Name          Semantic
+	//  |    |                |
+	//  v    v                v
+    float3 localPosition : POSITION; // XYZ position
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float2 uv : TEXTCOORD;
+};
+
 struct VertexToPixel
 {
     float4 screenPosition : SV_POSITION;

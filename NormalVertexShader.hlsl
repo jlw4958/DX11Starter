@@ -9,19 +9,6 @@ cbuffer ExternalData : register(b0)
 	float4x4 projection;
 }
 
-struct VertexShaderInput
-{
-	// Data type
-	//  |
-	//  |   Name          Semantic
-	//  |    |                |
-	//  v    v                v
-	float3 localPosition : POSITION;     // XYZ position
-	float3 normal : NORMAL;
-	float3 tangent : TANGENT;
-	float2 uv : TEXTCOORD;
-};
-
 VertexToPixel_Normal main(VertexShaderInput input) // add all the other stuff
 {
 	// Set up output struct

@@ -10,12 +10,7 @@
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> skyRasterizer;
 */
 
-Sky::Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs):
-	skyMesh(mesh_ptr),
-	skySampler(sampler),
-	skySRV(srv),
-	skyPixelShader(ps),
-	skyVertexShader(vs)
+Sky::Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs)
 {
 	// depthBuffer
 	// skyRasterizer
