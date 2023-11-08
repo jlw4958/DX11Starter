@@ -1,4 +1,6 @@
 #include "Sky.h"
+#include "PathHelpers.h"
+#include "WICTextureLoader.h" // windows imaging component
 
 /*
 * 	std::shared_ptr<Mesh> skyMesh;
@@ -10,15 +12,66 @@
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> skyRasterizer;
 */
 
-Sky::Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs)
+Sky::Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs, const wchar_t* text1, const wchar_t* text2, const wchar_t* text3, const wchar_t* text4, const wchar_t* text5, const wchar_t* text6) // will use the cube mesh btw
 {
 	// depthBuffer
 	// skyRasterizer
+	skyMesh = mesh_ptr;
+	skySampler = sampler;
+	device = _device;
+	context = _context;
+	skySRV = srv;
+	skyPixelShader = ps;
+	skyVertexShader = vs;
+
+	// cubemap
+	CreateCubemap(text1, text2, text3, text4, text5, text6);
+
+	// rasterizer state
+	D3D11_RASTERIZER_DESC rast = {};
+	rast.FillMode = D3D11_FILL_SOLID;
+	rast.CullMode = D3D11_CULL_FRONT;
+	device->CreateRasterizerState(&rast, &skyRasterizer);
+
+	// depth stencil state
+	D3D11_DEPTH_STENCIL_DESC depth = {};
+	depth.DepthEnable = true;
+	depth.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	device->CreateDepthStencilState(&depth, &depthBuffer);
 }
 
 Sky::~Sky()
 {
+	// nothing for now!
+}
 
+void Sky::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, std::shared_ptr<Camera> camPtr)
+{
+	context->RSSetState(skyRasterizer.Get());
+	context->OMSetDepthStencilState(depthBuffer.Get(), 0);
+
+	skyVertexShader->SetShader();
+	skyPixelShader->SetShader();
+
+	// set ps sampler & SRV
+	skyPixelShader->SetSamplerState("BasicSampler", skySampler);
+	skyPixelShader->SetShaderResourceView("SkyTexture", skySRV);
+
+	// set vs world & projection matrices
+	// will be based on the camera
+	skyPixelShader->SetMatrix4x4("view", camPtr->GetView());
+	skyPixelShader->SetMatrix4x4("projection", camPtr->GetProjection());
+
+	// copying buffer data
+	skyVertexShader->CopyAllBufferData();
+	skyPixelShader->CopyAllBufferData();
+
+	// drawing the mesh
+	skyMesh->Draw();
+
+	// resetting render states
+	context->RSSetState(0);
+	context->OMSetDepthStencilState(0, 0);
 }
 
 // --------------------------------------------------------
@@ -56,12 +109,12 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::CreateCubemap(
 	// - Explicitly NOT generating mipmaps, as we don't need them for the sky!
 	// - Order matters here!  +X, -X, +Y, -Y, +Z, -Z
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> textures[6] = {};
-	/*CreateWICTextureFromFile(device.Get(), right, (ID3D11Resource**)textures[0].GetAddressOf(), 0);
+	CreateWICTextureFromFile(device.Get(), right, (ID3D11Resource**)textures[0].GetAddressOf(), 0);
 	CreateWICTextureFromFile(device.Get(), left, (ID3D11Resource**)textures[1].GetAddressOf(), 0);
 	CreateWICTextureFromFile(device.Get(), up, (ID3D11Resource**)textures[2].GetAddressOf(), 0);
 	CreateWICTextureFromFile(device.Get(), down, (ID3D11Resource**)textures[3].GetAddressOf(), 0);
 	CreateWICTextureFromFile(device.Get(), front, (ID3D11Resource**)textures[4].GetAddressOf(), 0);
-	CreateWICTextureFromFile(device.Get(), back, (ID3D11Resource**)textures[5].GetAddressOf(), 0);*/
+	CreateWICTextureFromFile(device.Get(), back, (ID3D11Resource**)textures[5].GetAddressOf(), 0);
 
 	// We'll assume all of the textures are the same color format and resolution,
 	// so get the description of the first texture
@@ -87,7 +140,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::CreateCubemap(
 
 	// Create the final texture resource to hold the cube map
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> cubeMapTexture;
-	//device->CreateTexture2D(&cubeDesc, 0, cubeMapTexture.GetAddressOf());
+	device->CreateTexture2D(&cubeDesc, 0, cubeMapTexture.GetAddressOf());
 
 	// Loop through the individual face textures and copy them,
 	// one at a time, to the cube map texure
@@ -100,13 +153,13 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::CreateCubemap(
 			1); // How many mip levels are in the texture?
 
 		// Copy from one resource (texture) to another
-		//context->CopySubresourceRegion(
-		//	cubeMapTexture.Get(),  // Destination resource
-		//	subresource,           // Dest subresource index (one of the array elements)
-		//	0, 0, 0,               // XYZ location of copy
-		//	textures[i].Get(),     // Source resource
-		//	0,                     // Source subresource index (we're assuming there's only one)
-		//	0);                    // Source subresource "box" of data to copy (zero means the whole thing)
+		context->CopySubresourceRegion(
+			cubeMapTexture.Get(),  // Destination resource
+			subresource,           // Dest subresource index (one of the array elements)
+			0, 0, 0,               // XYZ location of copy
+			textures[i].Get(),     // Source resource
+			0,                     // Source subresource index (we're assuming there's only one)
+			0);                    // Source subresource "box" of data to copy (zero means the whole thing)
 	}
 
 	// At this point, all of the faces have been copied into the 
@@ -119,7 +172,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::CreateCubemap(
 
 	// Make the SRV
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> cubeSRV;
-	//device->CreateShaderResourceView(cubeMapTexture.Get(), &srvDesc, cubeSRV.GetAddressOf());
+	device->CreateShaderResourceView(cubeMapTexture.Get(), &srvDesc, cubeSRV.GetAddressOf());
 
 	// Send back the SRV, which is what we need for our shaders
 	return cubeSRV;
