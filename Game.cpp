@@ -92,7 +92,6 @@ void Game::Init()
 	XMFLOAT4 color1(0.4f, 0.2f, 0.7f, 1.0f);
 	XMFLOAT4 color2(0.6f, 0.1f, 1.0f, 1.0f);
 	XMFLOAT4 color3(1.0f, 0.7f, 0.4f, 1.0f);
-	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// sampler state
 	{
@@ -106,44 +105,11 @@ void Game::Init()
 		device->CreateSamplerState(&samplerDesc, sampler.GetAddressOf());
 	}
 
-	// textures and materials
-	{
-		// rocks
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksTextureSRV; // comptr to srv
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksSpecularSRV; // comptr to srv
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksNormalSRV; // comptr to srv
-
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks.jpg").c_str(), 0, rocksTextureSRV.GetAddressOf()); // gray rocks
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks_spec.png").c_str(), 0, rocksSpecularSRV.GetAddressOf()); // gray rocks
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks_normal.png").c_str(), 0, rocksNormalSRV.GetAddressOf()); // gray rocks
-
-		// bark
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkTextureSRV; // comptr to srv
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkSpecularSRV; // comptr to srv
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkNormalSRV; // comptr to srv
-
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow.jpg").c_str(), 0, barkTextureSRV.GetAddressOf());
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_spec.png").c_str(), 0, barkSpecularSRV.GetAddressOf());
-		CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_normal_2.png").c_str(), 0, barkNormalSRV.GetAddressOf());
-
-
-		// making materials!
-		material1 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
-		material2 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
-
-		material1->AddSampler("BasicSampler", sampler);
-		material1->AddTextureSRV("SurfaceTexture", rocksTextureSRV);
-		material1->AddTextureSRV("SurfaceSpecular", rocksSpecularSRV);
-		material1->AddTextureSRV("SurfaceNormal", rocksNormalSRV);
-
-		material2->AddSampler("BasicSampler", sampler);
-		material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
-		material2->AddTextureSRV("SurfaceSpecular", barkSpecularSRV);
-		material2->AddTextureSRV("SurfaceNormal", barkNormalSRV);
-	}
-
+	LoadMaterials();
 
 	CreateGeometry();
+
+	CreateSky();
 
 	// primitive topology
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // can use lines too! or points! anything!; if you don't set this, it defaults to triangles with modern graphics drivers (but not all of them!!)
@@ -155,10 +121,7 @@ void Game::Init()
 		ImGui::CreateContext();
 		ImGui_ImplWin32_Init(hWnd);
 		ImGui_ImplDX11_Init(device.Get(), context.Get());
-		// Pick a style (uncomment one of these 3)
-		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsLight();
-		//ImGui::StyleColorsClassic();
+		ImGui::StyleColorsClassic();
 	}
 
 	// Get size as the next multiple of 16 (instead of hardcoding a size here!)
@@ -177,48 +140,7 @@ void Game::Init()
 
 	editColor = color;
 
-	// create the cameras
-	{
-		// cam 1
-		cam1 = std::make_shared<Camera>(
-			0.0f, 0.0f, -5.0f,
-			5.0f,
-			1.0f,
-			XM_PIDIV4, // pi/4
-			float(this->windowWidth / this->windowHeight)
-		);
-
-		// cam 2
-		cam2 = std::make_shared<Camera>(
-			0.0f, 0.0f, -7.0f,
-			5.0f,
-			1.0f,
-			XM_PIDIV2, // pi/2
-			float(this->windowWidth / this->windowHeight)
-		);
-
-		// cam 3
-		cam3 = std::make_shared<Camera>(
-			0.0f, 0.0f, -15.0f,
-			5.0f,
-			1.0f,
-			XM_PI / 3, // pi
-			float(this->windowWidth / this->windowHeight)
-		);
-	}
-
-	// push cameras to vector
-	cameras.push_back(cam1);
-	cameras.push_back(cam2);
-	cameras.push_back(cam3);
-
-	// choosing an active camera by default; cameras[0] will be active
-	for (int i = 1; i < cameras.size(); i++)
-	{
-		cameras[i]->isActive = false;
-	}
-
-	activeCam = cameras[0];
+	CreateCameras();
 }
 
 // --------------------------------------------------------
@@ -243,6 +165,114 @@ void Game::LoadShaders()
 		FixPath(L"NormalVertexShader.cso").c_str());
 	normalPixelShader = std::make_shared<SimplePixelShader>(device, context,
 		FixPath(L"NormalPixelShader.cso").c_str());
+
+	// sky shaders
+	skyVertexShader = std::make_shared<SimpleVertexShader>(device, context,
+		FixPath(L"SkyVertexShader.cso").c_str());
+	skyPixelShader = std::make_shared<SimplePixelShader>(device, context,
+		FixPath(L"SkyPixelShader.cso").c_str());
+}
+
+void Game::LoadMaterials()// textures and materials
+{
+	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// rocks
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksTextureSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksSpecularSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksNormalSRV; // comptr to srv
+
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks.jpg").c_str(), 0, rocksTextureSRV.GetAddressOf()); // gray rocks
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks_spec.png").c_str(), 0, rocksSpecularSRV.GetAddressOf()); // gray rocks
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks_normal.png").c_str(), 0, rocksNormalSRV.GetAddressOf()); // gray rocks
+
+	// bark
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkTextureSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkSpecularSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkNormalSRV; // comptr to srv
+
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow.jpg").c_str(), 0, barkTextureSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_spec.png").c_str(), 0, barkSpecularSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_normal_2.png").c_str(), 0, barkNormalSRV.GetAddressOf());
+
+	// making materials!
+	material1 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
+	material2 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
+
+	material1->AddSampler("BasicSampler", sampler);
+	material1->AddTextureSRV("SurfaceTexture", rocksTextureSRV);
+	material1->AddTextureSRV("SurfaceSpecular", rocksSpecularSRV);
+	material1->AddTextureSRV("SurfaceNormal", rocksNormalSRV);
+
+	material2->AddSampler("BasicSampler", sampler);
+	material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
+	material2->AddTextureSRV("SurfaceSpecular", barkSpecularSRV);
+	material2->AddTextureSRV("SurfaceNormal", barkNormalSRV);
+}
+
+void Game::CreateSky()
+{
+	std::shared_ptr<Mesh> cubeMesh = std::make_shared<Mesh>(FixPath("../../Assets/Models/cube.obj").c_str(), device, context);
+
+	// grab sky textures
+	// right, left, up, down, front, back
+	skybox = std::make_shared<Sky>(
+		cubeMesh, // cube
+		sampler,
+		device,
+		context,
+		skyPixelShader,
+		skyVertexShader,
+		FixPath(L"../../Assets/Textures/Skies/Clouds Pink/right.png").c_str(),
+		FixPath(L"../../Assets/Textures/Skies/Clouds Pink/left.png").c_str(),
+		FixPath(L"../../Assets/Textures/Skies/Clouds Pink/up.png").c_str(),
+		FixPath(L"../../Assets/Textures/Skies/Clouds Pink/down.png").c_str(),
+		FixPath(L"../../Assets/Textures/Skies/Clouds Pink/front.png").c_str(),
+		FixPath(L"../../Assets/Textures/Skies/Clouds Pink/back.png").c_str()
+	);
+}
+
+void Game::CreateCameras()// create the cameras
+{
+	// cam 1
+	cam1 = std::make_shared<Camera>(
+		0.0f, 0.0f, -5.0f,
+		5.0f,
+		1.0f,
+		XM_PIDIV4, // pi/4
+		float(this->windowWidth / this->windowHeight)
+	);
+
+	// cam 2
+	cam2 = std::make_shared<Camera>(
+		0.0f, 0.0f, -7.0f,
+		5.0f,
+		1.0f,
+		XM_PIDIV2, // pi/2
+		float(this->windowWidth / this->windowHeight)
+	);
+
+	// cam 3
+	cam3 = std::make_shared<Camera>(
+		0.0f, 0.0f, -15.0f,
+		5.0f,
+		1.0f,
+		XM_PI / 3, // pi
+		float(this->windowWidth / this->windowHeight)
+	);
+
+	// push cameras to vector
+	cameras.push_back(cam1);
+	cameras.push_back(cam2);
+	cameras.push_back(cam3);
+
+	// choosing an active camera by default; cameras[0] will be active
+	for (int i = 1; i < cameras.size(); i++)
+	{
+		cameras[i]->isActive = false;
+	}
+
+	activeCam = cameras[0];
 }
 
 // --------------------------------------------------------
@@ -415,6 +445,7 @@ void Game::Draw(float deltaTime, float totalTime)
 		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambientColor", ambientColor);
 		
 	}
+	skybox->Draw(activeCam);
 
 	// Frame END
 	// - These should happen exactly ONCE PER FRAME

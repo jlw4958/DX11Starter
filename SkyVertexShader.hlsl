@@ -20,8 +20,10 @@ VertexToPixel_Sky main(VertexShaderInput input)
 	viewCpy._34 = 0;
 
 	// apply projection & view to position
-    output.position = mul(float4(input.localPosition, 1), mul(projection, viewCpy));
+    float4x4 viewPos = mul(projection, viewCpy);
 
+    output.position = mul(viewPos, float4(input.localPosition, 1.0f));
+	
 	// set output depth to 1.0
 	output.position.z = output.position.w;
 

@@ -1,6 +1,7 @@
 #include "Sky.h"
-#include "PathHelpers.h"
-#include "WICTextureLoader.h" // windows imaging component
+#include "WICTextureLoader.h"
+
+using namespace DirectX;
 
 /*
 * 	std::shared_ptr<Mesh> skyMesh;
@@ -12,7 +13,7 @@
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> skyRasterizer;
 */
 
-Sky::Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs, const wchar_t* text1, const wchar_t* text2, const wchar_t* text3, const wchar_t* text4, const wchar_t* text5, const wchar_t* text6) // will use the cube mesh btw
+Sky::Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs, const wchar_t* text1, const wchar_t* text2, const wchar_t* text3, const wchar_t* text4, const wchar_t* text5, const wchar_t* text6) // will use the cube mesh btw
 {
 	// depthBuffer
 	// skyRasterizer
@@ -20,12 +21,11 @@ Sky::Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerSta
 	skySampler = sampler;
 	device = _device;
 	context = _context;
-	skySRV = srv;
 	skyPixelShader = ps;
 	skyVertexShader = vs;
 
 	// cubemap
-	CreateCubemap(text1, text2, text3, text4, text5, text6);
+	skySRV = CreateCubemap(text1, text2, text3, text4, text5, text6);
 
 	// rasterizer state
 	D3D11_RASTERIZER_DESC rast = {};
@@ -45,7 +45,7 @@ Sky::~Sky()
 	// nothing for now!
 }
 
-void Sky::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, std::shared_ptr<Camera> camPtr)
+void Sky::Draw(std::shared_ptr<Camera> camPtr)
 {
 	context->RSSetState(skyRasterizer.Get());
 	context->OMSetDepthStencilState(depthBuffer.Get(), 0);
@@ -53,18 +53,17 @@ void Sky::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, std::shared
 	skyVertexShader->SetShader();
 	skyPixelShader->SetShader();
 
-	// set ps sampler & SRV
-	skyPixelShader->SetSamplerState("BasicSampler", skySampler);
-	skyPixelShader->SetShaderResourceView("SkyTexture", skySRV);
-
 	// set vs world & projection matrices
-	// will be based on the camera
-	skyPixelShader->SetMatrix4x4("view", camPtr->GetView());
-	skyPixelShader->SetMatrix4x4("projection", camPtr->GetProjection());
+// will be based on the camera
+	skyVertexShader->SetMatrix4x4("view", camPtr->GetView());
+	skyVertexShader->SetMatrix4x4("projection", camPtr->GetProjection());
 
 	// copying buffer data
 	skyVertexShader->CopyAllBufferData();
-	skyPixelShader->CopyAllBufferData();
+
+	// set ps sampler & SRV
+	skyPixelShader->SetSamplerState("SkySampler", skySampler);
+	skyPixelShader->SetShaderResourceView("SkyTexture", skySRV);
 
 	// drawing the mesh
 	skyMesh->Draw();
@@ -72,6 +71,10 @@ void Sky::Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, std::shared
 	// resetting render states
 	context->RSSetState(0);
 	context->OMSetDepthStencilState(0, 0);
+}
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::GetSkySRV() {
+	return skySRV;
 }
 
 // --------------------------------------------------------

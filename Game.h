@@ -8,6 +8,7 @@
 #include "SimpleShader.h"
 #include "PathHelpers.h"
 #include "Lights.h"
+#include "Sky.h"
 #include <DirectXMath.h>
 #include <wrl/client.h> // Used for ComPtr - a smart pointer for COM objects
 #include <memory>
@@ -27,21 +28,29 @@ public:
 	void Update(float deltaTime, float totalTime);
 	void Draw(float deltaTime, float totalTime);
 	DirectX::XMFLOAT4 editColor;
+
+	// cameras
 	std::shared_ptr<Camera> activeCam;
 	std::shared_ptr<Camera> cam1;
 	std::shared_ptr<Camera> cam2;
 	std::shared_ptr<Camera> cam3;
 	std::vector<std::shared_ptr<Camera>> cameras;
+
+	// materials
 	std::shared_ptr<Material> material1;
 	std::shared_ptr<Material> material2;
-	std::shared_ptr<Material> material3;
-
 	DirectX::XMFLOAT3 ambientColor;
+
+	// skybox
+	std::shared_ptr<Sky> skybox;
 
 private:
 
 	// Initialization helper methods - feel free to customize, combine, remove, etc.
-	void LoadShaders(); 
+	void LoadShaders();
+	void LoadMaterials();
+	void CreateSky();
+	void CreateCameras();
 	void CreateGeometry();
 	void ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras);
 	void ImGuiSetup(float dt);
@@ -56,11 +65,13 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
 	
 	// Shaders and shader-related constructs
+	std::shared_ptr<SimpleVertexShader> vertexShader;
 	std::shared_ptr<SimplePixelShader> pixelShader;
 	std::shared_ptr<SimplePixelShader> customPixelShader;
-	std::shared_ptr<SimpleVertexShader> vertexShader;
 	std::shared_ptr<SimpleVertexShader> normalVertexShader;
 	std::shared_ptr<SimplePixelShader> normalPixelShader;
+	std::shared_ptr<SimpleVertexShader> skyVertexShader;
+	std::shared_ptr<SimplePixelShader> skyPixelShader;
 
 	// entity list
 	std::vector<GameEntity> entities;

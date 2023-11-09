@@ -3,6 +3,7 @@
 #include "SimpleShader.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "WICTextureLoader.h"
 
 #include <iostream>
 #include <DirectXMath.h>
@@ -11,9 +12,10 @@ class Sky
 {
 public:
 	// will pass in texture filepaths from Game.cpp; will use cube mesh loaded in Game.cpp
-	Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs, const wchar_t* text1, const wchar_t* text2, const wchar_t* text3, const wchar_t* text4, const wchar_t* text5, const wchar_t* text6);
+	Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs, const wchar_t* text1, const wchar_t* text2, const wchar_t* text3, const wchar_t* text4, const wchar_t* text5, const wchar_t* text6);
 	~Sky();
-	void Draw(Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, std::shared_ptr<Camera> camPtr);
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSkySRV();
+	void Draw(std::shared_ptr<Camera> camPtr);
 
 private:
 	std::shared_ptr<Mesh> skyMesh;
