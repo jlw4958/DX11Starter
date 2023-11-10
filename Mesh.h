@@ -6,76 +6,37 @@
 class Mesh
 {
 public:
-	/// <summary>
-	/// Mesh class constructor
-	/// </summary>
-	/// <param name="vertices"></param>
-	/// <param name="numVertices"></param>
-	/// <param name="indices"></param>
-	/// <param name="numIndices"></param>
-	/// <param name="_device"></param>
-	/// <param name="_context"></param>
+	// takes vertices and indices to create mesh
 	Mesh(Vertex *_vertices, int numVertices, unsigned int *_indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context);
+
+	// takes filename to create mesh
 	Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context);
-	/// <summary>
-	/// Mesh class destructor
-	/// </summary>
+
 	~Mesh();
-	/// <summary>
-	/// returns the pointer to the vertex buffer object
-	/// </summary>
+
+	// **** getters ****
+
+	// returns vertex buffer pointer
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer();
-	/// <summary>
-	/// returns the pointer to the index buffer
-	/// </summary>
+
+	// returns index buffer pointer
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetIndexBuffer();
-	/// <summary>
-	/// returns the number of indices this mesh contains
-	/// </summary>
 	int GetIndexCount();
-	/// <summary>
-	/// sets buffers; tells DirectX to draw the correct number of indices
-	/// </summary>
-	void Draw();
-	/// <summary>
-	/// returns the context
-	/// </summary>
-	/// <returns></returns>
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
 
-private:
-	/// <summary>
-	/// points to the chunk of data holding the vertices of this mesh
-	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
-	/// <summary>
-	/// points to the chunk of data holding the indices of this mesh
-	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
-	/// <summary>
-	/// used for issuing draw commands
-	/// </summary>
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
-	/// <summary>
-	/// number of indices in this mesh's index buffer
-	/// </summary>
-	int indices;
-	/// <summary>
-	/// number of vertices in this mesh's vertex buffer
-	/// </summary>
-	int vertices;
-	/// <summary>
-	/// helper method that creates vertex and index buffers
-	/// </summary>
-	void CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device);
+	// sets buffers; tells DirectX to draw the correct number of indices
+	void Draw();
 
-	/// <summary>
-	/// calculates the tangent of the vertices
-	/// </summary>
-	/// <param name="verts"></param>
-	/// <param name="numVerts"></param>
-	/// <param name="indices"></param>
-	/// <param name="numIndices"></param>
+private:
+	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+	int indices;
+	int vertices;
+
+	// **** helpers ****
+
+	void CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device);
 	void CalculateTangents(Vertex* verts, int numVerts, unsigned int* indices, int numIndices);
 };
 

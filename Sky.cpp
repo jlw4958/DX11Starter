@@ -54,7 +54,7 @@ void Sky::Draw(std::shared_ptr<Camera> camPtr)
 	skyPixelShader->SetShader();
 
 	// set vs world & projection matrices
-// will be based on the camera
+	// will be based on the camera
 	skyVertexShader->SetMatrix4x4("view", camPtr->GetView());
 	skyVertexShader->SetMatrix4x4("projection", camPtr->GetProjection());
 
