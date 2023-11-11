@@ -4,12 +4,16 @@
 #include "Vertex.h" // holds our custom Vertex struct
 #include "Input.h"
 #include "PathHelpers.h"
-#pragma comment(lib, "d3dcompiler.lib")
+
 #include <iostream>
 #include <fstream>
 #include <d3dcompiler.h>
 #include <vector>
+
+#pragma comment(lib, "d3dcompiler.lib")
+
 using namespace DirectX;
+
 Mesh::Mesh(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context)
 {
 	this->context = _context;
@@ -19,35 +23,9 @@ Mesh::Mesh(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIn
 	// call tangent calculating function
 	CalculateTangents(_vertices, numVertices, _indices, numIndices);
 
-	// creating the vertex buffer
-	{
-		D3D11_BUFFER_DESC vbd = {};
-		vbd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
-		vbd.ByteWidth = sizeof(Vertex) * vertices;      // 3 = number of vertices in the buffer; sizeof(Vertex) * vertices; 
-		vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Tells Direct3D this is a vertex buffer
-		vbd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
-		vbd.MiscFlags = 0;
-		vbd.StructureByteStride = 0;
-		D3D11_SUBRESOURCE_DATA initialVertexData = {};
-		initialVertexData.pSysMem = _vertices; // pSysMem = Pointer to System Memory
-		_device->CreateBuffer(&vbd, &initialVertexData, vertexBuffer.GetAddressOf());
-	}
-	// creating the index buffer
-	{
-		D3D11_BUFFER_DESC ibd = {};
-		ibd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
-		ibd.ByteWidth = sizeof(unsigned int) * indices;	// 3 = number of indices in the buffer; sizeof(unsigned int) * indices;
-		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;	// Tells Direct3D this is an index buffer
-		ibd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
-		ibd.MiscFlags = 0;
-		ibd.StructureByteStride = 0;
-		// Specify the initial data for this buffer, similar to above
-		D3D11_SUBRESOURCE_DATA initialIndexData = {};
-		initialIndexData.pSysMem = _indices; // pSysMem = Pointer to System Memory
-		_device->CreateBuffer(&ibd, &initialIndexData, indexBuffer.GetAddressOf());
-	}
+	// creating buffers
+	CreateBuffers(_vertices, numVertices, _indices, numIndices, _device);
 }
-
 Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context)
 {
 	// Author: Chris Cascioli
@@ -247,41 +225,17 @@ Mesh::Mesh(const char* fileName, Microsoft::WRL::ComPtr<ID3D11Device> _device, M
 	// call tangent calculating function
 	CalculateTangents(&verts[0], vertCounter, &indices[0], indexCounter);
 
-	// making buffers
-	{
-		// creating the vertex buffer
-		{
-			D3D11_BUFFER_DESC vbd = {};
-			vbd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
-			vbd.ByteWidth = sizeof(Vertex) * vertCounter;
-			vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Tells Direct3D this is a vertex buffer
-			vbd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
-			vbd.MiscFlags = 0;
-			vbd.StructureByteStride = 0;
-			D3D11_SUBRESOURCE_DATA initialVertexData = {};
-			initialVertexData.pSysMem = &verts[0]; // pSysMem = Pointer to System Memory
-			_device->CreateBuffer(&vbd, &initialVertexData, vertexBuffer.GetAddressOf());
-		}
-		// creating the index buffer
-		{
-			D3D11_BUFFER_DESC ibd = {};
-			ibd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
-			ibd.ByteWidth = sizeof(unsigned int) * indexCounter;	// 3 = number of indices in the buffer; sizeof(unsigned int) * indices;
-			ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;	// Tells Direct3D this is an index buffer
-			ibd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
-			ibd.MiscFlags = 0;
-			ibd.StructureByteStride = 0;
-			// Specify the initial data for this buffer, similar to above
-			D3D11_SUBRESOURCE_DATA initialIndexData = {};
-			initialIndexData.pSysMem = &indices[0]; // pSysMem = Pointer to System Memory
-			_device->CreateBuffer(&ibd, &initialIndexData, indexBuffer.GetAddressOf());
-		}
-	}
+	// creating buffers
+	CreateBuffers(&verts[0], vertCounter, &indices[0], indexCounter, _device);
+
 }
 Mesh::~Mesh()
 {
 	// nothing for now!
 }
+
+// **** getters ****
+
 Microsoft::WRL::ComPtr<ID3D11Buffer> Mesh::GetVertexBuffer()
 {
 	return vertexBuffer;
@@ -294,6 +248,11 @@ int Mesh::GetIndexCount()
 {
 	return indices;
 }
+Microsoft::WRL::ComPtr<ID3D11DeviceContext> Mesh::GetContext()
+{
+	return context;
+}
+
 void Mesh::Draw()
 {
 	UINT stride = sizeof(Vertex);
@@ -307,12 +266,38 @@ void Mesh::Draw()
 			0);    // Offset to add to each index when looking up vertices
 	}
 }
-Microsoft::WRL::ComPtr<ID3D11DeviceContext> Mesh::GetContext()
-{
-	return context;
-}
+
+// **** helpers ****
+
 void Mesh::CreateBuffers(Vertex* _vertices, int numVertices, unsigned int* _indices, int numIndices, Microsoft::WRL::ComPtr<ID3D11Device> _device)
 {
+	// creating the vertex buffer
+	{
+		D3D11_BUFFER_DESC vbd = {};
+		vbd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
+		vbd.ByteWidth = sizeof(Vertex) * vertices;      // 3 = number of vertices in the buffer; sizeof(Vertex) * vertices; 
+		vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Tells Direct3D this is a vertex buffer
+		vbd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
+		vbd.MiscFlags = 0;
+		vbd.StructureByteStride = 0;
+		D3D11_SUBRESOURCE_DATA initialVertexData = {};
+		initialVertexData.pSysMem = _vertices; // pSysMem = Pointer to System Memory
+		_device->CreateBuffer(&vbd, &initialVertexData, vertexBuffer.GetAddressOf());
+	}
+	// creating the index buffer
+	{
+		D3D11_BUFFER_DESC ibd = {};
+		ibd.Usage = D3D11_USAGE_IMMUTABLE;	// Will NEVER change
+		ibd.ByteWidth = sizeof(unsigned int) * indices;	// 3 = number of indices in the buffer; sizeof(unsigned int) * indices;
+		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;	// Tells Direct3D this is an index buffer
+		ibd.CPUAccessFlags = 0;	// Note: We cannot access the data from C++ (this is good)
+		ibd.MiscFlags = 0;
+		ibd.StructureByteStride = 0;
+		// Specify the initial data for this buffer, similar to above
+		D3D11_SUBRESOURCE_DATA initialIndexData = {};
+		initialIndexData.pSysMem = _indices; // pSysMem = Pointer to System Memory
+		_device->CreateBuffer(&ibd, &initialIndexData, indexBuffer.GetAddressOf());
+	}
 }
 // --------------------------------------------------------
 // Author: Chris Cascioli

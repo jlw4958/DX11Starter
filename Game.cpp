@@ -1,5 +1,3 @@
-// clean up this file
-
 #include "Game.h"
 #include "Vertex.h"
 #include "Input.h"
@@ -14,13 +12,13 @@
 #include "Camera.h"
 #include "Material.h"
 #include "SimpleShader.h"
-
 #include "WICTextureLoader.h" // windows imaging component
+
+#include <iostream>
+#include <d3dcompiler.h>
 
 // Needed for a helper function to load pre-compiled shader files
 #pragma comment(lib, "d3dcompiler.lib")
-#include <iostream>
-#include <d3dcompiler.h>
 
 // For the DirectX Math library
 using namespace DirectX;
@@ -124,16 +122,18 @@ void Game::Init()
 		ImGui::StyleColorsClassic();
 	}
 
-	// Get size as the next multiple of 16 (instead of hardcoding a size here!)
-	unsigned int size = sizeof(VertexShaderExternalData);
-	size = (size + 15) / 16 * 16; // This will work even if the struct size changes
+	{
+		// Get size as the next multiple of 16 (instead of hardcoding a size here!)
+		unsigned int size = sizeof(VertexShaderExternalData);
+		size = (size + 15) / 16 * 16; // This will work even if the struct size changes
 
-	// Describe the constant buffer
-	D3D11_BUFFER_DESC cbDesc = {}; // Sets struct to all zeros
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.ByteWidth = size; // Must be a multiple of 16
-	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+		// Describe the constant buffer
+		D3D11_BUFFER_DESC cbDesc = {}; // Sets struct to all zeros
+		cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbDesc.ByteWidth = size; // Must be a multiple of 16
+		cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	}
 
 	// vectors to edit
 	XMFLOAT4 color(1.0f, 0.0f, 0.5f, 1.0f);
@@ -142,6 +142,8 @@ void Game::Init()
 
 	CreateCameras();
 }
+
+// **** helpers ****
 
 // --------------------------------------------------------
 // Loads shaders from compiled shader object (.cso) files
@@ -153,12 +155,12 @@ void Game::Init()
 // --------------------------------------------------------
 void Game::LoadShaders()
 {
+	vertexShader = std::make_shared<SimpleVertexShader>(device, context,
+		FixPath(L"VertexShader.cso").c_str());
 	pixelShader = std::make_shared<SimplePixelShader>(device, context,
 		FixPath(L"PixelShader.cso").c_str());
 	customPixelShader = std::make_shared<SimplePixelShader>(device, context,
 		FixPath(L"CustomPixelShader.cso").c_str());
-	vertexShader = std::make_shared<SimpleVertexShader>(device, context,
-		FixPath(L"VertexShader.cso").c_str());
 
 	// normal shaders
 	normalVertexShader = std::make_shared<SimpleVertexShader>(device, context,
@@ -176,6 +178,8 @@ void Game::LoadShaders()
 void Game::LoadMaterials()// textures and materials
 {
 	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// **** loading textures ****
 
 	// rocks
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksTextureSRV; // comptr to srv
@@ -195,7 +199,9 @@ void Game::LoadMaterials()// textures and materials
 	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_spec.png").c_str(), 0, barkSpecularSRV.GetAddressOf());
 	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_normal_2.png").c_str(), 0, barkNormalSRV.GetAddressOf());
 
-	// making materials!
+
+	// **** making materials! ****
+
 	material1 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
 	material2 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
 
@@ -280,17 +286,9 @@ void Game::CreateCameras()// create the cameras
 // --------------------------------------------------------
 void Game::CreateGeometry()
 {
-	// Create some temporary variables to represent colors
-	// - Not necessary, just makes things more readable
-	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	XMFLOAT4 black = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-
-
 	XMFLOAT3 white = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-	// lights
+	// **** lights ****
 
 	// directional lights
 	{
@@ -337,7 +335,9 @@ void Game::CreateGeometry()
 	lights.push_back(pointLight1);
 	lights.push_back(pointLight2);
 
-	// the quads are weird >:(
+	
+	// **** entities ****
+
 	// 1
 	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/cube.obj").c_str(), device, context), material1)); // make sure all models are lined up next to each other (adjust x pos)
 	entities[0].GetTransform()->SetPosition(XMFLOAT3(-6.0f, 0.0f, 0.0f));
@@ -358,6 +358,8 @@ void Game::CreateGeometry()
 	entities[4].GetTransform()->SetPosition(XMFLOAT3(6.0f, 0.0f, 0.0f));
 
 }
+
+// **** game functions ****
 
 // --------------------------------------------------------
 // Handle resizing to match the new window size.
@@ -436,8 +438,6 @@ void Game::Draw(float deltaTime, float totalTime)
 	// drawing entities
 	for (int i = 0; i < entities.size(); i++)
 	{
-		// lights
-
 		// entity specific pixel shader!
 		entities[i].GetMaterial()->GetPixelShader()->SetData("lights", &lights[0], sizeof(Light) * (int)lights.size());
 
@@ -445,6 +445,8 @@ void Game::Draw(float deltaTime, float totalTime)
 		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambientColor", ambientColor);
 		
 	}
+
+	// drawing skybox
 	skybox->Draw(activeCam);
 
 	// Frame END
@@ -468,7 +470,7 @@ void Game::Draw(float deltaTime, float totalTime)
 
 void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras)
 {
-	// looping through the entities for the tree nodes
+	// entity tree nodes
 	if (ImGui::TreeNode("Entities")) {
 		for (int i = 0; i < _entities.size(); i++)
 		{
@@ -507,6 +509,7 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector<
 		ImGui::TreePop();
 	}
 
+	// light tree nodes
 	if (ImGui::TreeNode("Lights")) {
 
 		// pass these values back to update them

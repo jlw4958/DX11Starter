@@ -24,6 +24,7 @@ Camera::Camera(float x, float y, float z, float moveSpeed, float mouseLookSpeed,
 
 Camera::~Camera()
 {
+	// nothing for now :)
 }
 
 void Camera::Update(float dt)
@@ -35,6 +36,7 @@ void Camera::Update(float dt)
 	// current speed
 	float speed = dt * moveSpeed;
 
+	// keyboard controls
 	if (input.KeyDown('W')) { transform.MoveRelative(0, 0, speed); } // forward
 	if (input.KeyDown('S')) { transform.MoveRelative(0, 0, -speed); } // backwards
 	if (input.KeyDown('A')) { transform.MoveRelative(-speed, 0, 0); } // left
@@ -42,6 +44,7 @@ void Camera::Update(float dt)
 	if (input.KeyDown(' ')) { transform.MoveRelative(0, speed, 0); } // up
 	if (input.KeyDown('X')) { transform.MoveRelative(0, -speed, 0); } // down
 
+	// mouse controls
 	if (input.MouseLeftDown()) {
 		float xDiff = 0.001f * mouseLookSpeed * input.GetMouseXDelta();
 		float yDiff = 0.001f * mouseLookSpeed * input.GetMouseYDelta();
