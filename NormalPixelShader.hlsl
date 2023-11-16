@@ -33,9 +33,8 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
     float3x3 TBN = float3x3(T, B, N);
     
     // Adjust the variables below as necessary to work with your own code
-    float3 surfaceColor = SurfaceTexture.Sample(BasicSampler, input.uv).rgb;
+    float3 surfaceColor = pow(SurfaceTexture.Sample(BasicSampler, input.uv).rgb, 2.2f);
     float specScale = SurfaceSpecular.Sample(BasicSampler, input.uv).r;
-    //specScale *= any(diffuse);
     
     // unpack and sample normal
     float3 unpackedNormal = SurfaceNormal.Sample(BasicSampler, input.uv).rgb * 2 - 1;
