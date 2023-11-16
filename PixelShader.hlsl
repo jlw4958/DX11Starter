@@ -57,5 +57,5 @@ float4 main(VertexToPixel input) : SV_TARGET
         finalColor += finalLight;
     }
     
-    return float4(finalColor, 1.0);
+    return float4(pow(finalColor, 1.0f/2.2f), 1);
 }
