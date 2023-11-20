@@ -58,11 +58,11 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
         
         if (lights[i].Type == LIGHT_TYPE_DIRECTIONAL)
         {
-            finalLight = DirLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specularColor);
+            finalLight = DirLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specularColor, metalness);
         }
         if (lights[i].Type == LIGHT_TYPE_POINT)
         {
-            finalLight = PointLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specularColor);
+            finalLight = PointLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specularColor, metalness);
         }
         finalColor += finalLight;
     }

@@ -49,45 +49,6 @@ float SpecCalc(float rough, float3 dir, float3 normal, float3 camPos,float3 worl
     return spec;
 }
 
-// making lights
-float3 DirLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float3 specScale)
-{
-    // normalize direction
-    float3 lightNormalDir = normalize(-light.Direction);
-    float3 camNormalDir = normalize(cameraPos - worldPos);
-    
-    // diffusion
-    float3 diffusion = Diffuse(normal, lightNormalDir);
-    
-    // specular
-    //float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos) * specScale;
-    float3 spec = MicrofacetBRDF(normal, lightNormalDir, camNormalDir, roughness, specScale);
-    // MicrofacetBRDF(normal, lightNormalDir, camNormalDir, roughness, specScale);
-    
-    return (diffusion * colorTint + spec) * light.Color;
-}
-
-float3 PointLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float3 specScale)
-{
-    // direction
-    float3 pointDir = normalize(light.Position - worldPos);
-    
-    // normalize direction
-    float3 lightNormalDir = normalize(-pointDir);
-    
-    // diffusion
-    float3 diffusion = Diffuse(normal, lightNormalDir);
-    
-    // specular
-    float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos) * specScale;
-    
-    // attenuation
-    float attenuate = Attenuate(light, worldPos);
-
-    return (diffusion * colorTint + spec) * attenuate * light.Color;
-}
-
-
 // PBR FUNCTIONS ================
 
 // Lambert diffuse BRDF - Same as the basic lighting diffuse calculation!
@@ -203,5 +164,52 @@ float3 MicrofacetBRDF(float3 n, float3 l, float3 v, float roughness, float3 f0, 
     return specularResult * max(dot(n, l), 0);
 }
 
+// making lights
+float3 DirLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float3 specScale, float metalness)// pass in metalness
+{
+    // normalize direction
+    float3 lightNormalDir = normalize(-light.Direction);
+    float3 camNormalDir = normalize(cameraPos - worldPos);
+    
+    // diffusion
+    float3 diffusion = Diffuse(normal, lightNormalDir);
+    float3 F;
+    
+    // specular
+    //float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos) * specScale; // phong
+    float3 spec = MicrofacetBRDF(normal, lightNormalDir, camNormalDir, roughness, specScale, F);
+    
+    // Calculate diffuse with energy conservation, including cutting diffuse for metals
+    float3 balancedDiff = DiffuseEnergyConserve(diffusion, F, metalness);
+    
+    return (balancedDiff * colorTint + spec) * light.Color;
+}
+
+float3 PointLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float3 specScale, float metalness)
+{
+    // direction
+    float3 pointDir = normalize(light.Position - worldPos);
+    
+    // normalize direction
+    float3 lightNormalDir = normalize(-pointDir);
+    float3 camNormalDir = normalize(cameraPos - worldPos);
+    
+    // diffusion
+    float3 diffusion = Diffuse(normal, lightNormalDir);
+    float3 F;
+
+    // specular
+    //float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos) * specScale; // phong
+    
+    float3 spec = MicrofacetBRDF(normal, lightNormalDir, camNormalDir, roughness, specScale, F);
+    
+    // attenuation
+    float attenuate = Attenuate(light, worldPos);
+    
+   // Calculate diffuse with energy conservation, including cutting diffuse for metals
+    float3 balancedDiff = DiffuseEnergyConserve(diffusion, F, metalness);
+
+    return (balancedDiff * colorTint + spec) * attenuate * light.Color;
+}
 
 #endif
