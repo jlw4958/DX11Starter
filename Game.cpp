@@ -256,7 +256,7 @@ void Game::CreateCameras()// create the cameras
 		5.0f,
 		1.0f,
 		XM_PIDIV4, // pi/4
-		float(this->windowWidth / this->windowHeight)
+		float(this->windowWidth) / this->windowHeight
 	);
 
 	// cam 2
@@ -265,7 +265,7 @@ void Game::CreateCameras()// create the cameras
 		5.0f,
 		1.0f,
 		XM_PIDIV2, // pi/2
-		float(this->windowWidth / this->windowHeight)
+		float(this->windowWidth) / this->windowHeight
 	);
 
 	// cam 3
@@ -274,7 +274,7 @@ void Game::CreateCameras()// create the cameras
 		5.0f,
 		1.0f,
 		XM_PI / 3, // pi
-		float(this->windowWidth / this->windowHeight)
+		float(this->windowWidth) / this->windowHeight
 	);
 
 	// push cameras to vector
