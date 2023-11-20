@@ -14,25 +14,21 @@ GameEntity::GameEntity(std::shared_ptr<Mesh> mesh_ptr, std::shared_ptr<Material>
 	editColor = DirectX::XMFLOAT4(1.0f, 0.0f, 0.5f, 1.0f);
 }
 
+// **** getters ****
+
 std::shared_ptr<Mesh> GameEntity::GetMesh()
 {
 	return myMesh;
 }
-
 std::shared_ptr<Transform> GameEntity::GetTransform()
 {
 	return myTransform;
 }
-
 std::shared_ptr<Material> GameEntity::GetMaterial()
 {
 	return myMaterial;
 }
 
-/// <summary>
-/// sets buffers, issues draw commands
-/// </summary>
-//void GameEntity::Draw(std::shared_ptr<Camera> camPtr, float totalTime, float greenValue)
 void GameEntity::Draw(std::shared_ptr<Camera> camPtr, float totalTime)
 {
 	// cBuffer
@@ -64,6 +60,8 @@ void GameEntity::Draw(std::shared_ptr<Camera> camPtr, float totalTime)
 	// setting up vertex + index buffers
 	myMesh->Draw();
 }
+
+// **** setters ****
 
 void GameEntity::SetMaterial(std::shared_ptr<Material> newMaterial)
 {

@@ -22,7 +22,9 @@ Transform::Transform() :
 	XMStoreFloat4x4(&worldInverseTranspose, XMMatrixIdentity());
 }
 
-// transformations: floats
+// **** transformations: floats ****
+
+// rotates vector to be absolute/relaive to the world
 void Transform::MoveAbsolute(float x, float y, float z)
 {
 	// making a vector with the parameters
@@ -44,6 +46,7 @@ void Transform::MoveAbsolute(float x, float y, float z)
 
 }
 
+// rotates vector to be relative to me (the object)
 void Transform::MoveRelative(float x, float y, float z)
 {
 	// rotate the vector I'm moving along to be relative to me
@@ -88,7 +91,9 @@ void Transform::Scale(float x, float y, float z)
 
 }
 
-// transformations: vectors
+// **** transformations: vectors **** 
+
+// rotates vector to be absolute/relaive to the world
 void Transform::MoveAbsolute(XMFLOAT3 _offset)
 {
 	// loading position into math vector
@@ -105,10 +110,6 @@ void Transform::MoveAbsolute(XMFLOAT3 _offset)
 
 	matrixIsDirty = true;
 }
-
-//void Transform::MoveRelative(XMFLOAT3 offset)
-//{
-//}
 
 void Transform::Rotate(XMFLOAT3 _rotation)
 {
@@ -144,7 +145,8 @@ void Transform::Scale(XMFLOAT3 _scale)
 	matrixIsDirty = true;
 }
 
-// setters: floats
+// **** setters: floats ****
+
 void Transform::SetPosition(float x, float y, float z)
 {
 	position.x = x;
@@ -165,7 +167,8 @@ void Transform::SetScale(float x, float y, float z)
 	matrixIsDirty = true;
 }
 
-// setters: vectors
+// **** setters: vectors ****
+
 void Transform::SetPosition(XMFLOAT3 _position)
 {
 	position = _position;
@@ -185,7 +188,8 @@ void Transform::SetScale(XMFLOAT3 _scale)
 	matrixIsDirty = true;
 }
 
-// getters
+// **** getters ****
+
 XMFLOAT3 Transform::GetPosition()
 {
 	return position;
@@ -223,9 +227,6 @@ XMFLOAT3 Transform::GetUp()
 	return up;
 }
 
-
-// helpers
-
 XMFLOAT4X4 Transform::GetWorldMatrix()
 {
 	if (matrixIsDirty) {
@@ -242,6 +243,8 @@ DirectX::XMFLOAT4X4 Transform::GetWorldInvTranspose()
 {
 	return worldInverseTranspose;
 }
+
+// **** helpers ****
 
 void Transform::UpdateMatrices()
 {

@@ -4,6 +4,7 @@
 using namespace DirectX;
 
 /*
+* List of variables in this class:
 * 	std::shared_ptr<Mesh> skyMesh;
 	std::shared_ptr<SimplePixelShader> skyPixelShader;
 	std::shared_ptr<SimpleVertexShader> skyVertexShader;
@@ -15,8 +16,6 @@ using namespace DirectX;
 
 Sky::Sky(std::shared_ptr<Mesh> mesh_ptr, Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler, Microsoft::WRL::ComPtr<ID3D11Device> _device, Microsoft::WRL::ComPtr<ID3D11DeviceContext> _context, std::shared_ptr<SimplePixelShader> ps, std::shared_ptr<SimpleVertexShader> vs, const wchar_t* text1, const wchar_t* text2, const wchar_t* text3, const wchar_t* text4, const wchar_t* text5, const wchar_t* text6) // will use the cube mesh btw
 {
-	// depthBuffer
-	// skyRasterizer
 	skyMesh = mesh_ptr;
 	skySampler = sampler;
 	device = _device;
@@ -54,7 +53,7 @@ void Sky::Draw(std::shared_ptr<Camera> camPtr)
 	skyPixelShader->SetShader();
 
 	// set vs world & projection matrices
-// will be based on the camera
+	// will be based on the camera
 	skyVertexShader->SetMatrix4x4("view", camPtr->GetView());
 	skyVertexShader->SetMatrix4x4("projection", camPtr->GetProjection());
 
@@ -90,9 +89,6 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Sky::GetSkySRV() {
 //   ComPtr called “device”.  Make any adjustments necessary for
 //   your own implementation.
 // --------------------------------------------------------
-
-// --- .CPP CODE ---
-
 // --------------------------------------------------------
 // Loads six individual textures (the six faces of a cube map), then
 // creates a blank cube map and copies each of the six textures to

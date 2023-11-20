@@ -22,61 +22,65 @@ public:
 	Game(HINSTANCE hInstance);
 	~Game();
 
-	// Overridden setup and game loop methods, which will be called automatically
+	// **** Overridden setup and game loop methods, which will be called automatically ****
 	void Init();
 	void OnResize();
 	void Update(float deltaTime, float totalTime);
 	void Draw(float deltaTime, float totalTime);
 	DirectX::XMFLOAT4 editColor;
 
-	// cameras
+	// **** cameras ****
 	std::shared_ptr<Camera> activeCam;
 	std::shared_ptr<Camera> cam1;
 	std::shared_ptr<Camera> cam2;
 	std::shared_ptr<Camera> cam3;
 	std::vector<std::shared_ptr<Camera>> cameras;
 
-	// materials
+	// **** materials ****
 	std::shared_ptr<Material> material1;
 	std::shared_ptr<Material> material2;
 	DirectX::XMFLOAT3 ambientColor;
 
-	// skybox
+	// **** skybox ****
 	std::shared_ptr<Sky> skybox;
 
 private:
 
-	// Initialization helper methods - feel free to customize, combine, remove, etc.
+	// **** Initialization helper methods - feel free to customize, combine, remove, etc. ****
+
 	void LoadShaders();
 	void LoadMaterials();
 	void CreateSky();
 	void CreateCameras();
 	void CreateGeometry();
+
+	// ImGUI Helpers
 	void ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras);
 	void ImGuiSetup(float dt);
 
-	// Note the usage of ComPtr below
-	//  - This is a smart pointer for objects that abide by the
-	//     Component Object Model, which DirectX objects do
-	//  - More info here: https://github.com/Microsoft/DirectXTK/wiki/ComPtr
-
-	// Buffers to hold actual geometry data
+	// **** Buffers to hold actual geometry data ****
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
-	
-	// Shaders and shader-related constructs
+
+	// **** Shaders and shader-related constructs ****
 	std::shared_ptr<SimpleVertexShader> vertexShader;
 	std::shared_ptr<SimplePixelShader> pixelShader;
+
+	// my custom shader!
 	std::shared_ptr<SimplePixelShader> customPixelShader;
+
+	// normal map shaders
 	std::shared_ptr<SimpleVertexShader> normalVertexShader;
 	std::shared_ptr<SimplePixelShader> normalPixelShader;
+
+	// skybox shaders
 	std::shared_ptr<SimpleVertexShader> skyVertexShader;
 	std::shared_ptr<SimplePixelShader> skyPixelShader;
 
 	// entity list
 	std::vector<GameEntity> entities;
 
-	// lights
+	// **** lights ****
 
 	// directional
 	Light directionalLight1;
@@ -87,6 +91,7 @@ private:
 	Light pointLight1;
 	Light pointLight2;
 
+	// light vector
 	std::vector<Light> lights;
 
 	// texture stuff

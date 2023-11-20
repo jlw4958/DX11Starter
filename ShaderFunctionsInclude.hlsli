@@ -49,6 +49,7 @@ float SpecCalc(float rough, float3 dir, float3 normal, float3 camPos,float3 worl
     return spec;
 }
 
+// making lights
 float3 DirLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float specScale)
 {
     // normalize direction
@@ -81,7 +82,7 @@ float3 PointLight(Light light, float3 normal, float3 colorTint, float roughness,
     float attenuate = Attenuate(light, worldPos);
 
     return (diffusion * colorTint + spec) * attenuate * light.Color;
-};
+}
 
 
 // PBR FUNCTIONS ================

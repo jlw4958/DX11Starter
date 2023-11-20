@@ -35,7 +35,8 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
     float3 B = cross(T, N);
     float3x3 TBN = float3x3(T, B, N);
     
-    float3 surfaceColor = SurfaceAlbedo.Sample(BasicSampler, input.uv).rgb;
+    // Adjust the variables below as necessary to work with your own code
+    float3 surfaceColor = pow(SurfaceTexture.Sample(BasicSampler, input.uv).rgb, 2.2f);
     float specScale = SurfaceSpecular.Sample(BasicSampler, input.uv).r;
     float roughness = SurfaceRoughness.Sample(BasicSampler, input.uv).r;
     float metalness = SurfaceMetalness.Sample(BasicSampler, input.uv).r;
@@ -64,5 +65,5 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
         finalColor += finalLight;
     }
     
-    return float4(finalColor, 1.0);
+    return float4(pow(finalColor, 1.0f / 2.2f), 1);
 }

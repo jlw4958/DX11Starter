@@ -36,7 +36,7 @@ float4 main(VertexToPixel input) : SV_TARGET
     input.normal = normalize(input.normal);
     
     // Adjust the variables below as necessary to work with your own code
-    float3 surfaceColor = SurfaceTexture.Sample(BasicSampler, input.uv).rgb;
+    float3 surfaceColor = pow(SurfaceTexture.Sample(BasicSampler, input.uv).rgb, 2.2f);
     float specScale = SurfaceSpecular.Sample(BasicSampler, input.uv).r;
     
     // after making 3 lights, add together with ambientColor to make finalColor; return final color
@@ -57,5 +57,5 @@ float4 main(VertexToPixel input) : SV_TARGET
         finalColor += finalLight;
     }
     
-    return float4(finalColor, 1.0);
+    return float4(pow(finalColor, 1.0f/2.2f), 1);
 }
