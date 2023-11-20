@@ -36,10 +36,12 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
     float3x3 TBN = float3x3(T, B, N);
     
     // Adjust the variables below as necessary to work with your own code
-    float3 surfaceColor = pow(SurfaceTexture.Sample(BasicSampler, input.uv).rgb, 2.2f);
+    float3 surfaceColor = pow(SurfaceAlbedo.Sample(BasicSampler, input.uv).rgb, 2.2f);
     float specScale = SurfaceSpecular.Sample(BasicSampler, input.uv).r;
     float roughness = SurfaceRoughness.Sample(BasicSampler, input.uv).r;
     float metalness = SurfaceMetalness.Sample(BasicSampler, input.uv).r;
+    float3 specularColor = lerp(F0_NON_METAL, surfaceColor.rgb, metalness);
+    
     
     // unpack and sample normal
     float3 unpackedNormal = SurfaceNormal.Sample(BasicSampler, input.uv).rgb * 2 - 1;
@@ -56,11 +58,11 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
         
         if (lights[i].Type == LIGHT_TYPE_DIRECTIONAL)
         {
-            finalLight = DirLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specScale);
+            finalLight = DirLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specularColor);
         }
         if (lights[i].Type == LIGHT_TYPE_POINT)
         {
-            finalLight = PointLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specScale);
+            finalLight = PointLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specularColor);
         }
         finalColor += finalLight;
     }

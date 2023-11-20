@@ -50,21 +50,24 @@ float SpecCalc(float rough, float3 dir, float3 normal, float3 camPos,float3 worl
 }
 
 // making lights
-float3 DirLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float specScale)
+float3 DirLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float3 specScale)
 {
     // normalize direction
     float3 lightNormalDir = normalize(-light.Direction);
+    float3 camNormalDir = normalize(cameraPos - worldPos);
     
     // diffusion
     float3 diffusion = Diffuse(normal, lightNormalDir);
     
     // specular
-    float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos) * specScale;
+    //float spec = SpecCalc(roughness, lightNormalDir, normal, cameraPos, worldPos) * specScale;
+    float3 spec = MicrofacetBRDF(normal, lightNormalDir, camNormalDir, roughness, specScale);
+    // MicrofacetBRDF(normal, lightNormalDir, camNormalDir, roughness, specScale);
     
     return (diffusion * colorTint + spec) * light.Color;
 }
 
-float3 PointLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float specScale)
+float3 PointLight(Light light, float3 normal, float3 colorTint, float roughness, float3 cameraPos, float3 worldPos, float3 specScale)
 {
     // direction
     float3 pointDir = normalize(light.Position - worldPos);
@@ -104,8 +107,6 @@ float3 DiffuseEnergyConserve(float3 diffuse, float3 F, float metalness)
     return diffuse * (1 - F) * (1 - metalness);
 }
  
-
-
 // Normal Distribution Function: GGX (Trowbridge-Reitz)
 //
 // a - Roughness
@@ -130,7 +131,6 @@ float D_GGX(float3 n, float3 h, float roughness)
 }
 
 
-
 // Fresnel term - Schlick approx.
 // 
 // v - View vector
@@ -146,8 +146,6 @@ float3 F_Schlick(float3 v, float3 h, float3 f0)
 	// Final value
     return f0 + (1 - f0) * pow(1 - VdotH, 5);
 }
-
-
 
 // Geometric Shadowing - Schlick-GGX
 // - k is remapped to a / 2, roughness remapped to (r+1)/2 before squaring!
@@ -172,8 +170,6 @@ float G_SchlickGGX(float3 n, float3 v, float roughness)
     return 1 / (NdotV * (1 - k) + k);
 }
 
-
- 
 // Cook-Torrance Microfacet BRDF (Specular)
 //
 // f(l,v) = D(h)F(v,h)G(l,v,h) / 4(n dot l)(n dot v)
