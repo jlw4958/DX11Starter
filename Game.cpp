@@ -180,24 +180,30 @@ void Game::LoadMaterials()// textures and materials
 	XMFLOAT4 white = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// **** loading textures ****
+	// albedo, metalness, normal, & roughness
+	// bronze + wood
 
-	// rocks
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksTextureSRV; // comptr to srv
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksSpecularSRV; // comptr to srv
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> rocksNormalSRV; // comptr to srv
+	// bronze
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> bronzeAlbedoSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> bronzeMetalSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> bronzeNormalSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> bronzeRoughSRV; // comptr to srv
 
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks.jpg").c_str(), 0, rocksTextureSRV.GetAddressOf()); // gray rocks
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks_spec.png").c_str(), 0, rocksSpecularSRV.GetAddressOf()); // gray rocks
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/gray_rocks_normal.png").c_str(), 0, rocksNormalSRV.GetAddressOf()); // gray rocks
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/PBR/bronze_albedo.png").c_str(), 0, bronzeAlbedoSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/PBR/bronze_metal.png").c_str(), 0, bronzeMetalSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/PBR/bronze_normals.png").c_str(), 0, bronzeNormalSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/PBR/bronze_roughness.png").c_str(), 0, bronzeRoughSRV.GetAddressOf());
 
-	// bark
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkTextureSRV; // comptr to srv
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkSpecularSRV; // comptr to srv
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> barkNormalSRV; // comptr to srv
+	// wood
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> woodAlbedoSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> woodMetalSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> woodNormalSRV; // comptr to srv
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> woodRoughSRV; // comptr to srv
 
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow.jpg").c_str(), 0, barkTextureSRV.GetAddressOf());
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_spec.png").c_str(), 0, barkSpecularSRV.GetAddressOf());
-	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/chosen/bark_willow_normal_2.png").c_str(), 0, barkNormalSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/PBR/wood_albedo.png").c_str(), 0, woodAlbedoSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/PBR/wood_metal.png").c_str(), 0, woodMetalSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/PBR/wood_normals.png").c_str(), 0, woodNormalSRV.GetAddressOf());
+	CreateWICTextureFromFile(device.Get(), context.Get(), FixPath(L"../../Assets/Textures/PBR/wood_roughness.png").c_str(), 0, woodRoughSRV.GetAddressOf());
 
 
 	// **** making materials! ****
@@ -205,15 +211,19 @@ void Game::LoadMaterials()// textures and materials
 	material1 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
 	material2 = std::make_shared<Material>(white, normalPixelShader, normalVertexShader, 0.7f);
 
+	// bronze
 	material1->AddSampler("BasicSampler", sampler);
-	material1->AddTextureSRV("SurfaceTexture", rocksTextureSRV);
-	material1->AddTextureSRV("SurfaceSpecular", rocksSpecularSRV);
-	material1->AddTextureSRV("SurfaceNormal", rocksNormalSRV);
+	material1->AddTextureSRV("SurfaceAlbedo", bronzeAlbedoSRV);
+	material1->AddTextureSRV("SurfaceMetalness", bronzeMetalSRV);
+	material1->AddTextureSRV("SurfaceNormal", bronzeNormalSRV);
+	material1->AddTextureSRV("SurfaceRoughness", bronzeRoughSRV);
 
+	// wood
 	material2->AddSampler("BasicSampler", sampler);
-	material2->AddTextureSRV("SurfaceTexture", barkTextureSRV);
-	material2->AddTextureSRV("SurfaceSpecular", barkSpecularSRV);
-	material2->AddTextureSRV("SurfaceNormal", barkNormalSRV);
+	material2->AddTextureSRV("SurfaceAlbedo", woodAlbedoSRV);
+	material2->AddTextureSRV("SurfaceMetalness", woodMetalSRV);
+	material2->AddTextureSRV("SurfaceNormal", woodNormalSRV);
+	material2->AddTextureSRV("SurfaceRoughness", woodRoughSRV);
 }
 
 void Game::CreateSky()
