@@ -509,13 +509,25 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector<
 
 	if (ImGui::TreeNode("Lights")) {
 
-		// pass these values back to update them
-		ImGui::ColorEdit3("Change Ambient Term", &ambientColor.x);
-		ImGui::ColorEdit3("Change Directional Light 1 Color", &directionalLight1.Color.x);
-		ImGui::ColorEdit3("Change Directional Light 2 Color", &directionalLight2.Color.x);
-		ImGui::ColorEdit3("Change Directional Light 3 Color", &directionalLight3.Color.x);
-		ImGui::ColorEdit3("Change Point Light 1 Color", &pointLight1.Color.x);
-		ImGui::ColorEdit3("Change Point Light 2 Color", &pointLight2.Color.x);
+		ImGui::DragFloat3("Change Ambient Term", &ambientColor.x, 0.1f, 0.0f, 1.0f);
+
+		for (int i = 0; i < lights.size(); i++) {
+			ImGui::PushID(i);
+
+			ImGui::Text("Light %i", i);
+
+			ImGui::DragFloat3("Change Light Color", &lights[i].Color.x, 0.01f, 0.0f, 1.0f);
+
+			ImGui::PopID();
+		}
+
+		//// pass these values back to update them
+		//ImGui::ColorEdit3("Change Ambient Term", &ambientColor.x);
+		//ImGui::ColorEdit3("Change Directional Light 1 Color", &directionalLight1.Color.x);
+		//ImGui::ColorEdit3("Change Directional Light 2 Color", &directionalLight2.Color.x);
+		//ImGui::ColorEdit3("Change Directional Light 3 Color", &directionalLight3.Color.x);
+		//ImGui::ColorEdit3("Change Point Light 1 Color", &pointLight1.Color.x);
+		//ImGui::ColorEdit3("Change Point Light 2 Color", &pointLight2.Color.x);
 
 		ImGui::TreePop();
 	}

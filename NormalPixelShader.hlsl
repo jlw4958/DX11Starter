@@ -17,9 +17,12 @@ cbuffer ExternalData : register(b0)
 // smapler for textures!
 SamplerState BasicSampler : register(s0);
 
-Texture2D SurfaceTexture : register(t0);
-Texture2D SurfaceSpecular : register(t1);
-Texture2D SurfaceNormal : register(t2);
+//Texture2D SurfaceTexture : register(t0);
+Texture2D SurfaceSpecular : register(t0);
+Texture2D SurfaceNormal : register(t1);
+Texture2D SurfaceAlbedo : register(t2); // sampled the way surfacetexture 
+Texture2D SurfaceRoughness : register(t3);
+Texture2D SurfaceMetalness : register(t4);
 
 float4 main(VertexToPixel_Normal input) : SV_TARGET
 {
@@ -32,10 +35,10 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
     float3 B = cross(T, N);
     float3x3 TBN = float3x3(T, B, N);
     
-    // Adjust the variables below as necessary to work with your own code
-    float3 surfaceColor = SurfaceTexture.Sample(BasicSampler, input.uv).rgb;
+    float3 surfaceColor = SurfaceAlbedo.Sample(BasicSampler, input.uv).rgb;
     float specScale = SurfaceSpecular.Sample(BasicSampler, input.uv).r;
-    //specScale *= any(diffuse);
+    float roughness = SurfaceRoughness.Sample(BasicSampler, input.uv).r;
+    float metalness = SurfaceMetalness.Sample(BasicSampler, input.uv).r;
     
     // unpack and sample normal
     float3 unpackedNormal = SurfaceNormal.Sample(BasicSampler, input.uv).rgb * 2 - 1;
