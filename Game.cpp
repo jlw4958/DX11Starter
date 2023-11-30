@@ -405,6 +405,11 @@ void Game::Update(float deltaTime, float totalTime)
 		}
 	}
 
+	for (int i = 0; i < entities.size()-1; i++)
+	{
+		entities[i].GetTransform()->Rotate(0.0f, 2.0f * deltaTime, 0.0f);
+	}
+
 	// ImGui things
 	{
 		// ImGUI setup
@@ -457,8 +462,7 @@ void Game::Draw(float deltaTime, float totalTime)
 		entities[i].GetMaterial()->GetPixelShader()->SetData("lights", &lights[0], sizeof(Light) * (int)lights.size());
 
 		entities[i].Draw(activeCam, totalTime);
-		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambientColor", ambientColor);
-		
+		entities[i].GetMaterial()->GetPixelShader()->SetFloat3("ambientColor", ambientColor);		
 	}
 
 	// drawing skybox
