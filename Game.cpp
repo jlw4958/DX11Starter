@@ -367,6 +367,10 @@ void Game::CreateGeometry()
 	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/torus.obj").c_str(), device, context), material2));
 	entities[4].GetTransform()->SetPosition(XMFLOAT3(6.0f, 0.0f, 0.0f));
 
+	// floor
+	entities.push_back(GameEntity(std::make_shared<Mesh>(FixPath("../../Assets/Models/cube.obj").c_str(), device, context), material2));
+	entities[5].GetTransform()->SetPosition(XMFLOAT3(0.0f, -3.0f, 0.0f));
+	entities[5].GetTransform()->Scale(XMFLOAT3(15.0f, 1.0f, 10.0f));
 }
 
 // **** game functions ****
