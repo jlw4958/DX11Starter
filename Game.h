@@ -50,6 +50,7 @@ private:
 
 	void LoadShaders();
 	void LoadMaterials();
+	void CreateShadowMap();
 	void CreateSky();
 	void CreateCameras();
 	void CreateGeometry();
@@ -90,9 +91,6 @@ private:
 	// point
 	Light pointLight1;
 	Light pointLight2;
-
-	// top light (directional)
-	Light topLight;
 
 	// light vector
 	std::vector<Light> lights;
