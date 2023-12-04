@@ -55,6 +55,8 @@ Game::Game(HINSTANCE hInstance)
 	pointLight1 = {};
 	pointLight2 = {};
 
+	topLight = {};
+
 	lights = {};
 }
 
@@ -292,7 +294,7 @@ void Game::CreateCameras()// create the cameras
 }
 
 // --------------------------------------------------------
-// Creates the geometry we're going to draw - a single triangle for now
+// Creates the geometry we're going to draw
 // --------------------------------------------------------
 void Game::CreateGeometry()
 {
@@ -304,7 +306,7 @@ void Game::CreateGeometry()
 	{
 		// 1
 		directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
-		directionalLight1.Direction = XMFLOAT3(0, 1, 0);
+		directionalLight1.Direction = XMFLOAT3(0, -1, 0);
 		directionalLight1.Intensity = 1.0f;
 		directionalLight1.Color = white;
 		//directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);
@@ -339,11 +341,20 @@ void Game::CreateGeometry()
 		pointLight2.Color = XMFLOAT3(1.0f, 0.4f, 0.7f); // pink?
 	}
 
+	//// top light
+	//{
+	//	topLight.Type = LIGHT_TYPE_DIRECTIONAL;
+	//	topLight.Direction = XMFLOAT3(0, 0, 1);
+	//	topLight.Intensity = 1.0f;
+	//	topLight.Color = white;
+	//}
+
 	lights.push_back(directionalLight1);
 	lights.push_back(directionalLight2);
 	lights.push_back(directionalLight3);
 	lights.push_back(pointLight1);
 	lights.push_back(pointLight2);
+	//lights.push_back(topLight);
 
 	
 	// **** entities ****
@@ -402,6 +413,11 @@ void Game::Update(float deltaTime, float totalTime)
 		if (!cameras[i]->isActive) {
 			cameras[i]->UpdateProjectionMatrix(cameras[i]->GetFOV(), cameras[i]->GetAspectRatio());
 		}
+	}
+	// rotating the entities
+	for (int i = 0; i < entities.size() - 1; i++)
+	{
+		entities[i].GetTransform()->Rotate(XMFLOAT3(0.0f, 2.0f*deltaTime, 0.0f));
 	}
 
 	// ImGui things

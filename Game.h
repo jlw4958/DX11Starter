@@ -91,6 +91,9 @@ private:
 	Light pointLight1;
 	Light pointLight2;
 
+	// top light (directional)
+	Light topLight;
+
 	// light vector
 	std::vector<Light> lights;
 
