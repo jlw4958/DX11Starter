@@ -304,7 +304,7 @@ void Game::CreateGeometry()
 
 	// directional lights
 	{
-		// 1
+		// 1: primary light source
 		directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
 		directionalLight1.Direction = XMFLOAT3(0, -1, 0);
 		directionalLight1.Intensity = 1.0f;
@@ -417,7 +417,7 @@ void Game::Update(float deltaTime, float totalTime)
 	// rotating the entities
 	for (int i = 0; i < entities.size() - 1; i++)
 	{
-		entities[i].GetTransform()->Rotate(XMFLOAT3(0.0f, 2.0f*deltaTime, 0.0f));
+		entities[i].GetTransform()->Rotate(0.0f, 2.0f*deltaTime, 0.0f);
 	}
 
 	// ImGui things
