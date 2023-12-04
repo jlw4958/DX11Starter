@@ -58,6 +58,9 @@ Game::Game(HINSTANCE hInstance)
 	topLight = {};
 
 	lights = {};
+
+	shadowProjectionMatrix = {};
+	shadowViewMatrix = {};
 }
 
 // --------------------------------------------------------
@@ -105,7 +108,50 @@ void Game::Init()
 		device->CreateSamplerState(&samplerDesc, sampler.GetAddressOf());
 	}
 
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> shadowTexture;
+	// shadow map resource
+	{
+		// Create the actual texture that will be the shadow map
+		D3D11_TEXTURE2D_DESC shadowDesc = {};
+		shadowDesc.Width = 1024; // Ideally a power of 2 (like 1024)
+		shadowDesc.Height = 1024; // Ideally a power of 2 (like 1024)
+		shadowDesc.ArraySize = 1;
+		shadowDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		shadowDesc.CPUAccessFlags = 0;
+		shadowDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+		shadowDesc.MipLevels = 1;
+		shadowDesc.MiscFlags = 0;
+		shadowDesc.SampleDesc.Count = 1;
+		shadowDesc.SampleDesc.Quality = 0;
+		shadowDesc.Usage = D3D11_USAGE_DEFAULT;
+		device->CreateTexture2D(&shadowDesc, 0, shadowTexture.GetAddressOf());
+
+	}
+
 	LoadMaterials();
+
+	// shadow depth and stencil views
+	{
+		// Create the depth/stencil view
+		D3D11_DEPTH_STENCIL_VIEW_DESC shadowDSDesc = {};
+		shadowDSDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		shadowDSDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		shadowDSDesc.Texture2D.MipSlice = 0;
+		device->CreateDepthStencilView(
+			shadowTexture.Get(),
+			&shadowDSDesc,
+			shadowDSV.GetAddressOf());
+		// Create the SRV for the shadow map
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		device->CreateShaderResourceView(
+			shadowTexture.Get(),
+			&srvDesc,
+			shadowSRV.GetAddressOf());
+	}
 
 	CreateGeometry();
 
@@ -306,7 +352,7 @@ void Game::CreateGeometry()
 	{
 		// 1: primary light source
 		directionalLight1.Type = LIGHT_TYPE_DIRECTIONAL;
-		directionalLight1.Direction = XMFLOAT3(0, -1, 0);
+		directionalLight1.Direction = XMFLOAT3(0, -.75, 0);
 		directionalLight1.Intensity = 1.0f;
 		directionalLight1.Color = white;
 		//directionalLight1.Color = XMFLOAT3(0.3f, 1.0f, 0.3f);

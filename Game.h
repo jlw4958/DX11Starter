@@ -100,5 +100,10 @@ private:
 	// texture stuff
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler; // for now, just one >:)
 
+	// shadow mapping
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> shadowDSV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shadowSRV;
+	DirectX::XMFLOAT4X4 shadowViewMatrix;
+	DirectX::XMFLOAT4X4 shadowProjectionMatrix;
 };
 
