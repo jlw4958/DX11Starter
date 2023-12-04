@@ -144,6 +144,8 @@ void Game::Init()
 	editColor = color;
 
 	CreateCameras();
+
+	CreateShadowMap();
 }
 
 // **** helpers ****
@@ -176,6 +178,10 @@ void Game::LoadShaders()
 		FixPath(L"SkyVertexShader.cso").c_str());
 	skyPixelShader = std::make_shared<SimplePixelShader>(device, context,
 		FixPath(L"SkyPixelShader.cso").c_str());
+
+	// shadow shader
+	shadowVertexShader = std::make_shared<SimpleVertexShader>(device, context,
+		FixPath(L"ShadowVertexShader.cso").c_str());
 }
 
 void Game::LoadMaterials()// textures and materials
@@ -275,18 +281,21 @@ void Game::CreateShadowMap() {
 	}
 
 	// light matrix
-	XMMATRIX lightView = XMMatrixLookToLH(
+	XMMATRIX shadowView = XMMatrixLookAtLH(
 		XMVectorSet(0, 20, -20, 0),// Position: "Backing up" 20 units from origin
 		XMVectorSet(0, 0, 0, 0),  // Direction: light's direction
 		XMVectorSet(0, 1, 0, 0)); // Up: World up vector (Y axis)
+	XMStoreFloat4x4(&shadowViewMatrix, shadowView);
+
 
 	// orthographic view
-	float lightProjectionSize = 15.0f; // Tweak for your scene!
-	XMMATRIX lightProjection = XMMatrixOrthographicLH(
-		lightProjectionSize,
-		lightProjectionSize,
+	float shadowProjectionSize = 15.0f; // Tweak for your scene!
+	XMMATRIX shadowProjection = XMMatrixOrthographicLH(
+		shadowProjectionSize,
+		shadowProjectionSize,
 		1.0f,
 		100.0f);
+	XMStoreFloat4x4(&shadowProjectionMatrix, shadowProjection);
 
 }
 
@@ -501,6 +510,49 @@ void Game::Update(float deltaTime, float totalTime)
 void Game::Draw(float deltaTime, float totalTime)
 {
 	// Frame START
+	
+	// shadows!
+	{
+		context->ClearDepthStencilView(shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0); // clear shadow map
+		
+		// output merger
+		ID3D11RenderTargetView* nullRTV{};
+		context->OMSetRenderTargets(1, &nullRTV, shadowDSV.Get()); 
+
+		context->PSSetShader(0, 0, 0); // no pixel shader!
+
+		// change viewport
+		D3D11_VIEWPORT viewport = {};
+		viewport.Width = (float)1024;
+		viewport.Height = (float)1024;
+		viewport.MaxDepth = 1.0f;
+		context->RSSetViewports(1, &viewport); 
+
+		// draw entities
+		shadowVertexShader->SetShader();
+		shadowVertexShader->SetMatrix4x4("view", shadowViewMatrix);
+		shadowVertexShader->SetMatrix4x4("projection", shadowProjectionMatrix);
+		// Loop and draw all entities
+		for (auto& e : entities)
+		{
+			shadowVertexShader->SetMatrix4x4("world", e.GetTransform()->GetWorldMatrix());
+			shadowVertexShader->CopyAllBufferData();
+			// Draw the mesh directly to avoid the entity's material
+			// Note: Your code may differ significantly here!
+			e.GetMesh()->Draw();
+		}
+
+		// reset pipeline
+		viewport.Width = (float)this->windowWidth;
+		viewport.Height = (float)this->windowHeight;
+		context->RSSetViewports(1, &viewport);
+		context->OMSetRenderTargets(
+			1,
+			backBufferRTV.GetAddressOf(),
+			depthBufferDSV.Get());
+	}
+
+
 	// - These things should happen ONCE PER FRAME
 	// - At the beginning of Game::Draw() before drawing *anything*
 	{
@@ -553,6 +605,8 @@ void Game::Draw(float deltaTime, float totalTime)
 
 void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras)
 {
+	ImGui::Image(shadowSRV.Get(), ImVec2(512, 512));
+
 	// entity tree nodes
 	if (ImGui::TreeNode("Entities")) {
 		for (int i = 0; i < _entities.size(); i++)

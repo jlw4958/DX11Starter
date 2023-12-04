@@ -78,6 +78,9 @@ private:
 	std::shared_ptr<SimpleVertexShader> skyVertexShader;
 	std::shared_ptr<SimplePixelShader> skyPixelShader;
 
+	// shadow shader
+	std::shared_ptr<SimpleVertexShader> shadowVertexShader;
+
 	// entity list
 	std::vector<GameEntity> entities;
 
