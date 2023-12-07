@@ -16,18 +16,35 @@ cbuffer ExternalData : register(b0)
 
 // smapler for textures!
 SamplerState BasicSampler : register(s0);
+SamplerComparisonState ShadowSampler : register(s1);
 
-//Texture2D SurfaceTexture : register(t0);
-//Texture2D SurfaceSpecular : register(t0);
 Texture2D SurfaceNormal : register(t0);
 Texture2D SurfaceAlbedo : register(t1); 
 Texture2D SurfaceRoughness : register(t2);
 Texture2D SurfaceMetalness : register(t3);
 
+Texture2D ShadowMap : register(t4);
+
 float4 main(VertexToPixel_Normal input) : SV_TARGET
 {
-    // Feel free to adjust/simplify this code to fit with your existing shader(s)
-    // Simplifications include not re-normalizing the same vector more than once!
+    // shadow map stuff!
+    // Perform the perspective divide (divide by W) ourselves
+    input.shadowMapPos /= input.shadowMapPos.w;
+    
+    // Convert the normalized device coordinates to UVs for sampling
+    float2 shadowUV = input.shadowMapPos.xy * 0.5f + 0.5f;
+    shadowUV.y = 1 - shadowUV.y; // Flip the Y
+    
+    // Grab the distances we need: light-to-pixel and closest-surface
+    float distToLight = input.shadowMapPos.z;
+    
+    // Get a ratio of comparison results using SampleCmpLevelZero()
+    float shadowAmount = ShadowMap.SampleCmpLevelZero(
+            ShadowSampler,
+            shadowUV,
+            distToLight).r;
+    // **** end shadow
+    
     float3 N = input.normal = normalize(input.normal); // Must be normalized here or before
     float3 T = normalize(input.tangent); // Must be normalized here or before
     
@@ -55,7 +72,6 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
     float3 finalLight;
     for (int i = 0; i < TOTAL_LIGHTS; i++)
     {
-        
         if (lights[i].Type == LIGHT_TYPE_DIRECTIONAL)
         {
             finalLight = DirLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specularColor, metalness);
@@ -63,6 +79,11 @@ float4 main(VertexToPixel_Normal input) : SV_TARGET
         if (lights[i].Type == LIGHT_TYPE_POINT)
         {
             finalLight = PointLight(lights[i], input.normal, surfaceColor, roughness, cameraPosition, input.worldPosition, specularColor, metalness);
+        }
+        
+        if (i == 0 && lights[i].Type == LIGHT_TYPE_DIRECTIONAL)
+        {
+            finalLight *= shadowAmount;
         }
         finalColor += finalLight;
     }

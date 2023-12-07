@@ -50,6 +50,7 @@ private:
 
 	void LoadShaders();
 	void LoadMaterials();
+	void CreateShadowMap();
 	void CreateSky();
 	void CreateCameras();
 	void CreateGeometry();
@@ -77,6 +78,15 @@ private:
 	std::shared_ptr<SimpleVertexShader> skyVertexShader;
 	std::shared_ptr<SimplePixelShader> skyPixelShader;
 
+	// shadow rasterizer state
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> shadowRasterizer;
+
+	// shadow sampler
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> shadowSampler;
+
+	// shadow shader
+	std::shared_ptr<SimpleVertexShader> shadowVertexShader;
+
 	// entity list
 	std::vector<GameEntity> entities;
 
@@ -97,5 +107,10 @@ private:
 	// texture stuff
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler; // for now, just one >:)
 
+	// shadow mapping
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> shadowDSV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shadowSRV;
+	DirectX::XMFLOAT4X4 shadowViewMatrix;
+	DirectX::XMFLOAT4X4 shadowProjectionMatrix;
 };
 

@@ -27,9 +27,10 @@ struct VertexToPixel
     float3 normal : NORMAL; 
     float3 worldPosition : POSITION;
     float2 uv : TEXTCOORD;
+    float4 shadowMapPos : SHADOW_POSITION;
 };
 
-struct VertexToPixel_Normal
+struct VertexToPixel_Normal // currently being used
 {
     float4 screenPosition : SV_POSITION;
     float4 color : COLOR; // RGBA color
@@ -37,6 +38,7 @@ struct VertexToPixel_Normal
     float3 worldPosition : POSITION;
     float3 tangent : TANGENT;
     float2 uv : TEXTCOORD;
+    float4 shadowMapPos : SHADOW_POSITION;
 };
 
 struct VertexToPixel_Sky
