@@ -54,6 +54,7 @@ private:
 	void CreateSky();
 	void CreateCameras();
 	void CreateGeometry();
+	void PostProcessingSetup();
 
 	// ImGUI Helpers
 	void ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras);
@@ -64,6 +65,10 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
 
 	// **** Shaders and shader-related constructs ****
+	
+	// texture stuff
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler; // for now, just one >:)
+
 	std::shared_ptr<SimpleVertexShader> vertexShader;
 	std::shared_ptr<SimplePixelShader> pixelShader;
 
@@ -104,13 +109,24 @@ private:
 	// light vector
 	std::vector<Light> lights;
 
-	// texture stuff
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler; // for now, just one >:)
-
 	// shadow mapping
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> shadowDSV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shadowSRV;
 	DirectX::XMFLOAT4X4 shadowViewMatrix;
 	DirectX::XMFLOAT4X4 shadowProjectionMatrix;
+
+	// **** Post-processing things ****
+	// note: multiple post processing render targets can share a vertex shader,
+	//	but each needs its own render target view (RTV), shader resource view (SRV), and pixel shader
+
+	// Resources that are shared among all post processes
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> ppSampler;
+	std::shared_ptr<SimpleVertexShader> ppVertexShader;
+
+	// Resources that are tied to a particular post process
+	std::shared_ptr<SimplePixelShader> ppPixelShader;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> ppRTV; // For rendering
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ppSRV; // For sampling
+
 };
 
