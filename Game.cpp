@@ -59,6 +59,7 @@ Game::Game(HINSTANCE hInstance)
 
 	shadowProjectionMatrix = {};
 	shadowViewMatrix = {};
+	blurRadius = 0;
 }
 
 // --------------------------------------------------------
@@ -146,6 +147,8 @@ void Game::Init()
 	CreateCameras();
 
 	CreateShadowMap();
+
+	PostProcessingSetup();
 }
 
 // **** helpers ****
@@ -590,9 +593,21 @@ void Game::Update(float deltaTime, float totalTime)
 // Clear the screen, redraw everything, present to the user
 // --------------------------------------------------------
 void Game::Draw(float deltaTime, float totalTime)
-{
+{	
 	// Frame START
-	
+
+	const float bgColor[4] = { 0.4f, 0.6f, 0.75f, 1.0f }; // Cornflower Blue
+
+	// - These things should happen ONCE PER FRAME
+	// - At the beginning of Game::Draw() before drawing *anything*
+	{
+		// Clear the back buffer (erases what's on the screen)
+		context->ClearRenderTargetView(backBufferRTV.Get(), bgColor);
+
+		// Clear the depth buffer (resets per-pixel occlusion information)
+		context->ClearDepthStencilView(depthBufferDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	}
+
 	// shadows!
 	{
 		context->ClearDepthStencilView(shadowDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0); // clear shadow map
@@ -635,18 +650,12 @@ void Game::Draw(float deltaTime, float totalTime)
 			depthBufferDSV.Get());
 	}
 
-
-	// - These things should happen ONCE PER FRAME
-	// - At the beginning of Game::Draw() before drawing *anything*
+	// post processing: pre-render
 	{
-		// Clear the back buffer (erases what's on the screen)
-		const float bgColor[4] = { 0.4f, 0.6f, 0.75f, 1.0f }; // Cornflower Blue
-		context->ClearRenderTargetView(backBufferRTV.Get(), bgColor);
-
-		// Clear the depth buffer (resets per-pixel occlusion information)
-		context->ClearDepthStencilView(depthBufferDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		context->ClearRenderTargetView(ppRTV.Get(), bgColor); // clearing the render target and back buffer
+		context->OMSetRenderTargets(1, ppRTV.GetAddressOf(), depthBufferDSV.Get()); // swapping active render target to post-processing render target
 	}
-
+		
 	// DRAW geometry
 	// - These steps are generally repeated for EACH object you draw
 	// - Other Direct3D calls will also be necessary to do more complex things
@@ -673,6 +682,27 @@ void Game::Draw(float deltaTime, float totalTime)
 	// drawing skybox
 	skybox->Draw(activeCam);
 
+	// post processing: post-render
+	{
+		context->OMSetRenderTargets(1, backBufferRTV.GetAddressOf(), 0); // restore back buffer
+
+		// Activate shaders and bind resources
+		// Also set any required cbuffer data (not shown)
+		ppVertexShader->SetShader();
+		ppPixelShader->SetShader();
+
+		ppPixelShader->SetShaderResourceView("Pixels", ppSRV.Get());
+		ppPixelShader->SetSamplerState("ClampSampler", ppSampler.Get());
+
+		ppPixelShader->SetInt("blurRadius", blurRadius);
+		ppPixelShader->SetFloat("pixelWidth", 1.0f / windowWidth);
+		ppPixelShader->SetFloat("pixelHeight", 1.0f / windowHeight);
+
+		ppPixelShader->CopyAllBufferData();
+
+		context->Draw(3, 0); // Draw exactly 3 vertices (one triangle)
+	}
+
 	// Frame END
 	// - These should happen exactly ONCE PER FRAME
 	// - At the very end of the frame (after drawing *everything*)
@@ -698,6 +728,10 @@ void Game::Draw(float deltaTime, float totalTime)
 void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector< std::shared_ptr<Camera>> _cameras)
 {
 	ImGui::Image(shadowSRV.Get(), ImVec2(512, 512));
+
+	// post processing blur
+	ImGui::DragInt("Blur Amount", &blurRadius, 1, 0, 10, "%d", ImGuiSliderFlags_AlwaysClamp);
+
 
 	// entity tree nodes
 	if (ImGui::TreeNode("Entities")) {
@@ -740,8 +774,6 @@ void Game::ImGuiHelper(float dt, std::vector<GameEntity> _entities, std::vector<
 
 	// light tree nodes
 	if (ImGui::TreeNode("Lights")) {
-
-		//ImGui::DragFloat3("Change Ambient Term", &ambientColor.x, 0.1f, 0.0f, 1.0f);
 
 		for (int i = 0; i < lights.size(); i++) {
 			ImGui::PushID(i);
