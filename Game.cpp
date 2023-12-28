@@ -191,6 +191,8 @@ void Game::LoadShaders()
 		FixPath(L"PPVertexShader.cso").c_str());
 	ppPixelShader = std::make_shared<SimplePixelShader>(device, context,
 		FixPath(L"PPBloomPixelShader.cso").c_str());
+	ppExtractPixelShader = std::make_shared<SimplePixelShader>(device, context,
+		FixPath(L"PPBloomExtract.cso").c_str());
 }
 
 void Game::LoadMaterials()// textures and materials
@@ -511,7 +513,7 @@ void Game::PostProcessingSetup() { // provided by Chris
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> ppTexture;
 	device->CreateTexture2D(&textureDesc, 0, ppTexture.GetAddressOf());
 
-	// Create the Render Target View
+	// Create the Render Target Views
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 	rtvDesc.Format = textureDesc.Format;
 	rtvDesc.Texture2D.MipSlice = 0;
@@ -520,6 +522,16 @@ void Game::PostProcessingSetup() { // provided by Chris
 		ppTexture.Get(),
 		&rtvDesc,
 		ppRTV.ReleaseAndGetAddressOf());
+
+	D3D11_RENDER_TARGET_VIEW_DESC eRTVDesc = {};
+	eRTVDesc.Format = textureDesc.Format;
+	eRTVDesc.Texture2D.MipSlice = 0;
+	eRTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	device->CreateRenderTargetView(
+		ppTexture.Get(),
+		&eRTVDesc,
+		ppExtractRTV.ReleaseAndGetAddressOf()); 
+
 	// Create the Shader Resource View
 	// By passing it a null description for the SRV, we
 	// get a "default" SRV that has access to the entire resource
@@ -652,8 +664,8 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	// post processing: pre-render
 	{
-		context->ClearRenderTargetView(ppRTV.Get(), bgColor); // clearing the render target and back buffer
-		context->OMSetRenderTargets(1, ppRTV.GetAddressOf(), depthBufferDSV.Get()); // swapping active render target to post-processing render target
+		context->ClearRenderTargetView(ppExtractRTV.Get(), bgColor); // clearing the render target and back buffer; change to bloom extract RTV
+		context->OMSetRenderTargets(1, ppExtractRTV.GetAddressOf(), depthBufferDSV.Get()); // swapping active render target to post-processing render target
 	}
 		
 	// DRAW geometry
@@ -684,13 +696,21 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	// post processing: post-render
 	{
-		context->OMSetRenderTargets(1, backBufferRTV.GetAddressOf(), 0); // restore back buffer
-
 		// Activate shaders and bind resources
 		// Also set any required cbuffer data (not shown)
+		ppExtractPixelShader->SetShader();
 		ppVertexShader->SetShader();
-		ppPixelShader->SetShader();
 
+		// bloom extract - get brightest values
+		ppExtractPixelShader->SetShaderResourceView("BrightTexture", ppSRV.Get());
+		ppExtractPixelShader->SetSamplerState("samples", ppSampler.Get());
+		ppExtractPixelShader->SetFloat("bloomThreshold", .6f);
+		ppExtractPixelShader->CopyAllBufferData();
+		context->Draw(3, 0);
+
+		// bloom combine - blur brightest values
+		context->OMSetRenderTargets(1, backBufferRTV.GetAddressOf(), 0); // restore back buffer
+		ppPixelShader->SetShader();
 		ppPixelShader->SetShaderResourceView("Pixels", ppSRV.Get());
 		ppPixelShader->SetSamplerState("ClampSampler", ppSampler.Get());
 

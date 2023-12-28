@@ -124,9 +124,15 @@ private:
 	std::shared_ptr<SimpleVertexShader> ppVertexShader;
 
 	// Resources that are tied to a particular post process
+	
+	// Bloom extract - grabbing brightest values
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> ppExtractRTV;
+	std::shared_ptr<SimplePixelShader> ppExtractPixelShader;
+
+	// Bloom combine - after extracting brightest values
 	std::shared_ptr<SimplePixelShader> ppPixelShader;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> ppRTV; // For rendering
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ppSRV; // For sampling
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> ppRTV; // For rendering - bloom combine
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ppSRV; // For sampling 
 
 	int blurRadius;
 
